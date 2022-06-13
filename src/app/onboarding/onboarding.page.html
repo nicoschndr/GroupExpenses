@@ -1,0 +1,41 @@
+<ion-header>
+
+</ion-header>
+
+<ion-content>
+  <ion-button *ngIf="counter!==1" (click)="back()">
+    <ion-icon name="chevron-back-outline"></ion-icon>
+  </ion-button>
+  <div class="image">
+    <img *ngIf="counter===1" src="" alt="logo">
+    <img *ngIf="counter===2" src="../../img/people.xcf" alt="onboarding2">
+    <img *ngIf="counter===3" src="" alt="onboarding3">
+    <img *ngIf="counter===4" src="" alt="onboarding4">
+    <img *ngIf="counter===5" src="" alt="onboarding5">
+  </div>
+  <div class="headlines">
+    <h1 *ngIf="counter===1">Willkommen bei BILLIE!</h1>
+    <h1 *ngIf="counter===2">Gruppe erstellen</h1>
+    <h1 *ngIf="counter===3">Ausgaben oder Einnahmen hinzufügen</h1>
+    <h1 *ngIf="counter===4">Interagiere mit deinen gruppenmitgliedern</h1>
+    <h1 *ngIf="counter===5">Schulden begleichen</h1>
+  </div>
+  <div class="text">
+    <p *ngIf="counter===1">Hier kannst die Ausgaben oder<br>Einnahmen von Gruppen erfasssen und<br> auf alle Beteiligten umrechnen lassen.</p>
+    <p *ngIf="counter===2">Erstelle in wenigen Schritten eine<br> Gruppe und füge deine Freunde mit<br> einem Einladungslink hinzu.</p>
+    <p *ngIf="counter===3">Scanne ganz einfach deine Belege und<br> füge Sie einer Ausgabe oder Einnahme<br> hinzu.</p>
+    <p *ngIf="counter===4">Erhalte kleine Auszeichnungen, mit<br> denen du deinen Gruppenmitgliedern<br> zeigst, dass du zuverlässig bist.</p>
+    <p *ngIf="counter===5">Nachdem Group Expenses die Anteile<br> auf die einzelnen Teilnehmer<br> umgerechnet hat, kannst du deine<br> Schulden begleichen.</p>
+  </div>
+  <div>
+    <ion-button *ngIf="counter===5" (click)="getStarted()">
+      jetzt loslegen
+    </ion-button>
+  </div>
+  <div class="link1">
+    <a *ngIf="counter!==5" style="display: flex; float: left; cursor: pointer" (click)="getStarted()">skip</a>
+  </div>
+  <div class="link2">
+    <a *ngIf="counter!==5" style="display: flex; float: right; cursor: pointer;" (click)="count()">next<ion-icon name="arrow-forward-circle-outline"></ion-icon></a>
+  </div>
+</ion-content>

@@ -1,0 +1,40 @@
+p {
+  cursor: default;
+  font-family: Roboto, sans-serif;
+}
+div {
+  display: flex;
+  justify-content: center;
+}
+input {
+  font-size: inherit; padding: 5px 12px;
+  font-family: Roboto, sans-serif;
+  font-weight: 300;
+  border: 1px #47517B;
+  background-color: #ffffff ;
+  border-radius: 5px;
+  width: 18%;
+  color: #0d0d0d;
+}
+.text1{
+  font-size: small;
+  font-family: Roboto, sans-serif;
+}
+.anmelden{
+  color: #ffffff;
+  font-family: Roboto, sans-serif;
+  width: 18%;
+  border-radius: 10px;
+}
+.password{
+  margin-top: 10px;
+  font-family: Roboto, sans-serif;
+}
+.logo{
+  margin-top: 5%;
+}
+.text2{
+  font-size: small;
+  font-family: Roboto, sans-serif;
+}
+

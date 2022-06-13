@@ -1,0 +1,35 @@
+<ion-content>
+  <ion-button>
+    <ion-icon name="chevron-back-outline"></ion-icon>
+  </ion-button>
+    <div class="logo">
+     <img alt="logo" src="">
+   </div>
+    <div>
+      <input type="text" placeholder="E-Mail" [(ngModel)]="email">
+    </div>
+     <div>
+       <input class="password" type="password" placeholder="Passwort" [(ngModel)]="password">
+     </div>
+     <div>
+        <p class="text1">Passwort vergessen? <a href="#">Hier zurücksetzen</a></p>
+     </div>
+   <div>
+      <ion-button *ngIf="!userService.isLoggedIn" class="anmelden" (click)="dologin()">
+        <p>einloggen</p>
+     </ion-button>
+   </div>
+    <div>
+      <ion-button  *ngIf="!userService.isLoggedIn" class="anmelden" (click)="loginWithGoogle()">
+      <p>LoginWithGoogle</p>
+     </ion-button>
+    </div>
+    <div>
+      <p class="text2">Noch nicht registriert? <a href="#">Jetzt anmelden</a></p>
+   </div>
+    <div>
+     <ion-button *ngIf="this.userService.isLoggedIn" (click)="userService.logout()">
+       <p>logout</p>
+      </ion-button>
+    </div>
+</ion-content>
