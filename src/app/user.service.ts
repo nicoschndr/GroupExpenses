@@ -35,4 +35,8 @@ export class UserService {
     localStorage.removeItem('currentUser');
     this.isLoggedIn = false;
   }
+
+  joinGroup(id, key){
+
+  }
 }
