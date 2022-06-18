@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {AngularFireAuth} from '@angular/fire/compat/auth';
-import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/compat/firestore';
+import {AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument} from '@angular/fire/compat/firestore';
 import firebase from 'firebase/compat/app';
 import {User} from './User.model';
 
@@ -8,9 +8,10 @@ import {User} from './User.model';
   providedIn: 'root'
 })
 export class UserService {
-
   isLoggedIn = false;
+  currentUser: User | undefined;
   private userCollection: AngularFirestoreCollection<User>;
+
 
   constructor(private afa: AngularFireAuth, private afs: AngularFirestore) {
     this.userCollection = afs.collection<User>('user');
@@ -21,12 +22,25 @@ export class UserService {
       res=>{
         this.isLoggedIn = true;
         localStorage.setItem('currentUser', JSON.stringify(res.user));
+        this.updatePassword(res.user.uid, password);
       }
     );
   }
+
+  async updatePassword(uid, password){
+    const user: User  = await this.getUserWithUid(uid);
+    const userData = new User(user.email, user.firstName, user.lastName, password);
+    await this.setUser(uid, userData);
+  }
+
+  async getUserWithUid(uid: any): Promise<User>{
+    return this.userCollection.doc(uid).get().toPromise().then(snapshot => snapshot.data());
+  }
+
   async loginWithGoogle(): Promise<void> {
     await this.afa.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(() => this.isLoggedIn = true);
   }
+
   async logout(){
     const user = localStorage.getItem('currentUser');
     if(user) {
@@ -38,5 +52,41 @@ export class UserService {
 
   joinGroup(id, key){
 
+  }
+
+  async signUp(firstName, lastName, email, password) {
+    await this.afa.createUserWithEmailAndPassword(email, password).then(async res => {
+      const uid = res.user.uid;
+      const userData: User = new User(email,firstName,lastName,password);
+      await this.setUser(uid, userData);
+    });
+    const user: User = new User(email,firstName,lastName,password);
+    this.isLoggedIn = true;
+    localStorage.setItem('currentUser', JSON.stringify(user));
+  };
+
+  async forgotPassword(email) {
+    await this.afa.sendPasswordResetEmail(email).then(res => {
+      console.log('email sent');
+      console.log(res);
+    })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorCode, errorMessage);
+      });
+  }
+
+  async setUser(uid, userData){
+    const userRef: AngularFirestoreDocument<User> = this.afs.doc(`user/${uid}`);
+    const user: User = {
+      email: userData.email,
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      password: userData.password
+    };
+    return userRef.set(user, {
+      merge: true,
+    });
   }
 }

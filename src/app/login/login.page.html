@@ -1,35 +1,75 @@
+<ion-row>
+  <ion-col>
+    <ion-button class="back" (click)="navigateHome()">
+      <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
+    </ion-button>
+  </ion-col>
+</ion-row>
+
+<div class="center">
+  <h1>Login</h1>
+</div>
+
 <ion-content>
-  <ion-button>
-    <ion-icon name="chevron-back-outline"></ion-icon>
-  </ion-button>
-    <div class="logo">
-     <img alt="logo" src="">
-   </div>
-    <div>
-      <input type="text" placeholder="E-Mail" [(ngModel)]="email">
-    </div>
-     <div>
-       <input class="password" type="password" placeholder="Passwort" [(ngModel)]="password">
-     </div>
-     <div>
-        <p class="text1">Passwort vergessen? <a href="#">Hier zurücksetzen</a></p>
-     </div>
-   <div>
-      <ion-button *ngIf="!userService.isLoggedIn" class="anmelden" (click)="dologin()">
-        <p>einloggen</p>
-     </ion-button>
-   </div>
-    <div>
-      <ion-button  *ngIf="!userService.isLoggedIn" class="anmelden" (click)="loginWithGoogle()">
-      <p>LoginWithGoogle</p>
-     </ion-button>
-    </div>
-    <div>
-      <p class="text2">Noch nicht registriert? <a href="#">Jetzt anmelden</a></p>
-   </div>
-    <div>
-     <ion-button *ngIf="this.userService.isLoggedIn" (click)="userService.logout()">
-       <p>logout</p>
-      </ion-button>
-    </div>
+  <ion-grid>
+
+    <ion-row>
+      <ion-col class="center">
+        <img alt="logo" src="assets/billie.svg" width="125" height="125">
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col class="center">
+        <ion-item>
+          <ion-input type="text" placeholder="E-Mail" [(ngModel)]="email"></ion-input>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col class="center">
+        <ion-item>
+          <ion-input type="password" placeholder="Passwort" [(ngModel)]="password"></ion-input>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col class="center">
+        <p class="text1">Passwort vergessen? <a (click)="forgotPW()" style="cursor: pointer">Hier zurücksetzen</a></p>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col class="center">
+        <ion-button *ngIf="!userService.isLoggedIn" class="anmelden" (click)="dologin()">
+          <p>einloggen</p>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col class="center">
+        <ion-button  *ngIf="!userService.isLoggedIn" class="anmelden" (click)="loginWithGoogle()">
+          <p>LoginWithGoogle</p>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col class="center">
+        <p class="text2">Noch nicht registriert? <a (click)="navigateSignUp()" style="cursor: pointer">Jetzt anmelden</a></p>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col class="center">
+        <ion-button *ngIf="this.userService.isLoggedIn" (click)="userService.logout()">
+          <p>logout</p>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+
+  </ion-grid>
 </ion-content>

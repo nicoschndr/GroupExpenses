@@ -20,12 +20,7 @@ input {
   font-size: small;
   font-family: Roboto, sans-serif;
 }
-.anmelden{
-  color: #ffffff;
-  font-family: Roboto, sans-serif;
-  width: 18%;
-  border-radius: 10px;
-}
+
 .password{
   margin-top: 10px;
   font-family: Roboto, sans-serif;
@@ -37,4 +32,38 @@ input {
   font-size: small;
   font-family: Roboto, sans-serif;
 }
+ion-button{
+  color: white;
+  --background: #47517B;
+  --border-radius: 25px;
+  width: 300px;
+  height: 55px;
+}
+.center{
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+}
+ion-item{
+  --border-color: #47517B;
+  --border-radius: 15px;
+  --border-width: 80%;
+  --padding-start: 10%;
+  --padding-end: 10%;
+  height: 55px;
+  width: 300px;
+  margin-bottom: 1em;
+}
+ion-input{
+  --placeholder-color: #47517B;
 
+}
+.back{
+  width: 55px;
+  --background: transparentize(100);
+}
+h1{
+  color: #47517B;
+
+}

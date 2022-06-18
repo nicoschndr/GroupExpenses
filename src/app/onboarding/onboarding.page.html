@@ -3,8 +3,8 @@
 </ion-header>
 
 <ion-content>
-  <ion-button *ngIf="counter!==1" (click)="back()">
-    <ion-icon name="chevron-back-outline"></ion-icon>
+  <ion-button class="back"  *ngIf="counter!==1" (click)="back()">
+    <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
   </ion-button>
   <div class="image">
     <img *ngIf="counter===1" src="./assets/billie.svg" width="200" height="200" alt="logo">
@@ -32,10 +32,11 @@
       jetzt loslegen
     </ion-button>
   </div>
-  <div class="link1">
-    <a *ngIf="counter!==5" style="display: flex; float: left; cursor: pointer" (click)="getStarted()">skip</a>
-  </div>
-  <div class="link2">
-    <a *ngIf="counter!==5" style="display: flex; float: right; cursor: pointer;" (click)="count()">next<ion-icon name="arrow-forward-circle-outline"></ion-icon></a>
-  </div>
+
 </ion-content>
+<ion-footer>
+  <ion-row>
+         <a *ngIf="counter!==5" style="display: flex; margin-left: 0; margin-right: auto; cursor: pointer" (click)="getStarted()">skip</a>
+         <a *ngIf="counter!==5" style="display: flex; margin-right: 0; margin-left: auto; cursor: pointer;" (click)="count()">next<ion-icon name="arrow-forward-circle-outline"></ion-icon></a>
+  </ion-row>
+</ion-footer>
