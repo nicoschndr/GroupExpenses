@@ -1,0 +1,58 @@
+
+  <ion-row>
+    <ion-col>
+    <ion-button class="back" (click)="navigateLogin()">
+      <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
+    </ion-button>
+    </ion-col>
+  </ion-row>
+  <div class="center">
+      <h1>Registrierung</h1>
+  </div>
+
+
+<ion-content>
+<ion-grid>
+
+  <ion-row>
+    <ion-col class="center">
+      <ion-item>
+        <ion-input placeholder="Vorname" type="text" required="true" [(ngModel)]="user.firstName"></ion-input>
+      </ion-item>
+    </ion-col>
+
+  </ion-row>
+
+  <ion-row>
+    <ion-col class="center">
+      <ion-item>
+        <ion-input placeholder="Name" type="text" required="true" [(ngModel)]="user.lastName"></ion-input>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+
+  <ion-row>
+    <ion-col class="center">
+      <ion-item>
+        <ion-input placeholder="Email" type="email" required="true" [(ngModel)]="user.email"></ion-input>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+
+  <ion-row>
+    <ion-col class="center">
+      <ion-item>
+        <ion-input placeholder="Passwort" type="password" required="true" [(ngModel)]="user.password"></ion-input>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+
+  <ion-row class="margin">
+    <ion-col class="center">
+      <ion-button type="submit" (click)="signUp()">registrieren</ion-button>
+    </ion-col>
+  </ion-row>
+
+</ion-grid>
+
+</ion-content>
