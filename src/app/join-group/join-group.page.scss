@@ -1,24 +1,39 @@
-div{
+.back{
+  width: 50px;
+  --background: transparentize(100);
+  display: flex;
+  float: left;
+  margin-left: 0;
+  margin-right: auto;
+}
+
+ion-item{
+  --border-color: #47517B;
+  --border-radius: 15px;
+  --border-width: 80%;
+  --padding-start: 10%;
+  --padding-end: 10%;
+  height: 55px;
+  width: 300px;
+  margin-bottom: 1em;
+}
+ion-input{
+  --placeholder-color: #47517B;
+
+}
+ion-button{
+  color: white;
+  --background: #47517B;
+  --border-radius: 25px;
+  width: 300px;
+  height: 55px;
+}
+.center{
   display: flex;
   justify-content: center;
+  align-content: center;
+  align-items: center;
 }
-.image{
-  margin-top: 5%;
-}
-input {
-  font-size: inherit; padding: 5px 12px;
-  font-family: Roboto, sans-serif;
-  font-weight: 300;
-  border: 1px #47517B;
-  background-color: #ffffff ;
-  border-radius: 5px;
-  width: 18%;
-  color: #0d0d0d;
-}
-.key{
-  margin-top: 10px;
-}
-.beitreten{
-  width: 18%;
-  margin-top: 10px;
+h1{
+  color: #47517B;
 }
