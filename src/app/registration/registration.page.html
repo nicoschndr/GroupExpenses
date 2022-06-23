@@ -16,35 +16,76 @@
 
   <ion-row>
     <ion-col class="center">
-      <ion-item>
-        <ion-input placeholder="Vorname" type="text" required="true" [(ngModel)]="user.firstName"></ion-input>
-      </ion-item>
+      <div>
+        <ion-item>
+          <ion-input placeholder="Vorname" type="text" required="true" [(ngModel)]="user.firstName"></ion-input>
+        </ion-item>
+        <div>
+          <p class="center"
+            style="color:var(--ion-color-danger)"
+            *ngIf="alertsService.errors.get('firstName')">
+           {{alertsService.errors.get('firstName')}}
+        </p>
+        </div>
+      </div>
     </ion-col>
   </ion-row>
 
-  <ion-row>
-    <ion-col class="center">
-      <ion-item>
-        <ion-input placeholder="Name" type="text" required="true" [(ngModel)]="user.lastName"></ion-input>
-      </ion-item>
-    </ion-col>
-  </ion-row>
 
   <ion-row>
     <ion-col class="center">
-      <ion-item>
-        <ion-input placeholder="Email" type="email" required="true" [(ngModel)]="user.email"></ion-input>
-      </ion-item>
+      <div>
+        <ion-item>
+          <ion-input placeholder="Name" type="text" required="true" [(ngModel)]="user.lastName"></ion-input>
+        </ion-item>
+        <div>
+          <p class="center"
+             style="color:var(--ion-color-danger)"
+             *ngIf="alertsService.errors.get('lastName')">
+            {{alertsService.errors.get('lastName')}}
+          </p>
+        </div>
+      </div>
     </ion-col>
   </ion-row>
 
+
   <ion-row>
     <ion-col class="center">
-      <ion-item>
-        <ion-input placeholder="Passwort" type="password" required="true" [(ngModel)]="user.password"></ion-input>
-      </ion-item>
+      <div>
+        <ion-item>
+          <ion-input placeholder="Email" type="email" required="true" [(ngModel)]="user.email"></ion-input>
+        </ion-item>
+        <div>
+          <p class="center"
+             style="color:var(--ion-color-danger)"
+             *ngIf="alertsService.errors.get('mail')">
+            {{alertsService.errors.get('mail')}}
+          </p>
+        </div>
+      </div>
     </ion-col>
   </ion-row>
+
+
+  <ion-row>
+    <ion-col class="center">
+      <div>
+        <ion-item>
+          <ion-input placeholder="Passwort" type="password" required="true" [(ngModel)]="user.password"></ion-input>
+        </ion-item>
+        <div>
+           <p class="center"
+            style="color:var(--ion-color-danger)"
+            *ngIf="alertsService.errors.get('password')">
+            {{alertsService.errors.get('password')}}
+           </p>
+        </div>
+      </div>
+    </ion-col>
+  </ion-row>
+
+
 
   <ion-row class="margin">
     <ion-col class="center">
@@ -53,5 +94,4 @@
   </ion-row>
 
 </ion-grid>
-
 </ion-content>
