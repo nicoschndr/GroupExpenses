@@ -1,0 +1,153 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button (click)="openAddExpensesModal()">Add Expense</ion-button>
+<!--      <ion-button (click)="openAddExpensesModal()">Add Expense</ion-button>-->
+      <ion-button (click)="openAddIncomeModal()">Add Income</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid>
+    <ion-row class="ion-justify-content-center">
+      <ion-segment [(ngModel)]="segment" (ionChange)="segmentChanged($event)">
+        <ion-segment-button value="Aufteilung">
+          <ion-label>Aufteilung</ion-label>
+        </ion-segment-button>
+
+        <ion-segment-button value="Ausgaben">
+          <ion-label>Ausgaben</ion-label>
+        </ion-segment-button>
+
+        <ion-segment-button value="Einnahmen">
+          <ion-label>Einnahmen</ion-label>
+        </ion-segment-button>
+
+        <ion-segment-button value="Statistik">
+          <ion-label>
+            <ion-icon name="stats-chart-outline"></ion-icon>
+          </ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </ion-row>
+
+    <div id="segment-content">
+      <!-- Segment 'Aufteilung' -->
+      <div class="segment-divs" *ngIf="segment === 'Aufteilung'">
+        <ion-row class="ion-justify-content-center">
+          <ion-card *ngIf="split.length === 0">
+            <ion-card-content class="ion-text-center">
+              <p>Es wurden keine Eingaben erfasst.</p>
+            </ion-card-content>
+          </ion-card>
+          <!--     <ion-card>-->
+          <!--       <ion-card-content>-->
+          <!--       </ion-card-content>-->
+          <!--     </ion-card>-->
+        </ion-row>
+      </div>
+
+      <!-- Segment 'Ausgaben' -->
+      <div class="segment-divs" *ngIf="segment === 'Ausgaben'">
+        <ion-row class="ion-justify-content-center">
+          <app-add-expense></app-add-expense>
+        </ion-row>
+        <ion-row class="ion-justify-content-center">
+          <ion-card class="no-entry" *ngIf="expenses.length === 0">
+            <ion-card-content>
+              <p>Es wurden keine Eingaben erfasst.</p>
+            </ion-card-content>
+          </ion-card>
+          <ion-card button *ngFor="let expense of expenses" id="expense-delete-trigger">
+            <ion-card-content>
+              <ion-row>
+                <ion-col class="ion-text-center" size="4">
+                  <span></span>
+                  <h1>-{{expense.amount}}€</h1>
+                </ion-col>
+                <ion-col size="4">
+                  <h2>{{expense.name}}</h2> <br>
+                  <!-- Get user name by expense.userId -->
+                  <p>User Name Platzhalter</p> <br>
+                  <p>{{expense.date}}</p>
+<!--                  <p>{{expense.date | date: 'dd.MM.yyyy'}}</p>-->
+                </ion-col>
+                <ion-col class="ion-align-items-center" size="4">
+                  <ion-buttons>
+                    <ion-button (click)="editExpense(expense)">
+                      <ion-icon name="create-outline"></ion-icon>
+                    </ion-button>
+                    <ion-button (click)="deleteExpense(expense)">
+                      <ion-icon name="trash-outline"></ion-icon>
+                    </ion-button>
+                  </ion-buttons>
+                </ion-col>
+              </ion-row>
+            </ion-card-content>
+            <ion-popover trigger="expense-delete-trigger" trigger-action="click">
+              <ng-template>
+                <ion-buttons>
+                  <ion-button (click)="deleteExpense(expense)">Eintrag löschen</ion-button>
+                </ion-buttons>
+              </ng-template>
+            </ion-popover>
+          </ion-card>
+        </ion-row>
+      </div>
+
+      <!-- Segment 'Einnahmen' -->
+      <div class="segment-divs" *ngIf="segment === 'Einnahmen'">
+        <ion-row class="ion-justify-content-center">
+          <app-add-income></app-add-income>
+        </ion-row>
+        <ion-row class="ion-justify-content-center">
+          <ion-card *ngFor="let income of incoming">
+            <ion-card-content>
+              <ion-row>
+                <ion-col class="ion-text-center" size="4">
+                  <h1>+{{income.amount}}€</h1>
+                </ion-col>
+                <ion-col size="4">
+                  <!-- Get by income.debitorId -->
+                  <h2>Gläubiger Name</h2> <br>
+                  <!-- Get by income.creditorId -->
+                  <p>Schuldner Name</p> <br>
+                  <p>{{income.date | date: 'dd.MM.yyyy'}}</p>
+                </ion-col>
+                <ion-col size="4">
+                  <div class="card-button">
+                    <ion-buttons>
+                      <ion-button (click)="editIncome(income)">
+                        <ion-icon class="edit-button" name="create-outline"></ion-icon>
+                      </ion-button>
+                      <ion-button (click)="deleteIncome(income)">
+                        <ion-icon name="trash-outline"></ion-icon>
+                      </ion-button>
+                    </ion-buttons>
+                  </div>
+                </ion-col>
+              </ion-row>
+            </ion-card-content>
+          </ion-card>
+        </ion-row>
+      </div>
+
+      <!-- Segment 'Statistik' -->
+      <div class="segment-divs" *ngIf="segment === 'Statistik'">
+        <ion-row class="ion-justify-content-center" id="statistic-month">
+
+        </ion-row>
+        <ion-row class="ion-justify-content-center" id="statistic-model">
+
+        </ion-row>
+        <ion-row class="ion-justify-content-center" id="statistic-key">
+
+        </ion-row>
+      </div>
+    </div>
+  </ion-grid>
+</ion-content>

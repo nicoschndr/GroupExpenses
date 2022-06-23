@@ -1,0 +1,40 @@
+h1 {
+  font-size: 30px;
+  font-weight: bold;
+}
+h2 {
+  font-size: 20px;
+}
+#segment-content {
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+}
+.segment-divs {
+  width: 100%;
+  margin: 0;
+  //align-content: center;
+  //justify-content: center;
+  justify-items: center;
+}
+ion-card {
+  width: 60%;
+  margin: 10px;
+  border: 1px solid #8CB8ED;
+  border-radius: 15px;
+  background-color: #8CB8ED;
+  color: #47517B;
+}
+.card-button {
+  display: flex;
+  justify-content: center;
+}
+.edit-button {
+  float: right;
+}
+.add-button {
+  width: 200px;
+  background-color: #8CB8ED;
+  border-radius: 15px;
+  color: white;
+}
