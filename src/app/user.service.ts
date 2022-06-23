@@ -62,27 +62,37 @@ export class UserService {
 
   async joinGroup(id, key){
     const user = JSON.parse(localStorage.getItem('currentUser'));
-    const groupData = await this.getGroupWithUid(id);
-    const userData = await this.getUserWithUid(user.uid);
-    console.log(groupData.groupMembers);
-    const arrayToPush: any = [];
+    try {
+      const groupData = await this.getGroupWithUid(id);
+      const userData = await this.getUserWithUid(user.uid);
+
+      const arrayToPush: any = [];
       arrayToPush.push(user.uid);
       groupData.groupMembers.forEach(r => {
         arrayToPush.push(r);
       });
       arrayToPush.push(user.uid);
-    const arrayToPush2: any = [];
+
+      const arrayToPush2: any = [];
       userData.gruppen.forEach(t => {
         arrayToPush2.push(t);
       });
       arrayToPush2.push(id);
 
-    if (groupData.key === key){
-      const setGroupData = new Group(arrayToPush, groupData.key, groupData.name);
-      const setUserData = new User(userData.email, userData.firstName, userData.lastName, userData.password,
-        arrayToPush2);
-      await this.setUser(user.uid, setUserData);
-      await this.setGroup(id, setGroupData);
+      if (groupData.key === key) {
+        const setGroupData = new Group(arrayToPush, groupData.key, groupData.name);
+        const setUserData = new User(userData.email, userData.firstName, userData.lastName, userData.password,
+          arrayToPush2);
+        await this.setUser(user.uid, setUserData);
+        await this.setGroup(id, setGroupData);
+        this.router.navigate(['home']);
+      }else{
+        this.alertsService.errors.clear();
+        this.alertsService.errors.set('key', 'Der eingegebene Key ist falsch');
+      }
+    }catch (e) {
+      this.alertsService.errors.clear();
+      this.alertsService.errors.set('groupId', 'Die eingegebene ID existiert nicht.');
     }
   }
 
@@ -122,7 +132,6 @@ export class UserService {
         this.alertsService.errors.set('password', 'Please enter your password');
       }
     }
-    this.isLoggedIn = true;
   };
 
   async forgotPassword(email) {

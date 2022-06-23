@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {UserService} from '../user.service';
+import {AlertsService} from '../alerts.service';
 
 @Component({
   selector: 'app-join-group',
@@ -11,7 +12,7 @@ export class JoinGroupPage implements OnInit {
   id = '';
   key = '';
 
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService, public alertsService: AlertsService) { }
 
    join(id, key): void {
       this.userService.joinGroup(id, key);
