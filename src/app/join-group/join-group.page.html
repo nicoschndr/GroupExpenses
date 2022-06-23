@@ -1,0 +1,49 @@
+<ion-row>
+  <ion-col>
+    <ion-button class="back">
+      <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
+    </ion-button>
+  </ion-col>
+</ion-row>
+
+<ion-content>
+  <ion-grid>
+
+    <ion-row>
+      <ion-col class="center">
+        <img src="assets/people.svg" alt="joinGroupImg" width="200" height="150">
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col class="center">
+        <h1>Nehme an einer Gruppe teil</h1>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col class="center">
+        <ion-item>
+          <ion-input type="text" placeholder="Gruppen-ID" [(ngModel)]="id"></ion-input>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col class="center">
+        <ion-item>
+          <ion-input type="text" class="key" placeholder="Key" [(ngModel)]="key"></ion-input>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col class="center">
+        <ion-button class="beitreten" (click)="join(this.id, this.key)">
+          los geht's
+        </ion-button>
+      </ion-col>
+    </ion-row>
+
+  </ion-grid>
+</ion-content>

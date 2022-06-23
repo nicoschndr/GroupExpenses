@@ -1,0 +1,39 @@
+<ion-row>
+  <ion-col>
+    <ion-button class="back" (click)="navigateLogin()">
+      <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
+    </ion-button>
+  </ion-col>
+</ion-row>
+
+<div class="center">
+  <h1>Passwort zurücksetzen</h1>
+</div>
+
+<div class="center">
+  <p>Geben Sie hier die mit dem Konto verbundene E-Mail ein:</p>
+</div>
+
+<ion-content>
+
+  <ion-grid>
+
+    <ion-row>
+      <ion-col class="center">
+        <ion-item>
+          <ion-input type="text" placeholder="E-Mail" [(ngModel)]="email"></ion-input>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col class="center">
+        <ion-button (click)="forgotPW()">
+          <p>senden</p>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+
+  </ion-grid>
+
+</ion-content>
