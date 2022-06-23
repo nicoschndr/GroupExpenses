@@ -3,15 +3,15 @@
 </ion-app>
 <ion-tabs>
   <ion-tab-bar slot="bottom">
-    <ion-tab-button tab="speakers">
-      <ion-icon class="icon" name="home-outline"></ion-icon>
+    <ion-tab-button>
+      <ion-icon (click)="showGrouplist()" class="icon" name="home-outline"></ion-icon>
     </ion-tab-button>
 
-    <ion-tab-button tab="map">
+    <ion-tab-button>
       <ion-icon class="icon" name="add-circle"></ion-icon>
     </ion-tab-button>
 
-    <ion-tab-button tab="about">
+    <ion-tab-button>
       <ion-icon class="icon" name="person-outline"></ion-icon>
     </ion-tab-button>
   </ion-tab-bar>

@@ -11,6 +11,18 @@ const routes: Routes = [
     redirectTo: 'home',
     pathMatch: 'full'
   },
+  {
+    path: 'grouplist',
+    loadChildren: () => import('./group/grouplist/grouplist.module').then( m => m.GrouplistPageModule)
+  },
+  {
+    path: 'create-group',
+    loadChildren: () => import('./group/create-group/create-group.module').then( m => m.CreateGroupPageModule)
+  },
+  {
+    path: 'group-overview',
+    loadChildren: () => import('./group/group-overview/group-overview.module').then( m => m.GroupOverviewPageModule)
+  },
 ];
 
 @NgModule({
