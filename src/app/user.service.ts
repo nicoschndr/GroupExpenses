@@ -4,6 +4,8 @@ import {AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument} 
 import firebase from 'firebase/compat/app';
 import {User} from './User.model';
 import {Group} from './Group.model';
+import {AlertsService} from './alerts.service';
+import {Router} from '@angular/router';
 
 
 @Injectable({
@@ -15,7 +17,7 @@ export class UserService {
   private userCollection: AngularFirestoreCollection<User>;
   private groupCollection: AngularFirestoreCollection<Group>;
 
-  constructor(private afa: AngularFireAuth, private afs: AngularFirestore) {
+  constructor(private afa: AngularFireAuth, private afs: AngularFirestore, public alertsService: AlertsService, private router: Router) {
     this.userCollection = afs.collection<User>('user');
     this.groupCollection = afs.collection<Group>('group');
   }
@@ -60,25 +62,76 @@ export class UserService {
 
   async joinGroup(id, key){
     const user = JSON.parse(localStorage.getItem('currentUser'));
-    const groupData = await this.getGroupWithUid(id);
-    const userData = await this.getUserWithUid(user.uid);
-    if (groupData.key === key){
-      const setGroupData = new Group([user.uid],groupData.key, groupData.name);
-      const setUserData = new User(userData.email, userData.firstName, userData.lastName, userData.password, [id]);
-      await this.setUser(user.uid, setUserData);
-      await this.setGroup(id, setGroupData);
+    try {
+      const groupData = await this.getGroupWithUid(id);
+      const userData = await this.getUserWithUid(user.uid);
+
+      const arrayToPush: any = [];
+      arrayToPush.push(user.uid);
+      groupData.groupMembers.forEach(r => {
+        arrayToPush.push(r);
+      });
+      arrayToPush.push(user.uid);
+
+      const arrayToPush2: any = [];
+      userData.gruppen.forEach(t => {
+        arrayToPush2.push(t);
+      });
+      arrayToPush2.push(id);
+
+      if (groupData.key === key) {
+        const setGroupData = new Group(arrayToPush, groupData.key, groupData.name);
+        const setUserData = new User(userData.email, userData.firstName, userData.lastName, userData.password,
+          arrayToPush2);
+        await this.setUser(user.uid, setUserData);
+        await this.setGroup(id, setGroupData);
+        this.router.navigate(['home']);
+      }else{
+        this.alertsService.errors.clear();
+        this.alertsService.errors.set('key', 'Der eingegebene Key ist falsch');
+      }
+    }catch (e) {
+      this.alertsService.errors.clear();
+      this.alertsService.errors.set('groupId', 'Die eingegebene ID existiert nicht.');
     }
   }
 
   async signUp(firstName, lastName, email, password) {
-    await this.afa.createUserWithEmailAndPassword(email, password).then(async res => {
-      const uid = res.user.uid;
-      const userData: User = new User(email,firstName,lastName,password,undefined);
-      await this.setUser(uid, userData);
-    });
-    const user: User = new User(email,firstName,lastName,password, undefined);
-    this.isLoggedIn = true;
-    localStorage.setItem('currentUser', JSON.stringify(user));
+    try {
+      await this.afa.createUserWithEmailAndPassword(email, password).then(async res => {
+        const uid = res.user.uid;
+        const userData: User = new User(email, firstName, lastName, password, []);
+        await this.setUser(uid, userData);
+        await this.login(email,password);
+        this.router.navigate(['home']);
+      });
+    } catch (e){
+      this.alertsService.errors.clear();
+      if(e.code==='auth/email-already-in-use') {
+        this.alertsService.errors.set('mail', 'The email address is already in use.');
+      }
+      if(e.code==='auth/invalid-email') {
+        this.alertsService.errors.set('mail', 'The email address is badly formatted.');
+      }
+      if(e.code==='auth/wrong-password') {
+        this.alertsService.errors.set('password', 'Wrong Password.');
+      }
+      if(e.code==='auth/weak-password') {
+        this.alertsService.errors.set('password', 'Your Password has to be at least 6 characters long.');
+      }
+      if(firstName===undefined){
+        this.alertsService.errors.set('firstName', 'Please enter your Firstname');
+      }
+      if(lastName===undefined){
+        this.alertsService.errors.set('lastName', 'Please enter your Lastname');
+      }
+      if(email===undefined){
+        this.alertsService.errors.set('mail', 'Please enter your email');
+      }
+      if(password===undefined){
+        this.alertsService.errors.set('password', 'Please enter your password');
+      }
+    }
   };
 
   async forgotPassword(email) {

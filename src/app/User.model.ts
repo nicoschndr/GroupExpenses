@@ -3,9 +3,9 @@ export class User {
   firstName: string;
   lastName: string;
   password: string;
-  gruppen: [any];
+  gruppen: any;
 
-  constructor(email: string, firstName: string, lastName: string, password: string, gruppen: [any],) {
+  constructor(email: string, firstName: string, lastName: string, password: string, gruppen: any) {
     this.email = email;
     this.firstName = firstName;
     this.lastName = lastName;

@@ -23,17 +23,35 @@
 
     <ion-row>
       <ion-col class="center">
-        <ion-item>
-          <ion-input type="text" placeholder="Gruppen-ID" [(ngModel)]="id"></ion-input>
-        </ion-item>
+        <div>
+          <ion-item>
+            <ion-input type="text" placeholder="Gruppen-ID" [(ngModel)]="id"></ion-input>
+         </ion-item>
+          <div>
+            <p class="center"
+             style="color:var(--ion-color-danger)"
+             *ngIf="alertsService.errors.get('groupId')">
+            {{alertsService.errors.get('groupId')}}
+           </p>
+         </div>
+        </div>
       </ion-col>
     </ion-row>
 
     <ion-row>
       <ion-col class="center">
-        <ion-item>
-          <ion-input type="text" class="key" placeholder="Key" [(ngModel)]="key"></ion-input>
-        </ion-item>
+        <div>
+         <ion-item>
+            <ion-input type="text" class="key" placeholder="Key" [(ngModel)]="key"></ion-input>
+          </ion-item>
+          <div>
+           <p class="center"
+             style="color:var(--ion-color-danger)"
+             *ngIf="alertsService.errors.get('key')">
+            {{alertsService.errors.get('key')}}
+           </p>
+          </div>
+        </div>
       </ion-col>
     </ion-row>
 
