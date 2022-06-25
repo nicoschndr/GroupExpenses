@@ -1,3 +1,9 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-icon name="chevron-back-outline" size="large"></ion-icon>
+    <ion-icon expand='block' (click)="showActions()" name="ellipsis-horizontal-outline" slot="end" size="large"></ion-icon>
+  </ion-toolbar>
+</ion-header>
 <ion-content>
   <ion-list>
     <img alt="threePeople" src="/assets/illustrations/groupOverview_fourPeople.png" class="image">
@@ -14,7 +20,7 @@
     </ion-label>
     <ion-card button *ngFor="let member of members">
       <ion-card-header>
-        <ion-card-title>{{member}}</ion-card-title>
+        <ion-card-title>{{member.firstName}}</ion-card-title>
       </ion-card-header>
     </ion-card>
   </ion-list>

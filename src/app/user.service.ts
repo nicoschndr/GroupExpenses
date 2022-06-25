@@ -34,7 +34,7 @@ export class UserService {
 
   async updatePassword(uid, password){
     const user: User  = await this.getUserWithUid(uid);
-    const userData = new User(user.email, user.firstName, user.lastName, password, user.gruppen);
+    const userData = new User(user.id, user.email, user.firstName, user.lastName, password, user.gruppen);
     await this.setUser(uid, userData);
   }
 
@@ -52,6 +52,7 @@ export class UserService {
 
   async logout(){
     const user = localStorage.getItem('currentUser');
+    console.log(user);
     if(user) {
       await this.afa.signOut();
     }
@@ -81,7 +82,7 @@ export class UserService {
 
       if (groupData.key === key) {
         const setGroupData = new Group(arrayToPush, groupData.key, groupData.name);
-        const setUserData = new User(userData.email, userData.firstName, userData.lastName, userData.password,
+        const setUserData = new User(userData.id, userData.email, userData.firstName, userData.lastName, userData.password,
           arrayToPush2);
         await this.setUser(user.uid, setUserData);
         await this.setGroup(id, setGroupData);
@@ -100,7 +101,7 @@ export class UserService {
     try {
       await this.afa.createUserWithEmailAndPassword(email, password).then(async res => {
         const uid = res.user.uid;
-        const userData: User = new User(email, firstName, lastName, password, []);
+        const userData: User = new User(uid, email, firstName, lastName, password, []);
         await this.setUser(uid, userData);
         await this.login(email,password);
         this.router.navigate(['home']);
@@ -149,6 +150,7 @@ export class UserService {
   async setUser(uid, userData){
     const userRef: AngularFirestoreDocument<User> = this.afs.doc(`user/${uid}`);
     const user: User = {
+      id: userData.id,
       email: userData.email,
       firstName: userData.firstName,
       lastName: userData.lastName,

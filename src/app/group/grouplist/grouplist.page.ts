@@ -12,6 +12,7 @@ export class GrouplistPage implements OnInit {
 
   grouplist: Group[] = [];
   leftToPay = 0;
+  currentUserId: string;
 
 
   constructor(
@@ -20,13 +21,23 @@ export class GrouplistPage implements OnInit {
   ) {
   }
 
+  ionViewDidEnter() {
+    this.getAllGroups();
+  }
+
   ngOnInit() {
     this.getAllGroups();
   }
 
+  async getUser() {
+    const user = JSON.parse(localStorage.getItem('currentUser'));
+    this.currentUserId = user.uid;
+  }
+
   async getAllGroups(): Promise<void> {
     try {
-      this.grouplist = await this.groupService.findAll();
+      await this.getUser();
+      this.grouplist = await this.groupService.findGroups(this.currentUserId);
     } catch (e) {
       console.log(e);
     }

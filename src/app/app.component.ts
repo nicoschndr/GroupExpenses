@@ -14,4 +14,12 @@ export class AppComponent {
   showGrouplist() {
     this.router.navigate(['grouplist']);
   }
+
+  showLogin() {
+    this.router.navigate(['login']);
+  }
+
+  addGroup() {
+    this.router.navigate(['create-group']);
+  }
 }

@@ -11,6 +11,7 @@ import {Router} from '@angular/router';
 export class CreateGroupPage implements OnInit {
 
   groupname: string;
+  founder: string;
 
   constructor(
     private groupService: GroupService,
@@ -18,14 +19,24 @@ export class CreateGroupPage implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.getUser();
   }
 
   async createGroup(): Promise<void> {
     try {
-      const group: Group = await this.groupService.addGroup(this.groupname);
-      this.router.navigate(['group-overview/', {id: group.id}]);
+      const group: Group = await this.groupService.addGroup(this.groupname, this.founder);
+      this.router.navigate(['group-overview/', {gId: group.id}]);
     } catch (e) {
       console.log(e);
     }
+  }
+
+  async getUser() {
+    const user = JSON.parse(localStorage.getItem('currentUser'));
+    this.founder = user.uid;
+  }
+
+  joinGroup() {
+    this.router.navigate(['join-group']);
   }
 }

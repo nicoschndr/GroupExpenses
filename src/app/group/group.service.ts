@@ -5,7 +5,9 @@ import {
   DocumentData,
   collection,
   getDocs,
-  addDoc, doc, getDoc
+  addDoc,
+  doc,
+  getDoc, where, query,
 } from '@angular/fire/firestore';
 import {Group} from './group.model';
 
@@ -33,26 +35,27 @@ export class GroupService {
     this.groupCollectionRef = collection(firestore, 'group');
   }
 
-  async findAll(): Promise<Group[]> {
+  async addGroup(groupname: string, founderId: string): Promise<any> {
     const refWithConverter = this.groupCollectionRef.withConverter(this.groupConverter);
-    const recordDocs = await getDocs(refWithConverter);
-    const groups: Group[] = [];
-    recordDocs.forEach(groupDoc => {
-      groups.push(groupDoc.data());
-    });
-    return groups;
-  }
-
-  async addGroup(groupname: string): Promise<any> {
-    const refWithConverter = this.groupCollectionRef.withConverter(this.groupConverter);
-    const newGroup = new Group(null, groupname, ['u0Nf0Hr3WzwwqgvMkzx6'], groupname.trim().toLowerCase());
-    const group = await addDoc(refWithConverter, newGroup);
-    return group;
+    const newGroup = new Group(null, groupname, [founderId], groupname.trim().toLowerCase());
+    return await addDoc(refWithConverter, newGroup);
   }
 
   async getGroup(groupId: string): Promise<Group> {
-    const docRef = doc(this.groupCollectionRef.withConverter(this.groupConverter), groupId.toString());
-    const recordDoc = await getDoc(docRef);
-    return recordDoc.data();
+    const docRef = doc(this.groupCollectionRef.withConverter(this.groupConverter), groupId);
+    const groupDoc = await getDoc(docRef);
+    return groupDoc.data();
+  }
+
+  async findGroups(uId: string): Promise<Group[]>{
+    const filter = query(
+      this.groupCollectionRef.withConverter(this.groupConverter),
+      where('groupMembers', 'array-contains', uId.toString()));
+    const groupDocs = await getDocs(filter);
+    const groups: Group[] = [];
+    groupDocs.forEach(groupDoc => {
+      groups.push(groupDoc.data());
+    });
+    return groups;
   }
 }
