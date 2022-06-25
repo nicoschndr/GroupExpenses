@@ -1,0 +1,21 @@
+<ion-content>
+  <ion-list>
+    <img alt="threePeople" src="/assets/illustrations/groupOverview_fourPeople.png" class="image">
+  </ion-list>
+  <ion-list class="ion-text-center" lines="none" >
+    <ion-label class="ion-text-center">
+      <h1>{{group.name}}</h1>
+      <br>
+      <h4>meine Bilanz</h4>
+      <br>
+      <p>0 €</p>
+      <br>
+      <h4 class="showDetails">Details anzeigen</h4>
+    </ion-label>
+    <ion-card button *ngFor="let member of members">
+      <ion-card-header>
+        <ion-card-title>{{member}}</ion-card-title>
+      </ion-card-header>
+    </ion-card>
+  </ion-list>
+</ion-content>

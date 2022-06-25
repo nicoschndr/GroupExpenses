@@ -1,0 +1,15 @@
+<ion-content>
+  <ion-list>
+    <img alt="threePeople" src="/assets/illustrations/grouplist_threePeople.png" class="image">
+  </ion-list>
+  <ion-label class="ion-text-center">
+    <h1>Erstelle eine neue Gruppe</h1>
+  </ion-label>
+  <br>
+  <ion-input [(ngModel)]="groupname" placeholder="Gruppenname"></ion-input>
+  <br>
+  <ion-button color="button" (click)="createGroup()" expand="block" shape="round">erstellen</ion-button>
+  <br>
+  <h5>Mit Gruppen-ID teilnehmen</h5>
+</ion-content>
+
