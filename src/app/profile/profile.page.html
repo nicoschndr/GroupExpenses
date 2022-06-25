@@ -1,31 +1,44 @@
 <ion-item style="--background: #00000;" lines="none">
-<ion-row>
+<ion-row *ngIf="password">
    <ion-col>
-    <ion-button class="back">
+    <ion-button class="back" (click)="password=false; this.altespw=''; this.pw=''; this.pw2='';alertsService.errors.clear();">
       <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
     </ion-button>
    </ion-col>
 </ion-row>
+  <ion-row *ngIf="!password">
+    <ion-col>
+      <ion-button class="back">
+        <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
+      </ion-button>
+    </ion-col>
+  </ion-row>
   <div style="margin-right: 0  ; margin-left: auto; text-align: right">
-    <ion-button class="back">
+    <ion-button *ngIf="!editMode&&!password" class="back" (click)="changeMode()">
       <ion-icon slot="icon-only" name="create-outline"></ion-icon>
     </ion-button>
-    <ion-button class="back">
+    <ion-button *ngIf="password" class="back" (click)="changePassword()">
+      <ion-icon slot="icon-only" name="save-outline"></ion-icon>
+    </ion-button>
+    <ion-button *ngIf="editMode" class="back" (click)="changeMode(); updateUser()">
       <ion-icon slot="icon-only" name="save-outline"></ion-icon>
     </ion-button>
   </div>
 </ion-item>
 
-<div class="center">
+<div class="center" *ngIf="!password">
   <h1>Dein Profil</h1>
 </div>
+<div class="center" *ngIf="password">
+  <h1>Passwort ändern</h1>
+</div>
 <ion-content>
-  <ion-grid>
+  <ion-grid *ngIf="!password">
 
     <ion-row>
       <ion-col class="center">
         <ion-item class="border">
-          <ion-input></ion-input>
+          <ion-input [readonly]="!editMode" [(ngModel)]="user.firstName"></ion-input>
         </ion-item>
       </ion-col>
     </ion-row>
@@ -33,7 +46,7 @@
     <ion-row>
       <ion-col class="center">
         <ion-item class="border">
-          <ion-input></ion-input>
+          <ion-input [readonly]="!editMode" [(ngModel)]="user.lastName"></ion-input>
         </ion-item>
       </ion-col>
     </ion-row>
@@ -41,20 +54,20 @@
     <ion-row>
       <ion-col class="center">
         <ion-item class="border">
-          <ion-input></ion-input>
+          <ion-input [readonly]="!editMode" [(ngModel)]="user.email"></ion-input>
         </ion-item>
       </ion-col>
     </ion-row>
 
     <ion-row>
       <ion-col class="left">
-        <p class="text2"><a style="cursor: pointer">Passwort ändern</a></p>
+        <p class="text2"><a style="cursor: pointer" (click)="password=true">Passwort ändern</a></p>
       </ion-col>
     </ion-row>
 
     <ion-row>
       <ion-col class="left">
-        <p class="text2"><a style="cursor: pointer">Profil löschen</a></p>
+        <p class="text2"><a style="cursor: pointer" (click)="deleteUser()">Profil löschen</a></p>
       </ion-col>
     </ion-row>
 
@@ -66,9 +79,45 @@
 
     <ion-row>
       <ion-col class="left">
-        <p class="text2"><a style="cursor: pointer; color:var(--ion-color-danger)">Ausloggen</a></p>
+        <p class="text2"><a style="cursor: pointer; color:var(--ion-color-danger)" (click)="logout(); user.firstName='';user.lastName='';user.email=''" >Ausloggen</a></p>
       </ion-col>
     </ion-row>
+
+  </ion-grid>
+
+  <ion-grid *ngIf="password">
+
+    <ion-row>
+      <ion-col class="center">
+        <ion-item class="border">
+          <ion-input type="password" placeholder="altes Passwort" [(ngModel)]="altespw"></ion-input>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col class="center">
+        <ion-item class="border">
+          <ion-input type="password" placeholder="neues Passwort" [(ngModel)]="pw"></ion-input>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+
+
+
+    <ion-row>
+      <ion-col class="center">
+        <ion-item class="border">
+          <ion-input type="password" placeholder="neues Passwort bestätigen" [(ngModel)]="pw2"></ion-input>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+
+    <p class="center"
+       style="color:var(--ion-color-danger)"
+       *ngIf="alertsService.errors.get('changePW')">
+      {{alertsService.errors.get('changePW')}}
+    </p>
 
   </ion-grid>
 </ion-content>
