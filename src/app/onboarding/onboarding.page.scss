@@ -1,0 +1,35 @@
+div {
+  display: flex;
+  justify-content: center;
+  font-family: Roboto, sans-serif;
+}
+.image {
+  margin-top: 20%;
+}
+.link1{
+  margin-right:95%;
+  font-family: Roboto, sans-serif;
+}
+.link2{
+  margin-left: 95%;
+  font-family: Roboto, sans-serif;
+}
+.text{
+  text-align: center;
+  font-family: Roboto, sans-serif;
+}
+.back{
+  width: 55px;
+  --background: transparentize(100);
+}
+ion-button{
+  color: white;
+  --background: #47517B;
+  --border-radius: 25px;
+  width: 300px;
+  height: 55px;
+}
+h1{
+  text-align: center;
+  color: #47517B;
+}
