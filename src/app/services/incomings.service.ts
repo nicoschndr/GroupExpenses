@@ -31,7 +31,9 @@ export class IncomingsService {
     return document.data() as Income;
   }
   updateIncome(income: Income){
-    this.incomingCollections.doc(income.id).set(income);
+    const data = JSON.parse(JSON.stringify(income));
+    this.incomingCollections.doc(income.id).update(data)
+      .catch((err) => console.log('Error: ', err));
   }
   async removeEntry(id: string){
     await this.incomingCollections.doc(id).delete();

@@ -1,61 +1,83 @@
-<!--<ion-modal>-->
-<!--  <ion-header>-->
-<!--    <ion-toolbar>-->
-<!--      <ion-buttons slot="start">-->
-<!--        <ion-button (click)="dismissModal()">x</ion-button>-->
-<!--      </ion-buttons>-->
-<!--    </ion-toolbar>-->
-<!--  </ion-header>-->
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Einnahme</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="dismissModal()">
+        <ion-icon name="close-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
 
-<!--  <ion-content>-->
-    <ion-grid>
-      <ion-list>
-        <ion-row>
-          <ion-col>
-            <ion-item>
-              <ion-input type="text" class="ion-text-start" [(ngModel)]="amount" placeholder="Betrag"></ion-input>
-            </ion-item>
-          </ion-col>
-          <ion-col>
-            <ion-item>
-              <ion-input type="number" class="ion-text-start" [(ngModel)]="fromUserId" placeholder="Bezahlt von"></ion-input>
-              <ion-select [(ngModel)]="fromUserId" multiple="false">
-                <!-- *ngFor="let user of users" & {{user.firstname}} -->
-                <ion-select-option *ngFor="let user of userGroupList">{{user}}</ion-select-option>
-              </ion-select>
-            </ion-item>
-          </ion-col>
-        </ion-row>
+<ion-grid>
+  <ion-list>
+    <ion-row>
+      <ion-col>
+        <ion-item>
+          <ion-input type="text" class="ion-text-start" [(ngModel)]="amount" placeholder="Betrag" required></ion-input>
+        </ion-item>
+        <p class="ion-text-end ion-padding-end" style="color:var(--ion-color-danger)"
+           *ngIf="errors.get('amount')">
+          {{errors.get('amount')}}
+        </p>
+      </ion-col>
+      <ion-col>
+        <ion-item>
+          <ion-input type="text" class="ion-text-start" placeholder="Bezahlt von" required></ion-input>
+          <ion-select [(ngModel)]="debitor" multiple="false">
+            <!-- *ngFor="let user of users" & {{user.firstname}} -->
+            <ion-select-option *ngFor="let user of userGroupList">{{user}}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <p class="ion-text-end ion-padding-end" style="color:var(--ion-color-danger)"
+           *ngIf="errors.get('debitor')">
+          {{errors.get('debitor')}}
+        </p>
+      </ion-col>
+    </ion-row>
 
-        <ion-row>
-          <ion-col>
-            <ion-item class="item-div">
-              <ion-input type="text" class="ion-text-start" [(ngModel)]="toUserId" placeholder="Bezahlt an"></ion-input>
-              <ion-select [(ngModel)]="toUserId" multiple="false">
-                <!-- *ngFor="let user of users" & {{user.firstname}} -->
-                <ion-select-option *ngFor="let user of userGroupList">{{user}}</ion-select-option>
-              </ion-select>
-            </ion-item>
-          </ion-col>
-          <ion-col>
-            <ion-item>
-              <ion-input type="text" class="ion-text-start" placeholder="Datum">{{date | date: 'dd.MM.yyyy'}}</ion-input>
-              <ion-popover trigger="open-date-input" show-backdrop="false" size="cover">
-                <ng-template>
-                  <ion-datetime [(ngModel)]="date"></ion-datetime>
-                </ng-template>
-              </ion-popover>
-            </ion-item>
-          </ion-col>
-        </ion-row>
-        <ion-row class="ion-justify-content-center">
-          <ion-buttons>
-            <ion-button (click)="addIncome()">
-              hinzufügen
-            </ion-button>
-          </ion-buttons>
-        </ion-row>
-      </ion-list>
-    </ion-grid>
-<!--  </ion-content>-->
-<!--</ion-modal>-->
+    <ion-row>
+      <ion-col>
+        <ion-item class="item-div">
+          <ion-input type="text" class="ion-text-start" placeholder="Bezahlt an" required></ion-input>
+          <ion-select [(ngModel)]="creditor" multiple="false">
+            <!-- *ngFor="let user of users" & {{user.firstname}} -->
+            <ion-select-option *ngFor="let user of userGroupList">{{user}}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <p class="ion-text-end ion-padding-end" style="color:var(--ion-color-danger)"
+           *ngIf="errors.get('creditor')">
+          {{errors.get('creditor')}}
+        </p>
+      </ion-col>
+      <ion-col>
+        <ion-item button="true" id="openDate">
+          <ion-input placeholder="Datum" value="{{date | date: 'dd.MM.yyyy'}}" required></ion-input>
+          <ion-popover trigger="openDate">
+            <ng-template>
+              <ion-datetime presentation="date" [(ngModel)]="date"></ion-datetime>
+            </ng-template>
+          </ion-popover>
+        </ion-item>
+        <p class="ion-text-end ion-padding-end" style="color:var(--ion-color-danger)"
+           *ngIf="errors.get('date')">
+          {{errors.get('date')}}
+        </p>
+      </ion-col>
+    </ion-row>
+    <ion-row class="ion-justify-content-center" *ngIf="!editMode">
+      <ion-buttons>
+        <ion-button class="formBtn" (click)="save()">
+          hinzufügen
+        </ion-button>
+      </ion-buttons>
+    </ion-row>
+    <ion-row class="ion-justify-content-center" *ngIf="editMode">
+      <ion-buttons>
+        <ion-button class="formBtn" (click)="save()">
+          speichern
+        </ion-button>
+      </ion-buttons>
+    </ion-row>
+  </ion-list>
+</ion-grid>

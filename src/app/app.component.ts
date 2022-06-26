@@ -10,7 +10,7 @@ export class AppComponent {
   constructor(private actionSheet: ActionSheetController) {}
   async addExpenseIncomeEntry(){
     const actionSheet = await this.actionSheet.create({
-      header: '',
+      header: 'Ausgaben & Einnahmen',
       buttons: [
         {text: 'Ausgabe hinzufügen'},
         {text: 'Einnahme hinzufügen'},

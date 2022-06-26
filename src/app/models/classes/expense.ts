@@ -1,13 +1,13 @@
 export class Expense {
   id?: string;
   name?: string;
-  amount?: string;
+  amount?: number;
   date?: Date;
   receipt?: string;
   interval?: boolean;
   userId?: string;
   groupId?: string;
-  constructor(id?: string, name?: string, amount?: string, date?: Date, receipt?: string,
+  constructor(id?: string, name?: string, amount?: number, date?: Date, receipt?: string,
               interval?: boolean, userId?: string, groupId?: string) {
     this.id = id;
     this.userId = userId;

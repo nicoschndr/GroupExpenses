@@ -1,18 +1,19 @@
 <ion-app>
   <ion-router-outlet></ion-router-outlet>
-</ion-app>
-<ion-tabs>
-  <ion-tab-bar slot="bottom">
-    <ion-tab-button tab="speakers">
-      <ion-icon class="icon" name="home-outline"></ion-icon>
-    </ion-tab-button>
-    <!-- not working, cannot open Action Sheet -->
-    <ion-tab-button tab="map" (click)="addExpenseIncomeEntry()">
-      <ion-icon class="icon" name="add-circle"></ion-icon>
-    </ion-tab-button>
+  <ion-tabs>
+    <ion-tab-bar slot="bottom">
+      <ion-tab-button tab="speakers">
+        <ion-icon class="icon" name="home-outline"></ion-icon>
+      </ion-tab-button>
 
-    <ion-tab-button tab="about">
-      <ion-icon class="icon" name="person-outline"></ion-icon>
-    </ion-tab-button>
-  </ion-tab-bar>
-</ion-tabs>
+      <ion-tab-button tab="map" (click)="addExpenseIncomeEntry()">
+        <ion-icon class="icon" name="add-circle"></ion-icon>
+      </ion-tab-button>
+
+      <ion-tab-button tab="about">
+        <ion-icon class="icon" name="person-outline"></ion-icon>
+      </ion-tab-button>
+    </ion-tab-bar>
+  </ion-tabs>
+</ion-app>
+

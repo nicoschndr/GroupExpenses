@@ -1,40 +1,51 @@
-<!--<ion-header>-->
-<!--  <ion-toolbar>-->
-<!--    <ion-buttons slot="start">-->
-<!--      <ion-button (click)="dismissModal()">x</ion-button>-->
-<!--    </ion-buttons>-->
-<!--  </ion-toolbar>-->
-<!--</ion-header>-->
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Ausgabe</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="dismissModal()">
+        <ion-icon name="close-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
 
 <ion-grid>
   <ion-list>
     <ion-row>
       <ion-col>
         <ion-item>
-          <ion-input type="text" class="ion-text-start" [(ngModel)]="name" placeholder="Name"></ion-input>
+          <ion-input type="text" class="ion-text-start" [(ngModel)]="name" placeholder="Name" required></ion-input>
         </ion-item>
+        <p class="ion-text-end ion-padding-end" style="color:var(--ion-color-danger)"
+           *ngIf="errors.get('name')">
+          {{errors.get('name')}}
+        </p>
       </ion-col>
       <ion-col>
         <ion-item>
-          <ion-input type="number" class="ion-text-start" [(ngModel)]="amount" placeholder="Betrag"></ion-input>
+          <ion-input type="number" class="ion-text-start" [(ngModel)]="amount" placeholder="Betrag" required></ion-input>
         </ion-item>
+        <p class="ion-text-end ion-padding-end" style="color:var(--ion-color-danger)"
+           *ngIf="errors.get('amount')">
+          {{errors.get('amount')}}
+        </p>
       </ion-col>
     </ion-row>
 
     <ion-row>
       <ion-col>
-        <ion-item button="true" id="open-date-input">
-          <ion-input placeholder="Datum" [(ngModel)]="date"></ion-input>
-<!--        <ion-item button="true" id="open-date-input" (click)="openDatePopover($event)">-->
-<!--          <ion-input placeholder="Datum">{{date | date: 'dd.MM.yyyy'}}</ion-input>-->
-<!--          <ion-popover #popover [isOpen]="isDatePopOpen" (didDismiss)="isDatePopOpen = false" trigger="open-date-input" show-backdrop="false" size="cover">-->
-<!--            <ng-template>-->
-<!--              <ion-content class="ion-padding">-->
-<!--                <ion-datetime [(ngModel)]="date"></ion-datetime>-->
-<!--              </ion-content>-->
-<!--            </ng-template>-->
-<!--          </ion-popover>-->
+        <ion-item button="true" id="open">
+          <ion-input placeholder="Datum" value="{{date | date: 'dd.MM.yyyy'}}" required></ion-input>
+          <ion-popover trigger="open">
+            <ng-template>
+              <ion-datetime presentation="date" [(ngModel)]="date"></ion-datetime>
+            </ng-template>
+          </ion-popover>
         </ion-item>
+        <p class="ion-text-end ion-padding-end" style="color:var(--ion-color-danger)"
+           *ngIf="errors.get('date')">
+          {{errors.get('date')}}
+        </p>
       </ion-col>
       <ion-col>
         <ion-item class="item-div">
@@ -48,10 +59,17 @@
         <ion-checkbox slot="end" [(ngModel)]="interval"></ion-checkbox>
       </ion-item>
     </ion-row>
-    <ion-row class="ion-justify-content-center">
+    <ion-row class="ion-justify-content-center" *ngIf="!editMode">
       <ion-buttons>
-        <ion-button (click)="addExpenseEntry() && reloadCurrentPage()">
+        <ion-button class="formBtn" (click)="save()">
           hinzufügen
+        </ion-button>
+      </ion-buttons>
+    </ion-row>
+    <ion-row class="ion-justify-content-center" *ngIf="editMode">
+      <ion-buttons>
+        <ion-button class="formBtn" (click)="save()">
+          speichern
         </ion-button>
       </ion-buttons>
     </ion-row>

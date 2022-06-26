@@ -32,7 +32,9 @@ export class ExpensesService {
     return document.data() as Expense;
   }
   updateExpense(expense: Expense){
-    this.expensesCollections.doc(expense.id).set(expense);
+    const data = JSON.parse(JSON.stringify(expense));
+    this.expensesCollections.doc(expense.id).update(data)
+      .catch((err) => console.log('Error: ', err));
   }
   async removeEntry(id: string){
     await this.expensesCollections.doc(id).delete();

@@ -27,7 +27,6 @@ export class ExpensesPage implements OnInit {
   constructor(private actionSheet: ActionSheetController, public expensesService: ExpensesService,
               private modalCtrl: ModalController, public incomingService: IncomingsService,
               private alertCtrl: AlertController) {
-    this.expenses.unshift(new Expense('expense1', 'Zahnpasta', '3,45', new Date(), '', false));
     this.getExpenses();
     this.getIncoming();
   }
@@ -40,7 +39,6 @@ export class ExpensesPage implements OnInit {
   //methods for expenses
   async getOneExpense(expense: Expense){
     this.expense = await this.expensesService.getEntryById(expense.id);
-    console.log('expense: ', JSON.stringify(this.expense));
   }
   getExpenses(){
     this.expensesService.getAllExpenses().subscribe((res) => {
@@ -49,13 +47,11 @@ export class ExpensesPage implements OnInit {
         ...e.payload.doc.data() as Expense
       }));
     });
-    console.log('all Expenses: ' + JSON.stringify(this.expense));
   }
   openAddExpensesModal(){
     this.openModalExpense();
   }
   async openModalExpense(){
-    console.log('modale expense');
     const modal = await this.modalCtrl.create({
       component: AddExpenseComponent
     });
@@ -65,8 +61,7 @@ export class ExpensesPage implements OnInit {
       .catch(err => console.log('error modal: ', err));
     await modal.onDidDismiss();
   }
-  async editExpense(expense){
-    console.log('edit expense');
+  async editExpense(expense: Expense){
     const modal = await this.modalCtrl.create({
       component: AddExpenseComponent,
       componentProps: expense,
@@ -76,8 +71,14 @@ export class ExpensesPage implements OnInit {
       .catch(err => console.log('error modal: ', err));
     await modal.onDidDismiss();
   }
-  deleteExpense(expense: Expense){
-    this.expensesService.removeEntry(expense.id);
+  async deleteExpense(expense: Expense){
+    await this.expensesService.removeEntry(expense.id);
+    const alert = await this.alertCtrl.create({
+      header: 'Erfolgreich',
+      message: 'Ausgabe wurde gelöscht.',
+      buttons: ['OK']
+    });
+    await alert.present();
   }
   addExpenseStatus(){
     this.expenseStatus = true;
@@ -85,7 +86,6 @@ export class ExpensesPage implements OnInit {
   //methods for incoming
   async getOneIncome(income: Income){
     this.income = await this.incomingService.getEntryById(income.id);
-    console.log('income: ', JSON.stringify(this.income));
   }
   getIncoming(){
     this.incomingService.getAllIncoming().subscribe((res) => {
@@ -99,7 +99,6 @@ export class ExpensesPage implements OnInit {
     this.openModalIncome();
   }
   async openModalIncome(){
-    console.log('modal income');
     const modal = await this.modalCtrl.create({
       component: AddIncomeComponent
     });
@@ -109,8 +108,7 @@ export class ExpensesPage implements OnInit {
       .catch(err => console.log('error modal: ', err));
     await modal.onDidDismiss();
   }
-  async editIncome(income){
-    console.log('edit income');
+  async editIncome(income: Income){
     const modal = await this.modalCtrl.create({
       component: AddIncomeComponent,
       componentProps: income,
