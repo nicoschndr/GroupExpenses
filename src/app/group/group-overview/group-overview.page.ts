@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {GroupService} from '../group.service';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {Group} from '../group.model';
 import {UserService} from '../../user.service';
 import {User} from '../../User.model';
@@ -17,18 +17,24 @@ export class GroupOverviewPage implements OnInit {
   group: Group = new Group();
   members: User[] = [];
   currentUserId: string;
+  editMode = false;
 
   constructor(
     private groupService: GroupService,
     private userService: UserService,
     private route: ActivatedRoute,
-    private actionSheetController: ActionSheetController,
+    private router: Router,
+    public actionSheetController: ActionSheetController,
   ) {
   }
 
   ngOnInit() {
     this.getGroup();
     this.getUser();
+  }
+
+  ionViewDidEnter() {
+    this.getMembers();
   }
 
   async getUser() {
@@ -54,51 +60,54 @@ export class GroupOverviewPage implements OnInit {
     }
   }
 
-  async showActions(): Promise<void> {
-    console.log('triggered');
-      const actionSheet = await this.actionSheetController.create({
-        header: 'Albums',
-        cssClass: 'my-custom-class',
-        buttons: [{
-          text: 'Delete',
-          role: 'destructive',
-          icon: 'trash',
-          id: 'delete-button',
-          data: {
-            type: 'delete'
-          },
-          handler: () => {
-            console.log('Delete clicked');
-          }
-        }, {
-          text: 'Share',
-          icon: 'share',
-          data: 10,
-          handler: () => {
-            console.log('Share clicked');
-          }
-        }, {
-          text: 'Play (open modal)',
-          icon: 'caret-forward-circle',
-          data: 'Data value',
-          handler: () => {
-            console.log('Play clicked');
-          }
-        }, {
-          text: 'Favorite',
-          icon: 'heart',
-          handler: () => {
-            console.log('Favorite clicked');
-          }
-        }, {
-          text: 'Cancel',
-          icon: 'close',
-          role: 'cancel',
-          handler: () => {
-            console.log('Cancel clicked');
-          }
-        }]
-      });
-      await actionSheet.present();
+  editGroup() {
+    this.editMode = true;
+  }
+
+  async deleteUserFromGroup(uId: string) {
+    const deleteAction: boolean = await this.groupService.deleteUserFromGroup(uId, this.group.id);
+    if (deleteAction) {
+      this.editMode = false;
+      this.members.splice(0, this.members.length);
+      await this.getMembers();
+    } else if (deleteAction && this.editMode) {
+      this.router.navigate(['grouplist']);
     }
+    else {
+      this.router.navigate(['grouplist']);
+    }
+  }
+
+  leaveEditMode() {
+    this.editMode = false;
+  }
+
+
+  async showActions() {
+    console.log('ationSheet');
+    const actionSheet = await this.actionSheetController.create({
+      //cssClass: 'my-custom-class',
+      buttons: [{
+        text: 'Mitglieder bearbeiten',
+        handler: () => {
+          this.editMode = true;
+        }
+      }, {
+        text: 'Gruppe verlassen',
+        handler: () => {
+          this.deleteUserFromGroup(this.currentUserId);
+        }
+      }, {
+        text: 'Abbrechen',
+        role: 'cancel',
+        handler: () => {
+          console.log('canceled action sheet group-overview');
+        }
+      }]
+    });
+    console.log('bevore present');
+    await actionSheet.present();
+    console.log('after present');
+  }
+
 }

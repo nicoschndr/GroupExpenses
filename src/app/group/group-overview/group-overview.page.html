@@ -1,7 +1,9 @@
 <ion-header>
   <ion-toolbar>
     <ion-icon name="chevron-back-outline" size="large"></ion-icon>
-    <ion-icon expand='block' (click)="showActions()" name="ellipsis-horizontal-outline" slot="end" size="large"></ion-icon>
+    <ion-icon *ngIf="!editMode" button (click)="showActions()" name="ellipsis-horizontal-outline" slot="end" size="large"></ion-icon>
+    <ion-icon *ngIf="editMode" button (click)="leaveEditMode()" name="save-outline" slot="end" size="large"></ion-icon>
+    <ion-icon button (click)="deleteUserFromGroup(this.currentUserId)" size="large" name="walk-outline"></ion-icon>
   </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -16,11 +18,20 @@
       <br>
       <p>0 €</p>
       <br>
-      <h4 class="showDetails">Details anzeigen</h4>
+      <h4 class="showDetails">Details anzeigen > </h4>
     </ion-label>
-    <ion-card button *ngFor="let member of members">
+    <ion-card *ngFor="let member of members">
       <ion-card-header>
-        <ion-card-title>{{member.firstName}}</ion-card-title>
+        <ion-card-title>
+          <h6>{{member.firstName}}</h6>
+          <ion-icon *ngIf="editMode"
+                    style="background-color: rgba(140, 184, 230, 0); position: absolute; top: 50%; right: 0px; transform: translateY(-50%); padding-bottom: 8px; padding-top: 8px"
+                    (click)="deleteUserFromGroup(member.id)"
+                    name="close-outline"
+                    size="large"
+                    button>
+          </ion-icon>
+        </ion-card-title>
       </ion-card-header>
     </ion-card>
   </ion-list>

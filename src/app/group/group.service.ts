@@ -7,7 +7,7 @@ import {
   getDocs,
   addDoc,
   doc,
-  getDoc, where, query,
+  getDoc, where, query, deleteDoc, updateDoc,
 } from '@angular/fire/firestore';
 import {Group} from './group.model';
 
@@ -57,5 +57,31 @@ export class GroupService {
       groups.push(groupDoc.data());
     });
     return groups;
+  }
+
+  async deleteUserFromGroup(uId: string, gId: string): Promise<boolean> {
+    try {
+      const groupToLeave: Group = await this.getGroup(gId);
+      let deleteAction = true;
+      groupToLeave.groupMembers.forEach(id => {
+        if (id === uId) {
+          const index: number = groupToLeave.groupMembers.indexOf(id);
+          groupToLeave.groupMembers.splice(index, 1);
+          const docRef = doc(this.groupCollectionRef.withConverter(this.groupConverter), gId.toString());
+          if (groupToLeave.groupMembers.length === 0) {
+            deleteDoc(docRef);
+            deleteAction = false;
+          } else {
+            updateDoc(docRef, {
+              groupMembers: groupToLeave.groupMembers,
+            });
+          }
+        }
+      });
+        return deleteAction;
+    } catch (e) {
+      console.log(e);
+      return false;
+    }
   }
 }
