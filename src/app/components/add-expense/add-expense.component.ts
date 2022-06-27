@@ -40,7 +40,7 @@ export class AddExpenseComponent implements OnInit {
   }
   async getCurrentUserData(){
     this.currentUser = await this.userService.getCurrentUser();
-    // this.userId = this.currentUser.id;
+    this.userId = await this.userService.getCurrentUserId();
   }
   save(){
     this.errors.clear();

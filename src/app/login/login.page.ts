@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {Router} from '@angular/router';
 import {UserService} from '../services/user.service';
+import {getAuth, onAuthStateChanged} from '@angular/fire/auth';
 
 
 
@@ -44,6 +45,10 @@ export class LoginPage implements OnInit{
   }
 
   ngOnInit() {
+    const auth = getAuth();
+    onAuthStateChanged(auth, async (user) => {
+      this.userService.isLoggedIn = !!user;
+    });
   }
 
 }

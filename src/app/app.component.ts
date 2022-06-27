@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 import {ActionSheetController, ModalController} from '@ionic/angular';
 import {AddIncomeComponent} from './components/add-income/add-income.component';
 import {AddExpenseComponent} from './components/add-expense/add-expense.component';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -9,7 +10,11 @@ import {AddExpenseComponent} from './components/add-expense/add-expense.componen
   styleUrls: ['app.component.scss'],
 })
 export class AppComponent {
-  constructor(private actionSheet: ActionSheetController, private modalCtrl: ModalController) {}
+  constructor(private actionSheet: ActionSheetController, private modalCtrl: ModalController,
+              private router: Router) {}
+  goToProfile(){
+    this.router.navigate(['profile']);
+  }
   async addExpenseIncomeEntry(){
     const actionSheet = await this.actionSheet.create({
       header: 'Ausgaben & Einnahmen',

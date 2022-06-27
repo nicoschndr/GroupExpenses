@@ -32,6 +32,11 @@ const routes: Routes = [
     loadChildren: () => import('./forgot-pw/forgot-pw.module').then( m => m.ForgotPWPageModule)
   },
   {
+    path: 'profile',
+    loadChildren: () => import('./profile/profile.module').then( m => m.ProfilePageModule)
+  },
+
+  {
     path: 'expenses',
     loadChildren: () => import('./expenses/expenses.module').then(m => m.ExpensesPageModule)
   },
