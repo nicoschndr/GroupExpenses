@@ -1,0 +1,23 @@
+@media screen and (min-resolution: 1.5dppx) {};
+
+h1 {
+  font-weight: bold;
+  color: #47517B;
+}
+
+ion-card {
+  background-color: rgba(140, 184, 237, .3);
+  color: #47517B;
+  border-radius: 15px;
+}
+
+ion-card-title {
+  font-size: 16px;
+  color: #47517B;
+}
+
+.button {
+  background-color: rgba(140, 184, 237);
+  color: #ffffff;
+  border-radius: 25px;
+}

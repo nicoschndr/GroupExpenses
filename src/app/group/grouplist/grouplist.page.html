@@ -1,0 +1,26 @@
+<ion-content>
+  <ion-list>
+    <img alt="threePeople" src="/assets/illustrations/grouplist_threePeople.png" class="image">
+  </ion-list>
+  <ion-label class="ion-text-center">
+    <h1>Deine Gruppen</h1>
+  </ion-label>
+  <ion-list>
+    <ion-card button *ngFor="let group of grouplist" (click)="showGroup(group.id)">
+      <ion-card-header>
+        <ion-card-title>{{group.name}}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        {{leftToPay}}€ sind noch offen
+      </ion-card-content>
+    </ion-card>
+    <ion-button color="button" (click)="openCreateGroup()" expand="block" shape="round">Gruppe erstellen</ion-button>
+  </ion-list>
+  <ion-list *ngIf="grouplist.length === 0">
+    <ion-card>
+      <ion-card-header>
+        Du nimmst noch an keiner Gruppe teil!
+      </ion-card-header>
+    </ion-card>
+  </ion-list>
+</ion-content>

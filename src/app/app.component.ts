@@ -76,4 +76,7 @@ export class AppComponent {
     });
     await actionSheet.present();
   }
+  showGrouplist() {
+    this.router.navigate(['grouplist']);
+  }
 }
