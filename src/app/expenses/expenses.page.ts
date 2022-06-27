@@ -7,6 +7,7 @@ import {AddExpenseComponent} from '../components/add-expense/add-expense.compone
 import {IncomingsService} from '../services/incomings.service';
 import {AddIncomeComponent} from '../components/add-income/add-income.component';
 import {User} from '../models/classes/User.model';
+import {UserService} from '../services/user.service';
 
 @Component({
   selector: 'app-expenses',
@@ -26,11 +27,11 @@ export class ExpensesPage implements OnInit {
   // groupUser: Group;
   users: User[];
   split = [];
-  expenseUser: User;
-  expenseList: Map<string, string>;
+  currentUserId: string;
   constructor(private actionSheet: ActionSheetController, public expensesService: ExpensesService,
               private modalCtrl: ModalController, public incomingService: IncomingsService,
-              private alertCtrl: AlertController) {
+              private alertCtrl: AlertController, private userService: UserService) {
+    this.getCurrentUserData();
     this.getExpenses();
     this.getIncoming();
   }
@@ -41,8 +42,11 @@ export class ExpensesPage implements OnInit {
     console.log('Segment changed to ', ev);
   }
   //methods for expenses
-  async getOneExpense(expense: Expense){
+  async getExpenseById(expense: Expense){
     this.expense = await this.expensesService.getEntryById(expense.id);
+  }
+  async getCurrentUserData(){
+    this.currentUserId = await this.userService.getCurrentUserId();
   }
   getExpenses(){
     this.expensesService.getAllExpenses().subscribe((res) => {
@@ -190,6 +194,4 @@ export class ExpensesPage implements OnInit {
   //   await actionSheet.present();
   //   console.log('Third');
   // }
-  ionViewDidLoad(){
-  }
 }

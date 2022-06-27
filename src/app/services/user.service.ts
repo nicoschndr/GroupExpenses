@@ -204,6 +204,7 @@ import {deleteUser, getAuth, updatePassword} from '@angular/fire/auth';
     async getCurrentUserId(){
       const auth = getAuth();
       const user = auth.currentUser;
+      console.log('User Id: ', user.uid);
       return user.uid;
     }
   }
