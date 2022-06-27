@@ -53,35 +53,46 @@
 
     <ion-row>
       <ion-col class="center">
-        <ion-item class="border">
-          <ion-input [readonly]="!editMode" [(ngModel)]="user.email"></ion-input>
-        </ion-item>
+          <ion-item class="border">
+           <ion-input [readonly]="!editMode" [(ngModel)]="user.email"></ion-input>
+          </ion-item>
       </ion-col>
     </ion-row>
+    <p class="center"
+       style="color: #2dd36f"
+       *ngIf="alertsService.errors.get('success')">
+      {{alertsService.errors.get('success')}}
+    </p>
+    <div class="center">
+      <ion-row style="width: 300px">
+        <ion-col class="left">
+          <p class="text2"><a style="cursor: pointer; color:#47517B" (click)="password=true">Passwort ändern</a></p>
+        </ion-col>
+      </ion-row>
+    </div>
+    <div class="center">
+      <ion-row style="width: 300px">
+        <ion-col class="left">
+          <p class="text2"><a style="cursor: pointer; color:#47517B" (click)="deleteUser()">Profil löschen</a></p>
+        </ion-col>
+      </ion-row>
+    </div>
 
-    <ion-row>
-      <ion-col class="left">
-        <p class="text2"><a style="cursor: pointer" (click)="password=true">Passwort ändern</a></p>
-      </ion-col>
-    </ion-row>
+    <div class="center">
+      <ion-row style="width: 300px">
+        <ion-col class="left">
+          <p class="text2"><a style="cursor: pointer; color:#47517B">Hilfe</a></p>
+        </ion-col>
+      </ion-row>
+    </div>
 
-    <ion-row>
-      <ion-col class="left">
-        <p class="text2"><a style="cursor: pointer" (click)="deleteUser()">Profil löschen</a></p>
-      </ion-col>
-    </ion-row>
-
-    <ion-row>
-      <ion-col class="left">
-        <p class="text2"><a style="cursor: pointer">Hilfe</a></p>
-      </ion-col>
-    </ion-row>
-
-    <ion-row>
-      <ion-col class="left">
-        <p class="text2"><a style="cursor: pointer; color:var(--ion-color-danger)" (click)="logout(); user.firstName='';user.lastName='';user.email=''" >Ausloggen</a></p>
-      </ion-col>
-    </ion-row>
+    <div class="center">
+      <ion-row style="width: 300px">
+        <ion-col class="left">
+          <p class="text2"><a style="cursor: pointer; color:var(--ion-color-danger)" (click)="logout(); user.firstName='';user.lastName='';user.email=''" >Ausloggen <ion-icon name="log-out-outline"></ion-icon></a></p>
+        </ion-col>
+      </ion-row>
+    </div>
 
   </ion-grid>
 
