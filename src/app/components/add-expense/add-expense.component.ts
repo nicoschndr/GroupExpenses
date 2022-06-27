@@ -1,8 +1,10 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {Expense} from '../../models/classes/expense';
 import {ExpensesService} from '../../services/expenses.service';
-import {ModalController, NavController, NavParams} from '@ionic/angular';
+import {AlertController, ModalController, NavController, NavParams} from '@ionic/angular';
 import {ActivatedRoute} from '@angular/router';
+import {UserService} from '../../services/user.service';
+import {User} from '../../models/classes/User.model';
 
 @Component({
   selector: 'app-add-expense',
@@ -20,18 +22,25 @@ export class AddExpenseComponent implements OnInit {
   interval: boolean;
   editMode = false;
   userId: string;
+  currentUser: User;
   groupId: string;
   errors: Map<string, string> = new Map<string, string>();
   constructor(private expensesService: ExpensesService, private modalCtrl: ModalController,
               private route: ActivatedRoute, private navCtrl: NavController,
-              private navParams: NavParams) {
+              private navParams: NavParams, private userService: UserService,
+              private alertCtrl: AlertController) {
     this.id = navParams.get('id');
     if(this.id){
       this.editMode = true;
     }
+    this.getCurrentUserData();
   }
 
   ngOnInit() {
+  }
+  async getCurrentUserData(){
+    this.currentUser = await this.userService.getCurrentUser();
+    // this.userId = this.currentUser.id;
   }
   save(){
     this.errors.clear();
@@ -60,6 +69,32 @@ export class AddExpenseComponent implements OnInit {
     this.expensesService.updateExpense(this.entry);
     console.log('expense updated: ' + JSON.stringify(this.entry));
     this.modalCtrl.dismiss();
+  }
+  async deleteExpense(){
+    const alertConfirm = await this.alertCtrl.create({
+      header: 'Sind Sie sicher?',
+      message: 'Soll der Eintrag wirklich gelöscht werden?',
+      buttons: [
+        {
+          text: 'Ja',
+          handler: () => {
+            this.expensesService.removeEntry(this.id);
+            this.dismissModal();
+            // alertSuccess.present();
+          }
+        },
+        {
+          text: 'Abbrechen',
+          role: 'cancel',
+        }
+      ]
+    });
+    await alertConfirm.present();
+    // const alertSuccess = await this.alertCtrl.create({
+    //   header: 'Erfolgreich',
+    //   message: 'Ausgabe wurde gelöscht.',
+    //   buttons: ['OK']
+    // });
   }
   dismissModal(){
     this.modalCtrl.dismiss();

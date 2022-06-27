@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {Income} from '../../models/classes/income';
 import {IncomingsService} from '../../services/incomings.service';
-import {ModalController, NavParams} from '@ionic/angular';
+import {AlertController, ModalController, NavParams} from '@ionic/angular';
 import {ActivatedRoute} from '@angular/router';
 
 @Component({
@@ -25,7 +25,8 @@ export class AddIncomeComponent implements OnInit {
   //users: User[] = [];
   errors: Map<string, string> = new Map<string, string>();
   constructor(private incomingService: IncomingsService, private modalCtrl: ModalController,
-              private route: ActivatedRoute, private navParams: NavParams) {
+              private route: ActivatedRoute, private navParams: NavParams,
+              private alertCtrl: AlertController) {
     this.id = navParams.get('id');
     if(this.id){
       this.editMode = true;
@@ -38,9 +39,9 @@ export class AddIncomeComponent implements OnInit {
     if(!this.amount){
       this.errors.set('amount', 'Betrag darf nicht leer sein!');
     } else if(!this.debitor){
-      this.errors.set('debitor', 'Betrag darf nicht leer sein!');
+      this.errors.set('debitor', 'Feld darf nicht leer sein!');
     } else if(!this.creditor){
-      this.errors.set('creditor', 'Betrag darf nicht leer sein!');
+      this.errors.set('creditor', 'Feld darf nicht leer sein!');
     } else if (!this.date) {
       this.errors.set('date', 'Datum darf nicht leer sein!');
     } else if(this.errors.size === 0){
@@ -62,6 +63,32 @@ export class AddIncomeComponent implements OnInit {
     this.incomingService.updateIncome(this.entry);
     console.log('expense updated: ' + JSON.stringify(this.entry));
     this.modalCtrl.dismiss();
+  }
+  async deleteIncome(){
+    const alertConfirm = await this.alertCtrl.create({
+      header: 'Sind Sie sicher?',
+      message: 'Soll der Eintrag wirklich gelöscht werden?',
+      buttons: [
+        {
+          text: 'Ja',
+          handler: () => {
+            this.incomingService.removeEntry(this.id);
+            this.dismissModal();
+            // alertSuccess.present();
+          }
+        },
+        {
+          text: 'Abbrechen',
+          role: 'cancel',
+        }
+      ]
+    });
+    await alertConfirm.present();
+    // const alertSuccess = await this.alertCtrl.create({
+    //   header: 'Erfolgreich',
+    //   message: 'Ausgabe wurde gelöscht.',
+    //   buttons: ['OK']
+    // });
   }
   dismissModal(){
     this.modalCtrl.dismiss();

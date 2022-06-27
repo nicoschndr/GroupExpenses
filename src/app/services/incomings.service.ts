@@ -24,7 +24,7 @@ export class IncomingsService {
       .catch((err) => console.log('Error: ' + err));
   }
   getAllIncoming(){
-    return this.incomingCollections.snapshotChanges();
+    return this.afs.collection('incoming', ref => ref.orderBy('date', 'desc')).snapshotChanges();
   }
   async getEntryById(id: string) {
     const document = await this.incomingCollections.doc(id).get().toPromise();

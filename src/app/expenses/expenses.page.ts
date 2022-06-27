@@ -22,7 +22,7 @@ export class ExpensesPage implements OnInit {
   incomeStatus = false;
   // debitor: User;
   // creditor: User;
-  //groupUser: Group;
+  // groupUser: Group;
   split = [];
   constructor(private actionSheet: ActionSheetController, public expensesService: ExpensesService,
               private modalCtrl: ModalController, public incomingService: IncomingsService,
@@ -72,13 +72,29 @@ export class ExpensesPage implements OnInit {
     await modal.onDidDismiss();
   }
   async deleteExpense(expense: Expense){
-    await this.expensesService.removeEntry(expense.id);
-    const alert = await this.alertCtrl.create({
-      header: 'Erfolgreich',
-      message: 'Ausgabe wurde gelöscht.',
-      buttons: ['OK']
+    const alertConfirm = await this.alertCtrl.create({
+      header: 'Sind Sie sicher?',
+      message: 'Soll der Eintrag ' + expense.name + ' wirklich gelöscht werden?',
+      buttons: [
+        {
+          text: 'Ja',
+          handler: () => {
+            this.expensesService.removeEntry(expense.id);
+            // alertSuccess.present();
+          }
+        },
+        {
+          text: 'Abbrechen',
+          role: 'cancel',
+        }
+      ]
     });
-    await alert.present();
+    await alertConfirm.present();
+    // const alertSuccess = await this.alertCtrl.create({
+    //   header: 'Erfolgreich',
+    //   message: 'Ausgabe wurde gelöscht.',
+    //   buttons: ['OK']
+    // });
   }
   addExpenseStatus(){
     this.expenseStatus = true;
@@ -119,13 +135,29 @@ export class ExpensesPage implements OnInit {
     await modal.onDidDismiss();
   }
   async deleteIncome(income: Income){
-    await this.incomingService.removeEntry(income.id);
-    const alert = await this.alertCtrl.create({
-      header: 'Erfolgreich',
-      message: 'Einnahme wurde gelöscht.',
-      buttons: ['OK']
+    const alertConfirm = await this.alertCtrl.create({
+      header: 'Sind Sie sicher?',
+      message: 'Soll der Eintrag wirklich gelöscht werden?',
+      buttons: [
+        {
+          text: 'Ja',
+          handler: () => {
+            this.incomingService.removeEntry(income.id);
+            // alertSuccess.present();
+          }
+        },
+        {
+          text: 'Abbrechen',
+          role: 'cancel',
+        }
+      ]
     });
-    await alert.present();
+    await alertConfirm.present();
+    // const alertSuccess = await this.alertCtrl.create({
+    //   header: 'Erfolgreich',
+    //   message: 'Ausgabe wurde gelöscht.',
+    //   buttons: ['OK']
+    // });
   }
   // async openActionSheet(){
   //   console.log('Open Action Sheet');

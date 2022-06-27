@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/compat/firestore';
 import {Expense} from '../models/classes/expense';
 import {Observable} from 'rxjs';
+import firebase from 'firebase/compat/app';
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +23,7 @@ export class ExpensesService {
     return this.addExpenseStatus = false;
   }
   getAllExpenses(){
-    return this.expensesCollections.snapshotChanges();
+    return this.afs.collection('expenses', ref => ref.orderBy('date', 'desc')).snapshotChanges();
   }
   openExpenseForm(){
     return this.addExpenseStatus = true;

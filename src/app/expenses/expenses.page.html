@@ -40,7 +40,7 @@
       <div class="segment-divs" *ngIf="segment === 'Aufteilung'">
         <ion-row class="ion-justify-content-center">
           <ion-card *ngIf="split.length === 0">
-            <ion-card-content class="ion-text-center">
+            <ion-card-content class="emptyCard">
               <p>Es wurden keine Eingaben erfasst.</p>
             </ion-card-content>
           </ion-card>
@@ -55,44 +55,54 @@
       <div class="segment-divs" *ngIf="segment === 'Ausgaben'">
         <ion-row class="ion-justify-content-center">
           <ion-card class="no-entry" *ngIf="expenses.length === 0">
-            <ion-card-content>
+            <ion-card-content class="emptyCard">
               <p>Es wurden keine Eingaben erfasst.</p>
             </ion-card-content>
           </ion-card>
           <ion-card button="true" *ngFor="let expense of expenses" id="openDelete">
             <ion-card-content>
               <ion-row>
-                <ion-col class="ion-text-center" size="4">
+                <ion-col class="amountCol" size="4">
                   <span></span>
                   <h1>-{{expense.amount}}€</h1>
                 </ion-col>
                 <ion-col size="4">
-                  <h2>{{expense.name}}</h2> <br>
-                  <!-- Get user name by expense.userId -->
-                  <p>User Name Platzhalter</p> <br>
-                  <p>{{expense.date | date: 'dd.MM.yyyy'}}</p>
+                  <ion-row>
+                    <h2>{{expense.name}}</h2>
+                  </ion-row>
+                  <ion-row>
+                    <!-- Get user name by expense.userId -->
+                    <p>User Name</p>
+                  </ion-row>
+                  <ion-row>
+                    <p>{{expense.date | date: 'dd.MM.yyyy'}}</p>
+                  </ion-row>
                 </ion-col>
                 <ion-col class="ion-align-items-center" size="4">
-                  <div class="card-button">
+                  <ion-row class="ion-justify-content-center">
                     <ion-buttons>
                       <ion-button (click)="editExpense(expense)">
                         <ion-icon name="create-outline" size="small"></ion-icon>
                       </ion-button>
+                    </ion-buttons>
+                  </ion-row>
+                  <ion-row class="ion-justify-content-center">
+                    <ion-buttons>
                       <ion-button (click)="deleteExpense(expense)">
                         <ion-icon name="trash-outline" size="small"></ion-icon>
                       </ion-button>
                     </ion-buttons>
-                  </div>
+                  </ion-row>
                 </ion-col>
               </ion-row>
             </ion-card-content>
-<!--            <ion-popover trigger="openDelete">-->
-<!--              <ng-template>-->
-<!--                <ion-buttons>-->
-<!--                  <ion-button (click)="deleteExpense(expense)">Eintrag löschen</ion-button>-->
-<!--                </ion-buttons>-->
-<!--              </ng-template>-->
-<!--            </ion-popover>-->
+            <!--              <ion-popover trigger="openDelete" [dismissOnSelect]="true">-->
+            <!--                <ng-template>-->
+            <!--                  <ion-buttons>-->
+            <!--                    <ion-button (click)="deleteExpense(expense)">Eintrag löschen</ion-button>-->
+            <!--                  </ion-buttons>-->
+            <!--                </ng-template>-->
+            <!--              </ion-popover>-->
           </ion-card>
         </ion-row>
       </div>
@@ -100,30 +110,45 @@
       <!-- Segment 'Einnahmen' -->
       <div class="segment-divs" *ngIf="segment === 'Einnahmen'">
         <ion-row class="ion-justify-content-center">
+          <ion-card class="no-entry" *ngIf="incoming.length === 0">
+            <ion-card-content class="emptyCard">
+              <p>Es wurden keine Eingaben erfasst.</p>
+            </ion-card-content>
+          </ion-card>
           <ion-card *ngFor="let income of incoming">
             <ion-card-content>
               <ion-row>
-                <ion-col class="ion-text-center" size="4">
+                <ion-col class="amountCol" size="4">
                   <h1>+{{income.amount}}€</h1>
                 </ion-col>
                 <ion-col size="4">
-                  <!-- Get by income.debitorId -->
-                  <h2>Gläubiger Name</h2> <br>
-                  <!-- Get by income.creditorId -->
-                  <p>Schuldner Name</p> <br>
-                  <p>{{income.date | date: 'dd.MM.yyyy'}}</p>
+                  <ion-row>
+                    <!-- Get by income.debitorId -->
+                    <h2>Gläubiger</h2>
+                  </ion-row>
+                  <ion-row>
+                    <!-- Get by income.creditorId -->
+                    <p>von Schuldner</p>
+                  </ion-row>
+                  <ion-row>
+                    <p>{{income.date | date: 'dd.MM.yyyy'}}</p>
+                  </ion-row>
                 </ion-col>
-                <ion-col size="4">
-                  <div class="card-button">
+                <ion-col class="ion-align-items-center" size="4">
+                  <ion-row class="ion-justify-content-center">
                     <ion-buttons>
                       <ion-button (click)="editIncome(income)">
-                        <ion-icon class="edit-button" name="create-outline" size="small"></ion-icon>
+                        <ion-icon name="create-outline" size="small"></ion-icon>
                       </ion-button>
+                    </ion-buttons>
+                  </ion-row>
+                  <ion-row class="ion-justify-content-center">
+                    <ion-buttons>
                       <ion-button (click)="deleteIncome(income)">
                         <ion-icon name="trash-outline" size="small"></ion-icon>
                       </ion-button>
                     </ion-buttons>
-                  </div>
+                  </ion-row>
                 </ion-col>
               </ion-row>
             </ion-card-content>

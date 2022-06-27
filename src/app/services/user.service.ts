@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import {AngularFireAuth} from '@angular/fire/compat/auth';
 import {AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument} from '@angular/fire/compat/firestore';
 import firebase from 'firebase/compat/app';
-import {User} from './User.model';
-import {Group} from './Group.model';
+import {User} from '../models/classes/User.model';
+import {Group} from '../models/classes/Group.model';
 import {AlertsService} from './alerts.service';
 import {Router} from '@angular/router';
 
@@ -169,5 +169,14 @@ export class UserService {
     return groupRef.set(group, {
       merge: true,
     });
+  }
+  async getCurrentUser(): Promise<any> {
+    try {
+      const userData = localStorage.getItem('currentUser');
+      const jsonParsedUserData = JSON.parse(userData);
+      return Promise.resolve(jsonParsedUserData);
+    } catch (e) {
+      return Promise.reject(e);
+    }
   }
 }

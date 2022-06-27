@@ -24,12 +24,15 @@ ion-label {
   justify-items: center;
 }
 ion-card {
-  width: 90%;
+  width: 80%;
   margin: 10px;
   border: 1px solid #8CB8ED;
   border-radius: 15px;
   background-color: #8CB8ED;
   color: #47517B;
+}
+ion-card-content {
+  padding: 5px;
 }
 .card-button {
   display: flex;
@@ -43,4 +46,11 @@ ion-card {
   background-color: #8CB8ED;
   border-radius: 15px;
   color: white;
+}
+.amountCol {
+  text-align: center;
+  vertical-align: center;
+}
+.emptyCard {
+  text-align: center;
 }

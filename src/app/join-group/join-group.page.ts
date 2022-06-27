@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import {UserService} from '../user.service';
-import {AlertsService} from '../alerts.service';
+import {UserService} from '../services/user.service';
+import {AlertsService} from '../services/alerts.service';
 
 @Component({
   selector: 'app-join-group',

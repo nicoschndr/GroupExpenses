@@ -6,6 +6,11 @@
         <ion-icon name="close-circle-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
+    <ion-buttons slot="end" *ngIf="editMode">
+      <ion-button (click)="deleteExpense()">
+        <ion-icon name="trash-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
