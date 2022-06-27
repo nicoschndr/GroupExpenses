@@ -6,6 +6,7 @@ import {ExpensesService} from '../services/expenses.service';
 import {AddExpenseComponent} from '../components/add-expense/add-expense.component';
 import {IncomingsService} from '../services/incomings.service';
 import {AddIncomeComponent} from '../components/add-income/add-income.component';
+import {User} from '../models/classes/User.model';
 
 @Component({
   selector: 'app-expenses',
@@ -23,7 +24,10 @@ export class ExpensesPage implements OnInit {
   // debitor: User;
   // creditor: User;
   // groupUser: Group;
+  users: User[];
   split = [];
+  expenseUser: User;
+  expenseList: Map<string, string>;
   constructor(private actionSheet: ActionSheetController, public expensesService: ExpensesService,
               private modalCtrl: ModalController, public incomingService: IncomingsService,
               private alertCtrl: AlertController) {
@@ -95,9 +99,6 @@ export class ExpensesPage implements OnInit {
     //   message: 'Ausgabe wurde gelöscht.',
     //   buttons: ['OK']
     // });
-  }
-  addExpenseStatus(){
-    this.expenseStatus = true;
   }
   //methods for incoming
   async getOneIncome(income: Income){
@@ -189,4 +190,6 @@ export class ExpensesPage implements OnInit {
   //   await actionSheet.present();
   //   console.log('Third');
   // }
+  ionViewDidLoad(){
+  }
 }

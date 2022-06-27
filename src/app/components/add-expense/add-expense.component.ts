@@ -22,6 +22,7 @@ export class AddExpenseComponent implements OnInit {
   interval: boolean;
   editMode = false;
   userId: string;
+  userName: string;
   currentUser: User;
   groupId: string;
   errors: Map<string, string> = new Map<string, string>();
@@ -39,8 +40,9 @@ export class AddExpenseComponent implements OnInit {
   ngOnInit() {
   }
   async getCurrentUserData(){
-    this.currentUser = await this.userService.getCurrentUser();
     this.userId = await this.userService.getCurrentUserId();
+    this.currentUser = await this.userService.getUserWithUid(this.userId);
+    this.userName = this.currentUser.firstName;
   }
   save(){
     this.errors.clear();
@@ -59,15 +61,14 @@ export class AddExpenseComponent implements OnInit {
     }
   }
   addExpenseEntry(){
-    this.entry = new Expense('', this.name, this.amount, this.date, this.receipt, this.interval, this.userId, this.groupId);
+    this.entry = new Expense('', this.name, this.amount, this.date, this.receipt, this.interval, this.userId, this.userName, this.groupId);
     this.expensesService.addExpense(this.entry);
-    console.log('expense added: ' + JSON.stringify(this.entry));
     this.modalCtrl.dismiss();
   }
   updateExpenseEntry(){
-    this.entry = new Expense(this.id, this.name, this.amount, this.date, this.receipt, this.interval, this.userId, this.groupId);
+    this.entry = new Expense(this.id, this.name, this.amount, this.date, this.receipt, this.interval,
+      this.userId, this.userName, this.groupId);
     this.expensesService.updateExpense(this.entry);
-    console.log('expense updated: ' + JSON.stringify(this.entry));
     this.modalCtrl.dismiss();
   }
   async deleteExpense(){

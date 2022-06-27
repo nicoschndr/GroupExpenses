@@ -6,11 +6,13 @@ export class Expense {
   receipt?: string;
   interval?: boolean;
   userId?: string;
+  userName?: string;
   groupId?: string;
   constructor(id?: string, name?: string, amount?: number, date?: Date, receipt?: string,
-              interval?: boolean, userId?: string, groupId?: string) {
+              interval?: boolean, userId?: string, userName?: string, groupId?: string) {
     this.id = id;
     this.userId = userId;
+    this.userName = userName;
     this.groupId = groupId;
     this.name = name;
     this.amount = amount;

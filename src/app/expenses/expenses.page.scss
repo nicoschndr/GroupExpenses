@@ -51,11 +51,17 @@ ion-card-content {
   text-align: center;
   vertical-align: center;
 }
-.amountH {
+.amountE {
   position: absolute;
   top: 35%;
-  right: 0px;
+  right: 0;
   transform: translateX(-50%);
+}
+.amountI {
+  position: absolute;
+  top: 35%;
+  right: 0;
+  transform: translateX(-90%);
 }
 .emptyCard {
   text-align: center;
