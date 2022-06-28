@@ -1,18 +1,23 @@
 <ion-app>
   <ion-router-outlet></ion-router-outlet>
+  <ion-tabs>
+    <ion-tab-bar slot="bottom">
+      <ion-tab-button>
+        <ion-icon (click)="showGrouplist()" class="icon" name="home-outline" size="large"></ion-icon>
+      </ion-tab-button>
+
+      <ion-tab-button *ngIf="this.grouplistView">
+        <ion-icon (click)="this.navToAddGroup()" class="icon" name="add-circle" size="large"></ion-icon>
+      </ion-tab-button>
+      <ion-tab-button *ngIf="!this.grouplistView">
+        <ion-icon (click)="showAddActions()" class="icon" name="add-circle" size="large"></ion-icon>
+      </ion-tab-button>
+
+      <ion-tab-button>
+        <ion-icon (click)="showLogin()" class="icon" name="person-outline" size="large"></ion-icon>
+      </ion-tab-button>
+    </ion-tab-bar>
+  </ion-tabs>
 </ion-app>
-<ion-tabs>
-  <ion-tab-bar slot="bottom">
-    <ion-tab-button>
-      <ion-icon (click)="showGrouplist()" class="icon" name="home-outline"></ion-icon>
-    </ion-tab-button>
 
-    <ion-tab-button>
-      <ion-icon (click)="addGroup()" class="icon" name="add-circle"></ion-icon>
-    </ion-tab-button>
 
-    <ion-tab-button>
-      <ion-icon (click)="showLogin()"class="icon" name="person-outline"></ion-icon>
-    </ion-tab-button>
-  </ion-tab-bar>
-</ion-tabs>

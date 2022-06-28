@@ -84,4 +84,8 @@ export class GroupService {
       return false;
     }
   }
+
+  setReminder(uId: string) {
+    return uId;
+  }
 }

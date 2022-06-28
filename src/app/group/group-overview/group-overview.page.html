@@ -1,9 +1,8 @@
 <ion-header>
   <ion-toolbar>
-    <ion-icon name="chevron-back-outline" size="large"></ion-icon>
+    <ion-icon button (click)="back()" name="chevron-back-outline" size="large"></ion-icon>
     <ion-icon *ngIf="!editMode" button (click)="showActions()" name="ellipsis-horizontal-outline" slot="end" size="large"></ion-icon>
     <ion-icon *ngIf="editMode" button (click)="leaveEditMode()" name="save-outline" slot="end" size="large"></ion-icon>
-    <ion-icon button (click)="deleteUserFromGroup(this.currentUserId)" size="large" name="walk-outline"></ion-icon>
   </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -26,9 +25,15 @@
           <h6>{{member.firstName}}</h6>
           <ion-icon *ngIf="editMode"
                     style="background-color: rgba(140, 184, 230, 0); position: absolute; top: 50%; right: 0px; transform: translateY(-50%); padding-bottom: 8px; padding-top: 8px"
-                    (click)="deleteUserFromGroup(member.id)"
+                    (click)="confirmDeleteAction(member.id)"
                     name="close-outline"
                     size="large"
+                    button>
+          </ion-icon>
+          <ion-icon *ngIf="!editMode"
+                    (click)="sendReminder(member.id, member.firstName, 'YhyD5Niv6gaDcgp18PB3')"
+                    name="alarm-outline"
+                    style="background-color: rgba(140, 184, 230, 0); position: absolute; top: 50%; right: 0px; transform: translateY(-50%); padding-bottom: 8px; padding-top: 8px"
                     button>
           </ion-icon>
         </ion-card-title>

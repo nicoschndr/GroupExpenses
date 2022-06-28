@@ -6,6 +6,7 @@ import {User} from './User.model';
 import {Group} from './Group.model';
 import {AlertsService} from './alerts.service';
 import {Router} from '@angular/router';
+import {Payment} from './payment.model';
 
 
 @Injectable({
@@ -16,10 +17,12 @@ export class UserService {
   currentUser: any[] =[];
   private userCollection: AngularFirestoreCollection<User>;
   private groupCollection: AngularFirestoreCollection<Group>;
+  private paymentCollection: AngularFirestoreCollection<Payment>;
 
   constructor(private afa: AngularFireAuth, private afs: AngularFirestore, public alertsService: AlertsService, private router: Router) {
     this.userCollection = afs.collection<User>('user');
     this.groupCollection = afs.collection<Group>('group');
+    this.paymentCollection = afs.collection<Payment>('payment');
   }
 
   async login(email: string ,password: string){
@@ -34,7 +37,7 @@ export class UserService {
 
   async updatePassword(uid, password){
     const user: User  = await this.getUserWithUid(uid);
-    const userData = new User(user.id, user.email, user.firstName, user.lastName, password, user.gruppen);
+    const userData = new User(user.id, user.email, user.firstName, user.lastName, password, user.gruppen, user.reminderCount);
     await this.setUser(uid, userData);
   }
 
@@ -83,11 +86,10 @@ export class UserService {
       if (groupData.key === key) {
         const setGroupData = new Group(arrayToPush, groupData.key, groupData.name);
         const setUserData = new User(userData.id, userData.email, userData.firstName, userData.lastName, userData.password,
-          arrayToPush2);
+          arrayToPush2, user.reminderCount);
         await this.setUser(user.uid, setUserData);
         await this.setGroup(id, setGroupData);
-        this.router.navigate(['home']);
-      }else{
+      } else{
         this.alertsService.errors.clear();
         this.alertsService.errors.set('key', 'Der eingegebene Key ist falsch');
       }
@@ -101,10 +103,9 @@ export class UserService {
     try {
       await this.afa.createUserWithEmailAndPassword(email, password).then(async res => {
         const uid = res.user.uid;
-        const userData: User = new User(uid, email, firstName, lastName, password, []);
+        const userData: User = new User(uid, email, firstName, lastName, password, [], 0);
         await this.setUser(uid, userData);
         await this.login(email,password);
-        this.router.navigate(['home']);
       });
     } catch (e){
       this.alertsService.errors.clear();
@@ -147,6 +148,12 @@ export class UserService {
       });
   }
 
+  async setReminderCount(uid) {
+    const userData: User = await this.getUserWithUid(uid);
+    ++userData.reminderCount;
+    await this.setUser(uid, userData);
+  }
+
   async setUser(uid, userData){
     const userRef: AngularFirestoreDocument<User> = this.afs.doc(`user/${uid}`);
     const user: User = {
@@ -155,12 +162,14 @@ export class UserService {
       firstName: userData.firstName,
       lastName: userData.lastName,
       password: userData.password,
-      gruppen: userData.gruppen
+      gruppen: userData.gruppen,
+      reminderCount: userData.reminderCount,
     };
     return userRef.set(user, {
       merge: true,
     });
   }
+
   async setGroup(id, groupData){
     const groupRef: AngularFirestoreDocument<Group> = this.afs.doc(`group/${id}`);
     const group: Group = {

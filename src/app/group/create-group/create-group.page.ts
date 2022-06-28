@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import {GroupService} from '../group.service';
 import {Group} from '../group.model';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
+import {NavController} from '@ionic/angular';
+import {TrackNavService} from "../../track-nav.service";
 
 @Component({
   selector: 'app-create-group',
@@ -16,10 +18,14 @@ export class CreateGroupPage implements OnInit {
   constructor(
     private groupService: GroupService,
     private router: Router,
+    private route: ActivatedRoute,
+    public navCtrl: NavController,
+    private trackNav: TrackNavService,
   ) { }
 
   ngOnInit() {
     this.getUser();
+    this.trackNav.trackRouteChanges(this.route.snapshot.paramMap.get('gId'));
   }
 
   async createGroup(): Promise<void> {

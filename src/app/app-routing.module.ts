@@ -61,6 +61,10 @@ const routes: Routes = [
     path: 'forgot-pw',
     loadChildren: () => import('./forgot-pw/forgot-pw.module').then( m => m.ForgotPWPageModule)
   },
+  {
+    path: 'home',
+    loadChildren: () => import('./group/group-overview/group-overview.module').then( m => m.GroupOverviewPageModule)
+  },
 ];
 
 @NgModule({

@@ -23,12 +23,14 @@ export class LoginPage implements OnInit{
     this.userService.login(this.email, this.password);
     this.email='';
     this.password='';
+    this.router.navigate(['grouplist']);
   }
 
   loginWithGoogle(): void{
     this.userService.loginWithGoogle();
     this.email='';
     this.password='';
+    this.router.navigate(['grouplist']);
   }
 
   navigateSignUp(): void{
