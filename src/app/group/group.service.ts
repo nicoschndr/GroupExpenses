@@ -5,7 +5,10 @@ import {
   DocumentData,
   collection,
   getDocs,
-  addDoc, doc, getDoc, documentId
+  addDoc,
+  doc,
+  getDoc, where, query, deleteDoc, updateDoc,
+  documentId
 } from '@angular/fire/firestore';
 import {Group} from './group.model';
 import {AngularFirestore} from '@angular/fire/compat/firestore';
@@ -30,31 +33,62 @@ export class GroupService {
     }
   };
 
-  constructor(private firestore: Firestore, private afs: AngularFirestore) {
+  constructor(private firestore: Firestore) {
     this.groupCollectionRef = collection(firestore, 'group');
   }
 
-  async findAll(): Promise<Group[]> {
+  async addGroup(groupname: string, founderId: string): Promise<any> {
     const refWithConverter = this.groupCollectionRef.withConverter(this.groupConverter);
-    const recordDocs = await getDocs(refWithConverter);
+    const newGroup = new Group(null, groupname, [founderId], groupname.trim().toLowerCase());
+    return await addDoc(refWithConverter, newGroup);
+  }
+
+  async getGroup(groupId: string): Promise<Group> {
+    const docRef = doc(this.groupCollectionRef.withConverter(this.groupConverter), groupId);
+    const groupDoc = await getDoc(docRef);
+    return groupDoc.data();
+  }
+
+  async findGroups(uId: string): Promise<Group[]>{
+    const filter = query(
+      this.groupCollectionRef.withConverter(this.groupConverter),
+      where('groupMembers', 'array-contains', uId.toString()));
+    const groupDocs = await getDocs(filter);
     const groups: Group[] = [];
-    recordDocs.forEach(groupDoc => {
+    groupDocs.forEach(groupDoc => {
       groups.push(groupDoc.data());
     });
     return groups;
   }
 
-  async addGroup(groupname: string): Promise<any> {
-    const refWithConverter = this.groupCollectionRef.withConverter(this.groupConverter);
-    const newGroup = new Group(null, groupname, ['u0Nf0Hr3WzwwqgvMkzx6'], groupname.trim().toLowerCase());
-    const group = await addDoc(refWithConverter, newGroup);
-    return group;
+  async deleteUserFromGroup(uId: string, gId: string): Promise<boolean> {
+    try {
+      const groupToLeave: Group = await this.getGroup(gId);
+      let deleteAction = true;
+      groupToLeave.groupMembers.forEach(id => {
+        if (id === uId) {
+          const index: number = groupToLeave.groupMembers.indexOf(id);
+          groupToLeave.groupMembers.splice(index, 1);
+          const docRef = doc(this.groupCollectionRef.withConverter(this.groupConverter), gId.toString());
+          if (groupToLeave.groupMembers.length === 0) {
+            deleteDoc(docRef);
+            deleteAction = false;
+          } else {
+            updateDoc(docRef, {
+              groupMembers: groupToLeave.groupMembers,
+            });
+          }
+        }
+      });
+        return deleteAction;
+    } catch (e) {
+      console.log(e);
+      return false;
+    }
   }
 
-  async getGroup(groupId: string): Promise<Group> {
-    const docRef = doc(this.groupCollectionRef.withConverter(this.groupConverter), groupId.toString());
-    const recordDoc = await getDoc(docRef);
-    return recordDoc.data();
+  setReminder(uId: string) {
+    return uId;
   }
   getCurrentGroup(id: string){
     let currentGroup;
