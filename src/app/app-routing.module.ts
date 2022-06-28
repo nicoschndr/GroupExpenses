@@ -40,7 +40,10 @@ const routes: Routes = [
     path: 'expenses',
     loadChildren: () => import('./expenses/expenses.module').then(m => m.ExpensesPageModule)
   },
-
+  {
+    path: 'expenses/:id',
+    loadChildren: () => import('./expenses/expenses.module').then(m => m.ExpensesPageModule)
+  },
   {
     path: 'grouplist',
     loadChildren: () => import('./group/grouplist/grouplist.module').then( m => m.GrouplistPageModule)
