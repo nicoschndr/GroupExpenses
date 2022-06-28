@@ -164,34 +164,4 @@ export class ExpensesPage implements OnInit {
     //   buttons: ['OK']
     // });
   }
-  // async openActionSheet(){
-  //   console.log('Open Action Sheet');
-  //   const actionSheet = await this.actionSheet.create({
-  //     header: 'Neuer Eintrag',
-  //     buttons: [
-  //       {
-  //         text: 'Ausgabe hinzufügen',
-  //         handler: () => {
-  //           console.log('Ausgabe hinzufügen');
-  //         }
-  //       },
-  //       {
-  //         text: 'Einnahme hinzufügen',
-  //         handler: () => {
-  //           console.log('Einnahme hinzufügen');
-  //         }
-  //       },
-  //       {
-  //         text: 'Abbrechen',
-  //         role: 'cancel',
-  //         handler: () => {
-  //           console.log('Vorgang abgebrochen');
-  //         }
-  //       },
-  //     ],
-  //   });
-  //   console.log('Second');
-  //   await actionSheet.present();
-  //   console.log('Third');
-  // }
 }

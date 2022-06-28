@@ -5,9 +5,10 @@ import {
   DocumentData,
   collection,
   getDocs,
-  addDoc, doc, getDoc
+  addDoc, doc, getDoc, documentId
 } from '@angular/fire/firestore';
 import {Group} from './group.model';
+import {AngularFirestore} from '@angular/fire/compat/firestore';
 
 @Injectable({
   providedIn: 'root'
@@ -29,7 +30,7 @@ export class GroupService {
     }
   };
 
-  constructor(private firestore: Firestore) {
+  constructor(private firestore: Firestore, private afs: AngularFirestore) {
     this.groupCollectionRef = collection(firestore, 'group');
   }
 
@@ -54,5 +55,15 @@ export class GroupService {
     const docRef = doc(this.groupCollectionRef.withConverter(this.groupConverter), groupId.toString());
     const recordDoc = await getDoc(docRef);
     return recordDoc.data();
+  }
+  getCurrentGroup(id: string){
+    let currentGroup;
+    return this.afs.collection('group', ref => ref.where(documentId(), '==', id)).snapshotChanges()
+      .subscribe((res) => {
+        currentGroup = res.map((e) => ({
+          id: e.payload.doc.id,
+          ...e.payload.doc.data() as Group
+        }));
+      });
   }
 }
