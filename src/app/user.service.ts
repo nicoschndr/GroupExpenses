@@ -148,12 +148,6 @@ export class UserService {
       });
   }
 
-  async setReminderCount(uid) {
-    const userData: User = await this.getUserWithUid(uid);
-    ++userData.reminderCount;
-    await this.setUser(uid, userData);
-  }
-
   async setUser(uid, userData){
     const userRef: AngularFirestoreDocument<User> = this.afs.doc(`user/${uid}`);
     const user: User = {
@@ -180,5 +174,17 @@ export class UserService {
     return groupRef.set(group, {
       merge: true,
     });
+  }
+
+  async setReminderCount(uid: string) {
+    const userData: User = await this.getUserWithUid(uid);
+    ++userData.reminderCount;
+    await this.setUser(uid, userData);
+  }
+
+  async unsetReminderCount(uId: string) {
+    const userData: User = await this.getUserWithUid(uId);
+    --userData.reminderCount;
+    await this.setUser(uId, userData);
   }
 }

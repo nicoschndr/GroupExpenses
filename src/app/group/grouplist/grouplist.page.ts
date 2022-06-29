@@ -5,9 +5,7 @@ import {GroupService} from '../group.service';
 import {TrackNavService} from '../../track-nav.service';
 import {UserService} from '../../user.service';
 import {User} from '../../User.model';
-import {PaymentsService} from '../../payments.service';
-import {AlertController} from "@ionic/angular";
-import {Payment} from "../../payment.model";
+import {AlertController} from '@ionic/angular';
 
 @Component({
   selector: 'app-grouplist',
@@ -19,7 +17,6 @@ export class GrouplistPage implements OnInit {
   grouplist: Group[] = [];
   leftToPay = 0;
   currentUserId: string;
-  userFromService: User;
   oldReminderCount: number;
 
 
@@ -30,7 +27,6 @@ export class GrouplistPage implements OnInit {
     private userService: UserService,
     private trackNav: TrackNavService,
     private alertController: AlertController,
-    private paymentsService: PaymentsService,
   ) {
   }
 
@@ -40,20 +36,28 @@ export class GrouplistPage implements OnInit {
   }
 
   ngOnInit() {
+    localStorage.setItem('reminderCount', JSON.stringify(0));
+    this.getUser();
     this.getAllGroups();
     this.getOldReminderCount();
-    this.getUser();
-    this.handleReminderAlertsOnOpen();
   }
 
   async getUser() {
-    const user = JSON.parse(localStorage.getItem('currentUser'));
-    this.currentUserId = user.uid;
+    const user = await JSON.parse(localStorage.getItem('currentUser'));
+    const uId: string = user.uid;
+    this.currentUserId = uId;
+    await this.setReminderCountStorage();
+  }
+
+  async setReminderCountStorage() {
+    console.log('setReminderCounterNew');
+    const userFromService: User = await this.userService.getUserWithUid(this.currentUserId);
+    await localStorage.setItem('reminderCount', JSON.stringify(userFromService.reminderCount));
+    await this.handleReminderAlertsOnOpen();
   }
 
   async getAllGroups(): Promise<void> {
     try {
-      await this.getUser();
       this.grouplist = await this.groupService.findGroups(this.currentUserId);
     } catch (e) {
       console.log(e);
@@ -69,7 +73,8 @@ export class GrouplistPage implements OnInit {
   }
 
   async handleReminderAlertsOnOpen() {
-    if (this.oldReminderCount < this.userFromService.reminderCount) {
+    const newReminderCount: number = JSON.parse(localStorage.getItem('reminderCount'));
+    if (this.oldReminderCount < newReminderCount) {
       const alertPayReminder = await this.alertController.create({
         cssClass: 'alertText',
         header: 'Da war noch etwas...',
@@ -77,7 +82,8 @@ export class GrouplistPage implements OnInit {
         buttons: [{
           text: 'Ja',
           handler: () => {
-
+            this.userService.unsetReminderCount(this.currentUserId);
+            this.getUser();
           }
         }]
       });
@@ -86,7 +92,8 @@ export class GrouplistPage implements OnInit {
     }
   }
 
-  private getOldReminderCount() {
+  getOldReminderCount() {
+    console.log('getOldRemindercount');
     this.oldReminderCount = JSON.parse(localStorage.getItem('reminderCount'));
   }
 }

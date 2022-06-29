@@ -1,13 +1,17 @@
 import { Injectable } from '@angular/core';
 import {
-  CollectionReference,
-  Firestore,
-  DocumentData,
-  collection,
   getDocs,
-  addDoc,
   doc,
-  getDoc, where, query, deleteDoc, updateDoc,
+  getDoc,
+  where,
+  query,
+  deleteDoc,
+  updateDoc,
+  Firestore,
+  collection,
+  addDoc,
+  CollectionReference,
+  DocumentData,
   documentId
 } from '@angular/fire/firestore';
 import {Group} from './group.model';
@@ -52,7 +56,7 @@ export class GroupService {
   async findGroups(uId: string): Promise<Group[]>{
     const filter = query(
       this.groupCollectionRef.withConverter(this.groupConverter),
-      where('groupMembers', 'array-contains', uId.toString()));
+      where('groupMembers', 'array-contains', uId));
     const groupDocs = await getDocs(filter);
     const groups: Group[] = [];
     groupDocs.forEach(groupDoc => {
