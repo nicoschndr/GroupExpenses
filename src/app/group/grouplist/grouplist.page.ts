@@ -3,8 +3,8 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {Group} from '../group.model';
 import {GroupService} from '../group.service';
 import {TrackNavService} from '../../track-nav.service';
-import {UserService} from '../../user.service';
-import {User} from '../../User.model';
+import {UserService} from '../../services/user.service';
+import {User} from '../../models/classes/User.model';
 import {AlertController} from '@ionic/angular';
 
 @Component({

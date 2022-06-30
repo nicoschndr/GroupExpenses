@@ -5,6 +5,7 @@ import {AlertController, ModalController, NavController, NavParams} from '@ionic
 import {ActivatedRoute} from '@angular/router';
 import {UserService} from '../../services/user.service';
 import {User} from '../../models/classes/User.model';
+import {File} from '../../models/interfaces/file';
 
 @Component({
   selector: 'app-add-expense',
@@ -18,7 +19,7 @@ export class AddExpenseComponent implements OnInit {
   name: string;
   amount: number;
   date: any;
-  receipt;
+  receipt: File;
   interval: boolean;
   editMode = false;
   userId: string;
@@ -26,6 +27,9 @@ export class AddExpenseComponent implements OnInit {
   currentUser: User;
   groupId: string;
   errors: Map<string, string> = new Map<string, string>();
+  fileName: string;
+  fileNumber: string;
+  uploadStatus = false;
   constructor(private expensesService: ExpensesService, private modalCtrl: ModalController,
               private route: ActivatedRoute, private navCtrl: NavController,
               private navParams: NavParams, private userService: UserService,
@@ -34,10 +38,12 @@ export class AddExpenseComponent implements OnInit {
     if(this.id){
       this.editMode = true;
     }
+    this.groupId = this.navParams.get('groupId');
     this.getCurrentUserData();
   }
 
   ngOnInit() {
+    console.log('Group Id: ', this.groupId);
   }
   async getCurrentUserData(){
     this.userId = await this.userService.getCurrentUserId();
@@ -96,6 +102,9 @@ export class AddExpenseComponent implements OnInit {
     //   message: 'Ausgabe wurde gelöscht.',
     //   buttons: ['OK']
     // });
+  }
+  uploadPhoto(event){
+    this.uploadStatus = true;
   }
   dismissModal(){
     this.modalCtrl.dismiss();

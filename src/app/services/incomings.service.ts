@@ -23,8 +23,8 @@ export class IncomingsService {
     await this.incomingCollections.doc(entry.id).set(data)
       .catch((err) => console.log('Error: ' + err));
   }
-  getAllIncoming(){
-    return this.afs.collection('incoming', ref => ref.orderBy('date', 'desc')).snapshotChanges();
+  getAllIncoming(id: string){
+    return this.afs.collection('incoming', ref => ref.where('groupId', '==', id)).snapshotChanges();
   }
   async getEntryById(id: string) {
     const document = await this.incomingCollections.doc(id).get().toPromise();

@@ -3,6 +3,10 @@ import {Income} from '../../models/classes/income';
 import {IncomingsService} from '../../services/incomings.service';
 import {AlertController, ModalController, NavParams} from '@ionic/angular';
 import {ActivatedRoute} from '@angular/router';
+import {GroupService} from '../../group/group.service';
+import {Group} from '../../group/group.model';
+import {UserService} from '../../services/user.service';
+import {User} from '../../models/classes/User.model';
 
 @Component({
   selector: 'app-add-income',
@@ -20,20 +24,36 @@ export class AddIncomeComponent implements OnInit {
   date: Date;
   groupId: string;
   editMode = false;
-  userGroupList = ['Sarah', 'Markus', 'Vera', 'Tim'];
-  //Get userlist from Group
-  //users: User[] = [];
+  // userGroupList = ['Sarah', 'Markus', 'Vera', 'Tim'];
+  userGroupList = [];
+  groupMembers: Map<string, string> = new Map<string, string>();
+  group: Group;
+  // Get userlist from Group
+  // users: User[] = [];
   errors: Map<string, string> = new Map<string, string>();
   constructor(private incomingService: IncomingsService, private modalCtrl: ModalController,
               private route: ActivatedRoute, private navParams: NavParams,
-              private alertCtrl: AlertController) {
+              private alertCtrl: AlertController, private groupService: GroupService,
+              private userService: UserService) {
     this.id = navParams.get('id');
     if(this.id){
       this.editMode = true;
     }
+    this.groupId = this.navParams.get('groupId');
   }
 
-  ngOnInit() {}
+  async ngOnInit() {
+    this.group = await this.groupService.getGroup(this.groupId);
+    this.userGroupList = this.group.groupMembers;
+    await this.getGroupMembers();
+  }
+  async getGroupMembers(){
+    // eslint-disable-next-line @typescript-eslint/prefer-for-of
+    for(let i = 0; i < this.userGroupList.length; ++i){
+      const user: User = await this.userService.getUserWithUid(this.userGroupList[i]);
+      this.groupMembers.set(this.userGroupList[i], user.firstName);
+    }
+  }
   save(){
     this.errors.clear();
     if(!this.amount){
@@ -52,17 +72,30 @@ export class AddIncomeComponent implements OnInit {
       }
     }
   }
-  addIncome(){
-    this.entry = new Income('', this.debitorId, this.creditorId, this.amount, this.date, this.groupId);
-    this.incomingService.addIncome(this.entry);
+  async addIncome(){
+    await this.getMembersName();
+    this.entry = new Income('', this.debitorId, this.debitor, this.creditorId, this.creditor, this.amount, this.date, this.groupId);
+    console.log(this.debitor + ' ' + this.debitorId);
+    console.log(this.creditor + ' ' + this.creditorId);
+    this.incomingService.addIncome(this.entry).catch((err) => console.log('Error: ', err));
     console.log('Income added: ', JSON.stringify(this.entry));
     this.dismissModal();
   }
-  updateIncome(){
-    this.entry = new Income(this.id, this.debitorId, this.creditorId, this.amount, this.date, this.groupId);
+  async updateIncome(){
+    await this.getMembersName();
+    this.entry = new Income(this.id, this.debitorId, this.debitor, this.creditorId, this.creditor, this.amount, this.date, this.groupId);
     this.incomingService.updateIncome(this.entry);
     console.log('expense updated: ' + JSON.stringify(this.entry));
-    this.modalCtrl.dismiss();
+    this.modalCtrl.dismiss().catch((err) => console.log('Error: ', err));
+  }
+  async getMembersName(){
+    for(const [key, value] of this.groupMembers.entries()){
+      if(value === this.debitor){
+        this.debitorId = key;
+      } else if(value === this.creditor){
+        this.creditorId = key;
+      }
+    }
   }
   async deleteIncome(){
     const alertConfirm = await this.alertCtrl.create({

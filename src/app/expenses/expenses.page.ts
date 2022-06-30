@@ -8,6 +8,8 @@ import {IncomingsService} from '../services/incomings.service';
 import {AddIncomeComponent} from '../components/add-income/add-income.component';
 import {User} from '../models/classes/User.model';
 import {UserService} from '../services/user.service';
+import {ActivatedRoute, Router} from '@angular/router';
+import {GroupService} from '../group/group.service';
 
 @Component({
   selector: 'app-expenses',
@@ -24,16 +26,19 @@ export class ExpensesPage implements OnInit {
   incomeStatus = false;
   // debitor: User;
   // creditor: User;
+  groupId: string;
   // groupUser: Group;
   users: User[];
   split = [];
   currentUserId: string;
   constructor(private actionSheet: ActionSheetController, public expensesService: ExpensesService,
               private modalCtrl: ModalController, public incomingService: IncomingsService,
-              private alertCtrl: AlertController, private userService: UserService) {
-    this.getCurrentUserData();
-    this.getExpenses();
-    this.getIncoming();
+              private alertCtrl: AlertController, private userService: UserService,
+              private router: Router, private route: ActivatedRoute, private groupService: GroupService) {
+    this.groupId = this.route.snapshot.paramMap.get('gId');
+    this.getCurrentUserData().catch((err) => console.log('Error: ', err));
+    this.getExpenses(this.groupId);
+    this.getIncoming(this.groupId);
   }
 
   ngOnInit() {
@@ -48,8 +53,8 @@ export class ExpensesPage implements OnInit {
   async getCurrentUserData(){
     this.currentUserId = await this.userService.getCurrentUserId();
   }
-  getExpenses(){
-    this.expensesService.getAllExpenses().subscribe((res) => {
+  getExpenses(id: string){
+    this.expensesService.getAllExpenses(id).subscribe((res) => {
       this.expenses = res.map((e) => ({
         id: e.payload.doc.id,
         ...e.payload.doc.data() as Expense
@@ -61,7 +66,10 @@ export class ExpensesPage implements OnInit {
   }
   async openModalExpense(){
     const modal = await this.modalCtrl.create({
-      component: AddExpenseComponent
+      component: AddExpenseComponent,
+      componentProps: {
+        groupId: this.groupId,
+      }
     });
     await modal
       .present()
@@ -108,8 +116,8 @@ export class ExpensesPage implements OnInit {
   async getOneIncome(income: Income){
     this.income = await this.incomingService.getEntryById(income.id);
   }
-  getIncoming(){
-    this.incomingService.getAllIncoming().subscribe((res) => {
+  getIncoming(id: string){
+    this.incomingService.getAllIncoming(id).subscribe((res) => {
       this.incoming = res.map((e) => ({
         id: e.payload.doc.id,
         ...e.payload.doc.data() as Income
@@ -121,7 +129,10 @@ export class ExpensesPage implements OnInit {
   }
   async openModalIncome(){
     const modal = await this.modalCtrl.create({
-      component: AddIncomeComponent
+      component: AddIncomeComponent,
+      componentProps: {
+        groupId: this.groupId,
+      }
     });
     await modal
       .present()

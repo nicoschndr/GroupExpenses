@@ -19,7 +19,7 @@
     <ion-row>
       <ion-col>
         <ion-item>
-          <ion-input type="text" class="ion-text-start" [(ngModel)]="amount" placeholder="Betrag" required></ion-input>
+          <ion-input type="number" class="ion-text-start" [(ngModel)]="amount" placeholder="Betrag" required="true"></ion-input>
         </ion-item>
         <p class="ion-text-end ion-padding-end" style="color:var(--ion-color-danger)"
            *ngIf="errors.get('amount')">
@@ -28,10 +28,10 @@
       </ion-col>
       <ion-col>
         <ion-item>
-          <ion-input type="text" class="ion-text-start" placeholder="Bezahlt von" required></ion-input>
+          <ion-input type="text" class="ion-text-start" placeholder="Von" required="true" disabled="true"></ion-input>
           <ion-select [(ngModel)]="debitor" multiple="false">
             <!-- *ngFor="let user of users" & {{user.firstname}} -->
-            <ion-select-option *ngFor="let user of userGroupList">{{user}}</ion-select-option>
+            <ion-select-option *ngFor="let user of groupMembers | keyvalue">{{user.value}}</ion-select-option>
           </ion-select>
         </ion-item>
         <p class="ion-text-end ion-padding-end" style="color:var(--ion-color-danger)"
@@ -44,10 +44,10 @@
     <ion-row>
       <ion-col>
         <ion-item class="item-div">
-          <ion-input type="text" class="ion-text-start" placeholder="Bezahlt an" required></ion-input>
+          <ion-input type="text" class="ion-text-start" placeholder="An" required="true" disabled="true"></ion-input>
           <ion-select [(ngModel)]="creditor" multiple="false">
             <!-- *ngFor="let user of users" & {{user.firstname}} -->
-            <ion-select-option *ngFor="let user of userGroupList">{{user}}</ion-select-option>
+            <ion-select-option *ngFor="let user of groupMembers | keyvalue">{{user.value}}</ion-select-option>
           </ion-select>
         </ion-item>
         <p class="ion-text-end ion-padding-end" style="color:var(--ion-color-danger)"
@@ -57,7 +57,7 @@
       </ion-col>
       <ion-col>
         <ion-item button="true" id="openDate">
-          <ion-input placeholder="Datum" value="{{date | date: 'dd.MM.yyyy'}}" required></ion-input>
+          <ion-input placeholder="Datum" value="{{date | date: 'dd.MM.yyyy'}}" required="true"></ion-input>
           <ion-popover trigger="openDate">
             <ng-template>
               <ion-datetime presentation="date" [(ngModel)]="date"></ion-datetime>

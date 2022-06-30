@@ -7,21 +7,23 @@ import {Group} from '../models/classes/Group.model';
 import {AlertsService} from './alerts.service';
 import {Router} from '@angular/router';
 import {deleteUser, getAuth, updatePassword} from '@angular/fire/auth';
-
-
+import {Payment} from '../payment.model';
 
   @Injectable({
     providedIn: 'root'
   })
   export class UserService {
     isLoggedIn = false;
+    currentUser: any[] =[];
     private userCollection: AngularFirestoreCollection<User>;
     private groupCollection: AngularFirestoreCollection<Group>;
+    private paymentCollection: AngularFirestoreCollection<Payment>;
 
 
     constructor(private afa: AngularFireAuth, private afs: AngularFirestore, public alertsService: AlertsService, private router: Router) {
       this.userCollection = afs.collection<User>('user');
       this.groupCollection = afs.collection<Group>('group');
+      this.paymentCollection = afs.collection<Payment>('payment');
     }
 
     async login(email: string, password: string) {
@@ -174,7 +176,8 @@ import {deleteUser, getAuth, updatePassword} from '@angular/fire/auth';
         firstName: userData.firstName,
         lastName: userData.lastName,
         password: userData.password,
-        gruppen: userData.gruppen
+        gruppen: userData.gruppen,
+        reminderCount: userData.reminderCount,
       };
       return userRef.set(user, {
         merge: true,
@@ -192,14 +195,19 @@ import {deleteUser, getAuth, updatePassword} from '@angular/fire/auth';
         merge: true,
       });
     }
+    async setReminderCount(uid: string) {
+      const userData: User = await this.getUserWithUid(uid);
+      ++userData.reminderCount;
+      await this.setUser(uid, userData);
+    }
+    async unsetReminderCount(uId: string) {
+      const userData: User = await this.getUserWithUid(uId);
+      --userData.reminderCount;
+      await this.setUser(uId, userData);
+    }
     async getCurrentUser(): Promise<any> {
-      try {
-        const userData = localStorage.getItem('currentUser');
-        const jsonParsedUserData = JSON.parse(userData);
-        return Promise.resolve(jsonParsedUserData);
-      } catch (e) {
-        return Promise.reject(e);
-      }
+      const auth = getAuth();
+      return auth.currentUser;
     }
     async getCurrentUserId(){
       const auth = getAuth();

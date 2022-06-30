@@ -37,7 +37,7 @@ export class GroupService {
     }
   };
 
-  constructor(private firestore: Firestore) {
+  constructor(private firestore: Firestore, private afs: AngularFirestore) {
     this.groupCollectionRef = collection(firestore, 'group');
   }
 
@@ -93,15 +93,5 @@ export class GroupService {
 
   setReminder(uId: string) {
     return uId;
-  }
-  getCurrentGroup(id: string){
-    let currentGroup;
-    return this.afs.collection('group', ref => ref.where(documentId(), '==', id)).snapshotChanges()
-      .subscribe((res) => {
-        currentGroup = res.map((e) => ({
-          id: e.payload.doc.id,
-          ...e.payload.doc.data() as Group
-        }));
-      });
   }
 }

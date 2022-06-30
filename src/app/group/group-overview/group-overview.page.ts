@@ -2,12 +2,12 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {GroupService} from '../group.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Group} from '../group.model';
-import {UserService} from '../../user.service';
-import {User} from '../../User.model';
+import {UserService} from '../../services/user.service';
+import {User} from '../../models/classes/User.model';
 import {ActionSheetController, AlertController, NavController, PopoverController} from '@ionic/angular';
 import {Share} from '@capacitor/share';
-import {TrackNavService} from "../../track-nav.service";
-import {PaymentsService} from "../../payments.service";
+import {TrackNavService} from '../../track-nav.service';
+import {PaymentsService} from '../../payments.service';
 
 @Component({
   selector: 'app-group-overview',
@@ -54,21 +54,21 @@ export class GroupOverviewPage implements OnInit {
   async getGroup() {
     this.groupId = this.route.snapshot.paramMap.get('gId');
     this.group = await this.groupService.getGroup(this.groupId);
-    await this.getMembers();
+    // await this.getMembers();
   }
 
-  async getMembers(): Promise<void> {
-    this.members = [];
-    for (const userId of this.group.groupMembers) {
-      const user: User = await this.userService.getUserWithUid(userId);
-      if (user.id === this.currentUserId) {
-        user.firstName = 'Ich';
-        this.members.push(user);
-      } else {
-        this.members.push(user);
-      }
-    }
-  }
+  // async getMembers(): Promise<void> {
+  //   this.members = [];
+  //   for (const userId of this.group.groupMembers) {
+  //     const user: User = await this.userService.getUserWithUid(userId);
+  //     if (user.id === this.currentUserId) {
+  //       user.firstName = 'Ich';
+  //       this.members.push(user);
+  //     } else {
+  //       this.members.push(user);
+  //     }
+  //   }
+  // }
 
   async deleteUserFromGroup(uId: string) {
     const deleteAction: boolean = await this.groupService.deleteUserFromGroup(uId, this.group.id);
@@ -221,6 +221,9 @@ export class GroupOverviewPage implements OnInit {
     });
     await alertSendReminder.present();
     await setTimeout(() => alertSendReminder.dismiss(), 1500);
+  }
+  showExpensesOverview(groupId: string){
+    this.router.navigate(['expenses/', {gId: groupId}]);
   }
 }
 

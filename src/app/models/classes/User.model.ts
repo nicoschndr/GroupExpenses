@@ -1,5 +1,4 @@
 export class User {
-  id?: string;
   email?: string;
   firstName?: string;
   lastName?: string;
@@ -7,8 +6,8 @@ export class User {
   gruppen?: any;
   reminderCount?: number;
 
-  constructor(id?: string, email?: string, firstName?: string, lastName?: string, password?: string, gruppen?: any, reminderCount?: number) {
-    this.id = id;
+  constructor(email?: string, firstName?: string, lastName?: string, password?: string,
+              gruppen?: any, reminderCount?: number) {
     this.email = email;
     this.firstName = firstName;
     this.lastName = lastName;

@@ -116,12 +116,12 @@
                 </ion-col>
                 <ion-col size="4">
                   <ion-row>
-                    <!-- Get by income.debitorId -->
-                    <h2>Gläubiger</h2>
+                    <!-- Get by income.debitor -->
+                    <h2>{{income.debitor}}</h2>
                   </ion-row>
                   <ion-row>
-                    <!-- Get by income.creditorId -->
-                    <p>von Schuldner</p>
+                    <!-- Get by income.creditor -->
+                    <p>von {{income.creditor}}</p>
                   </ion-row>
                   <ion-row>
                     <p>{{income.date | date: 'dd.MM.yyyy'}}</p>

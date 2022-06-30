@@ -22,11 +22,8 @@ export class ExpensesService {
       .catch((err) => console.log('Error: ' + err));
     return this.addExpenseStatus = false;
   }
-  getAllExpenses(){
-    return this.afs.collection('expenses', ref => ref.orderBy('date', 'desc')).snapshotChanges();
-  }
-  openExpenseForm(){
-    return this.addExpenseStatus = true;
+  getAllExpenses(id: string){
+    return this.afs.collection('expenses', ref => ref.where('groupId', '==', id)).snapshotChanges();
   }
   async getEntryById(id: string) {
     const document = await this.expensesCollections.doc(id).get().toPromise();
