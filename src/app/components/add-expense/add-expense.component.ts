@@ -6,6 +6,7 @@ import {ActivatedRoute} from '@angular/router';
 import {UserService} from '../../services/user.service';
 import {User} from '../../models/classes/User.model';
 import {File} from '../../models/interfaces/file';
+import {PhotoService} from '../../services/photo.service';
 
 @Component({
   selector: 'app-add-expense',
@@ -19,7 +20,7 @@ export class AddExpenseComponent implements OnInit {
   name: string;
   amount: number;
   date: any;
-  receipt: File;
+  receipt: any;
   interval: boolean;
   editMode = false;
   userId: string;
@@ -28,18 +29,17 @@ export class AddExpenseComponent implements OnInit {
   groupId: string;
   errors: Map<string, string> = new Map<string, string>();
   fileName: string;
-  fileNumber: string;
   uploadStatus = false;
   constructor(private expensesService: ExpensesService, private modalCtrl: ModalController,
               private route: ActivatedRoute, private navCtrl: NavController,
               private navParams: NavParams, private userService: UserService,
-              private alertCtrl: AlertController) {
+              private alertCtrl: AlertController, private photoService: PhotoService) {
     this.id = navParams.get('id');
     if(this.id){
       this.editMode = true;
     }
     this.groupId = this.navParams.get('groupId');
-    this.getCurrentUserData();
+    this.getCurrentUserData().catch((err) => console.log('Error: ', err));
   }
 
   ngOnInit() {
@@ -87,7 +87,7 @@ export class AddExpenseComponent implements OnInit {
           handler: () => {
             this.expensesService.removeEntry(this.id);
             this.dismissModal();
-            // alertSuccess.present();
+            alertSuccess.present();
           }
         },
         {
@@ -97,14 +97,24 @@ export class AddExpenseComponent implements OnInit {
       ]
     });
     await alertConfirm.present();
-    // const alertSuccess = await this.alertCtrl.create({
-    //   header: 'Erfolgreich',
-    //   message: 'Ausgabe wurde gelöscht.',
-    //   buttons: ['OK']
-    // });
+    const alertSuccess = await this.alertCtrl.create({
+      header: 'Erfolgreich',
+      message: 'Ausgabe wurde gelöscht.',
+      buttons: ['OK']
+    });
   }
   uploadPhoto(event){
     this.uploadStatus = true;
+    this.receipt = this.photoService.storeImg(event.target.files[0]).then((res: any) => {
+      if(res){
+        this.uploadStatus = false;
+        this.receipt = res;
+      }
+    },
+      (error: any) => {
+        this.uploadStatus = false;
+        console.log('Error: ', error);
+      });
   }
   dismissModal(){
     this.modalCtrl.dismiss();

@@ -223,7 +223,7 @@ export class GroupOverviewPage implements OnInit {
     await setTimeout(() => alertSendReminder.dismiss(), 1500);
   }
   showExpensesOverview(groupId: string){
-    this.router.navigate(['expenses/', {gId: groupId}]);
+    this.router.navigate(['expenses/', {gId: groupId}]).catch((err) => console.log('Error: ', err));
   }
 }
 

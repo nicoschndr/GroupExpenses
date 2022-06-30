@@ -59,7 +59,7 @@
               <p>Es wurden keine Eingaben erfasst.</p>
             </ion-card-content>
           </ion-card>
-          <ion-card button="true" *ngFor="let expense of expenses" id="openDelete">
+          <ion-card button="true" *ngFor="let expense of expenses" id="openDelete" (click)="showExpenseDetails(expense.id)">
             <ion-card-content>
               <ion-row>
                 <ion-col class="amountCol" size="4">
@@ -116,12 +116,12 @@
                 </ion-col>
                 <ion-col size="4">
                   <ion-row>
-                    <!-- Get by income.debitor -->
-                    <h2>{{income.debitor}}</h2>
+                    <!-- Get by income.creditor -->
+                    <h2>{{income.creditor}}</h2>
                   </ion-row>
                   <ion-row>
-                    <!-- Get by income.creditor -->
-                    <p>von {{income.creditor}}</p>
+                    <!-- Get by income.debitor -->
+                    <p>von {{income.debitor}}</p>
                   </ion-row>
                   <ion-row>
                     <p>{{income.date | date: 'dd.MM.yyyy'}}</p>

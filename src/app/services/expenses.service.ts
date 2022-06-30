@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/compat/firestore';
 import {Expense} from '../models/classes/expense';
 import {Observable} from 'rxjs';
-import firebase from 'firebase/compat/app';
+import{AngularFireStorage} from '@angular/fire/compat/storage';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +12,7 @@ export class ExpensesService {
   addExpenseStatus = false;
   private expensesCollections: AngularFirestoreCollection<Expense>;
   private expenses: Observable<Expense[]>;
-  constructor(private afs: AngularFirestore) {
+  constructor(private afs: AngularFirestore, private afsStorage: AngularFireStorage) {
     this.expensesCollections = this.afs.collection('expenses');
   }
   async addExpense(entry: Expense){

@@ -10,6 +10,7 @@ import {User} from '../models/classes/User.model';
 import {UserService} from '../services/user.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {GroupService} from '../group/group.service';
+import {ExpenseDetailsPage} from '../expense-details/expense-details.page';
 
 @Component({
   selector: 'app-expenses',
@@ -20,21 +21,16 @@ export class ExpensesPage implements OnInit {
   segment = 'Aufteilung';
   expense: Expense;
   expenses: Expense[] = [];
-  expenseStatus = false;
   income: Income;
   incoming: Income[] = [];
-  incomeStatus = false;
-  // debitor: User;
-  // creditor: User;
   groupId: string;
-  // groupUser: Group;
   users: User[];
   split = [];
   currentUserId: string;
   constructor(private actionSheet: ActionSheetController, public expensesService: ExpensesService,
               private modalCtrl: ModalController, public incomingService: IncomingsService,
               private alertCtrl: AlertController, private userService: UserService,
-              private router: Router, private route: ActivatedRoute, private groupService: GroupService) {
+              private router: Router, private route: ActivatedRoute) {
     this.groupId = this.route.snapshot.paramMap.get('gId');
     this.getCurrentUserData().catch((err) => console.log('Error: ', err));
     this.getExpenses(this.groupId);
@@ -60,11 +56,9 @@ export class ExpensesPage implements OnInit {
         ...e.payload.doc.data() as Expense
       }));
     });
+    this.expenses.sort();
   }
-  openAddExpensesModal(){
-    this.openModalExpense();
-  }
-  async openModalExpense(){
+  async openAddExpensesModal(){
     const modal = await this.modalCtrl.create({
       component: AddExpenseComponent,
       componentProps: {
@@ -87,6 +81,9 @@ export class ExpensesPage implements OnInit {
       .catch(err => console.log('error modal: ', err));
     await modal.onDidDismiss();
   }
+  showExpenseDetails(id: string){
+    this.router.navigate(['expense-details/', {eId: id}]).catch((err) => console.log('Error: ', err));
+  }
   async deleteExpense(expense: Expense){
     const alertConfirm = await this.alertCtrl.create({
       header: 'Sind Sie sicher?',
@@ -96,7 +93,7 @@ export class ExpensesPage implements OnInit {
           text: 'Ja',
           handler: () => {
             this.expensesService.removeEntry(expense.id);
-            // alertSuccess.present();
+            this.openSuccessAlert();
           }
         },
         {
@@ -106,11 +103,6 @@ export class ExpensesPage implements OnInit {
       ]
     });
     await alertConfirm.present();
-    // const alertSuccess = await this.alertCtrl.create({
-    //   header: 'Erfolgreich',
-    //   message: 'Ausgabe wurde gelöscht.',
-    //   buttons: ['OK']
-    // });
   }
   //methods for incoming
   async getOneIncome(income: Income){
@@ -124,10 +116,7 @@ export class ExpensesPage implements OnInit {
       }));
     });
   }
-  openAddIncomeModal(){
-    this.openModalIncome();
-  }
-  async openModalIncome(){
+  async openAddIncomeModal(){
     const modal = await this.modalCtrl.create({
       component: AddIncomeComponent,
       componentProps: {
@@ -159,7 +148,7 @@ export class ExpensesPage implements OnInit {
           text: 'Ja',
           handler: () => {
             this.incomingService.removeEntry(income.id);
-            // alertSuccess.present();
+            this.openSuccessAlert();
           }
         },
         {
@@ -169,10 +158,13 @@ export class ExpensesPage implements OnInit {
       ]
     });
     await alertConfirm.present();
-    // const alertSuccess = await this.alertCtrl.create({
-    //   header: 'Erfolgreich',
-    //   message: 'Ausgabe wurde gelöscht.',
-    //   buttons: ['OK']
-    // });
+  }
+  async openSuccessAlert(){
+    const alertSuccess = await this.alertCtrl.create({
+      header: 'Erfolgreich',
+      message: 'Ausgabe wurde gelöscht.',
+      buttons: ['OK']
+    });
+    await alertSuccess.present();
   }
 }

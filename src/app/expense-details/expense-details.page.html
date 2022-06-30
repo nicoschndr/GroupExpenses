@@ -1,0 +1,84 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Ausgabe Details</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="expenseOverview()">
+        <ion-icon name="close-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button (click)="deleteExpense()">
+        <ion-icon name="trash-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-col>
+
+    <div class="ion-justify-content-center">
+      <ion-list>
+        <ion-row>
+          <ion-col size="5">
+            <ion-item>Name</ion-item>
+          </ion-col>
+          <ion-col size="7">
+            <ion-item class="ion-text-center">
+              <p>{{expense.name}}</p>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col size="5">
+            <ion-item>Betrag</ion-item>
+          </ion-col>
+          <ion-col size="7">
+            <ion-item class="ion-text-center">
+              <p>{{expense.amount}}€</p>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col size="5">
+            <ion-item>Datum</ion-item>
+          </ion-col>
+          <ion-col size="7">
+            <ion-item>
+              <p>{{expense.date | date: 'dd.MM.yyyy'}}</p>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col size="5">
+            <ion-item>Monatlich wiederkehrend?</ion-item>
+          </ion-col>
+          <ion-col size="7">
+            <ion-item class="ion-text-center">
+              <p>{{interval}}</p>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col size="5">
+            <ion-item>Bezahlt von</ion-item>
+          </ion-col>
+          <ion-col size="7">
+            <ion-item class="ion-text-center">
+              <p>{{expense.userName}}</p>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-img src="{{expense.receipt}}"></ion-img>
+        </ion-row>
+      </ion-list>
+    </div>
+
+  </ion-col>
+</ion-content>

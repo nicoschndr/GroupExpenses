@@ -1,16 +1,14 @@
-import {File} from '../interfaces/file';
-
 export class Expense {
   id?: string;
   name?: string;
   amount?: number;
   date?: Date;
-  receipt?: File;
+  receipt?: any;
   interval?: boolean;
   userId?: string;
   userName?: string;
   groupId?: string;
-  constructor(id?: string, name?: string, amount?: number, date?: Date, receipt?: File,
+  constructor(id?: string, name?: string, amount?: number, date?: Date, receipt?: any,
               interval?: boolean, userId?: string, userName?: string, groupId?: string) {
     this.id = id;
     this.userId = userId;
