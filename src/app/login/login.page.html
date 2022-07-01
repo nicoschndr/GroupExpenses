@@ -21,19 +21,43 @@
 
     <ion-row>
       <ion-col class="center">
+        <div>
         <ion-item>
           <ion-input type="text" placeholder="E-Mail" [(ngModel)]="email"></ion-input>
         </ion-item>
+          <div>
+            <p class="center"
+               style="color:var(--ion-color-danger)"
+               *ngIf="alertsService.errors.get('loginmail')">
+              {{alertsService.errors.get('loginmail')}}
+            </p>
+          </div>
+        </div>
       </ion-col>
     </ion-row>
 
     <ion-row>
       <ion-col class="center">
+        <div>
         <ion-item>
           <ion-input type="password" placeholder="Passwort" [(ngModel)]="password"></ion-input>
         </ion-item>
+        <div>
+          <p class="center"
+             style="color:var(--ion-color-danger); width: 300px"
+             *ngIf="alertsService.errors.get('loginpw')">
+            {{alertsService.errors.get('loginpw')}}
+          </p>
+          <p class="center"
+             style="color: #2dd36f; width: 300px"
+             *ngIf="alertsService.errors.get('logout')">
+            {{alertsService.errors.get('logout')}}
+          </p>
+        </div>
+        </div>
       </ion-col>
     </ion-row>
+
 
     <ion-row>
       <ion-col class="center">
