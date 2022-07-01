@@ -210,8 +210,10 @@ import {Payment} from '../payment.model';
       return auth.currentUser;
     }
     async getCurrentUserId(){
-      const auth = getAuth();
-      const user = auth.currentUser;
+      // const auth = getAuth();
+      // const user = auth.currentUser;
+      const user = JSON.parse(localStorage.getItem('currentUser'));
+      // this.currentUserId = user.uid;
       console.log('User Id: ', user.uid);
       return user.uid;
     }

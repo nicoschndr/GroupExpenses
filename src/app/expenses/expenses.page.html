@@ -59,7 +59,7 @@
               <p>Es wurden keine Eingaben erfasst.</p>
             </ion-card-content>
           </ion-card>
-          <ion-card button="true" *ngFor="let expense of expenses" id="openDelete" (click)="showExpenseDetails(expense.id)">
+          <ion-card button="true" *ngFor="let expense of expenses" id="openCardMenu">
             <ion-card-content>
               <ion-row>
                 <ion-col class="amountCol" size="4">
@@ -79,23 +79,34 @@
                   </ion-row>
                 </ion-col>
                 <ion-col class="ion-align-items-center" size="4">
-                  <ion-row class="ion-justify-content-center">
-                    <ion-buttons>
-                      <ion-button (click)="editExpense(expense)">
-                        <ion-icon name="create-outline" size="small"></ion-icon>
-                      </ion-button>
-                    </ion-buttons>
-                  </ion-row>
-                  <ion-row class="ion-justify-content-center">
-                    <ion-buttons>
-                      <ion-button (click)="deleteExpense(expense)">
-                        <ion-icon name="trash-outline" size="small"></ion-icon>
-                      </ion-button>
-                    </ion-buttons>
-                  </ion-row>
+<!--                  <ion-row class="ion-justify-content-center">-->
+<!--                    <ion-buttons>-->
+<!--                      <ion-button (click)="editExpense(expense)">-->
+<!--                        <ion-icon name="create-outline" size="small"></ion-icon>-->
+<!--                      </ion-button>-->
+<!--                    </ion-buttons>-->
+<!--                  </ion-row>-->
+<!--                  <ion-row class="ion-justify-content-center">-->
+<!--                    <ion-buttons>-->
+<!--                      <ion-button (click)="deleteExpense(expense)">-->
+<!--                        <ion-icon name="trash-outline" size="small"></ion-icon>-->
+<!--                      </ion-button>-->
+<!--                    </ion-buttons>-->
+<!--                  </ion-row>-->
                 </ion-col>
               </ion-row>
             </ion-card-content>
+            <ion-popover trigger="openCardMenu" [dismissOnSelect]="true" side="right" alignment="end">
+              <ng-template>
+                <ion-content>
+                  <ion-list>
+                    <ion-item [button]="true" [detail]="false" (click)="showExpenseDetails(expense.id)">Details anzeigen</ion-item>
+                    <ion-item [button]="true" [detail]="false" (click)="editExpense(expense)">Bearbeiten</ion-item>
+                    <ion-item [button]="true" [detail]="false" (click)="deleteExpense(expense)" style="color: red">Löschen</ion-item>
+                  </ion-list>
+                </ion-content>
+              </ng-template>
+            </ion-popover>
           </ion-card>
         </ion-row>
       </div>
