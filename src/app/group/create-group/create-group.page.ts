@@ -12,37 +12,36 @@ import {TrackNavService} from "../../track-nav.service";
 })
 export class CreateGroupPage implements OnInit {
 
-  groupname: string;
-  founder: string;
+  public groupname: string;
+  private founder: string;
 
   constructor(
     private groupService: GroupService,
+    private userService: UserService,
     private router: Router,
-    private route: ActivatedRoute,
     public navCtrl: NavController,
-    private trackNav: TrackNavService,
   ) { }
 
-  ngOnInit() {
-    this.getUser();
-    this.trackNav.trackRouteChanges(this.route.snapshot.paramMap.get('gId'));
+  async ngOnInit() {
+    const auth = getAuth();
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        this.founder = await this.userService.getCurrentUser();
+      } else {
+        await this.router.navigate(['grouplist']);
+      }
+    });
   }
 
   async createGroup(): Promise<void> {
-    try {
-      const group: Group = await this.groupService.addGroup(this.groupname, this.founder);
-      this.router.navigate(['group-overview/', {gId: group.id}]);
-    } catch (e) {
-      console.log(e);
-    }
+    const key: string = this.groupname.trim();
+    const data: Group = new Group('', this.groupname, [this.founder], key);
+    const id = await this.groupService.addGroup(data);
+    await this.router.navigate(['group-overview/', {gId: id}]);
+    this.groupname = '';
   }
 
-  async getUser() {
-    const user = JSON.parse(localStorage.getItem('currentUser'));
-    this.founder = user.uid;
-  }
-
-  joinGroup() {
-    this.router.navigate(['join-group']);
+  async navToJoinGroup() {
+    await this.router.navigate(['join-group']);
   }
 }

@@ -1,19 +1,19 @@
 import { Injectable } from '@angular/core';
+import {NavigationStart, Router} from '@angular/router';
+import {Observable} from 'rxjs';
+import {filter, map} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TrackNavService {
 
-  constructor(
-  ) {
-  }
+  constructor(private router: Router) {}
 
-  trackRouteChanges(gId: string): boolean {
-      if (gId !== null){
-        return false;
-      }
-      return true;
+  checkIfInGroupView(): Observable<boolean> {
+    return this.router.events.pipe(
+      filter(e => e instanceof NavigationStart),
+      map(e => (e as NavigationStart).url.indexOf('gId') !== -1));
   }
 }
 

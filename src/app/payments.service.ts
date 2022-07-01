@@ -19,7 +19,7 @@ export class PaymentsService {
   }
 
   async getOpenPaymentsForUser(uId: string) {
-    const doc = await this.paymentCollection.doc(uId)
+    const doc = await this.paymentCollection.doc(uId);
   }
 
   async setReminderForPayment(pId: string) {

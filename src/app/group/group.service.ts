@@ -20,76 +20,97 @@ import {Group} from './group.model';
 })
 export class GroupService {
 
-  groupCollectionRef: CollectionReference<DocumentData>;
+  private groupCollection: AngularFirestoreCollection<Group>;
+  private groups: Observable<Group[]>;
 
-  groupConverter = {
-    fromFirestore: (snapshot, options): Group => {
-      const res = Object.assign(new Group(), snapshot.data(options));
-      res.id = snapshot.id;
-      return res;
-    },
-    toFirestore: (group): DocumentData => {
-      const duplicate = {...group};
-      delete duplicate.id;
-      return duplicate;
-    }
-  };
-
-  constructor(private firestore: Firestore) {
-    this.groupCollectionRef = collection(firestore, 'group');
+  constructor(private afs: AngularFirestore,
+              private userService: UserService,
+              private alertsService: AlertsService,
+  ) {
+    this.groupCollection = afs.collection<Group>('groups');
   }
 
-  async addGroup(groupname: string, founderId: string): Promise<any> {
-    const refWithConverter = this.groupCollectionRef.withConverter(this.groupConverter);
-    const newGroup = new Group(null, groupname, [founderId], groupname.trim().toLowerCase());
-    return await addDoc(refWithConverter, newGroup);
+  async addGroup(group: Group): Promise<string> {
+    group.id = this.afs.createId();
+    const data = JSON.parse(JSON.stringify(group));
+    await this.groupCollection.doc(group.id).set(data);
+    return group.id;
   }
 
-  async getGroup(groupId: string): Promise<Group> {
-    const docRef = doc(this.groupCollectionRef.withConverter(this.groupConverter), groupId);
-    const groupDoc = await getDoc(docRef);
-    return groupDoc.data();
+  async getGroupById(id: string): Promise<Group> {
+    const document = await this.groupCollection.doc(id).get().toPromise();
+    return document.data() as Group;
   }
 
-  async findGroups(uId: string): Promise<Group[]>{
-    const filter = query(
-      this.groupCollectionRef.withConverter(this.groupConverter),
-      where('groupMembers', 'array-contains', uId));
-    const groupDocs = await getDocs(filter);
-    const groups: Group[] = [];
-    groupDocs.forEach(groupDoc => {
-      groups.push(groupDoc.data());
-    });
-    return groups;
+  async findGroupsFromUser(uId: string) {
+    const id: string = uId;
+    return this.afs.collection('groups', docRef => docRef.where('groupMembers', 'array-contains', id)).snapshotChanges();
   }
 
   async deleteUserFromGroup(uId: string, gId: string): Promise<boolean> {
     try {
-      const groupToLeave: Group = await this.getGroup(gId);
+      const groupToLeave: Group = await this.getGroupById(gId);
       let deleteAction = true;
       groupToLeave.groupMembers.forEach(id => {
         if (id === uId) {
           const index: number = groupToLeave.groupMembers.indexOf(id);
           groupToLeave.groupMembers.splice(index, 1);
-          const docRef = doc(this.groupCollectionRef.withConverter(this.groupConverter), gId.toString());
           if (groupToLeave.groupMembers.length === 0) {
-            deleteDoc(docRef);
+            this.groupCollection.doc(gId).delete();
             deleteAction = false;
           } else {
-            updateDoc(docRef, {
+            this.groupCollection.doc(gId).update({
               groupMembers: groupToLeave.groupMembers,
             });
           }
         }
       });
-        return deleteAction;
+      return deleteAction;
     } catch (e) {
       console.log(e);
       return false;
     }
   }
 
-  setReminder(uId: string) {
-    return uId;
+  async setGroup(groupData: Group) {
+    const groupRef: AngularFirestoreDocument<Group> = this.afs.doc(`group/${groupData.id}`);
+    return groupRef.set(groupData, {
+      merge: true,
+    });
+  }
+
+  async joinGroup(id, key) {
+    const currentUser = this.userService.getCurrentUser();
+    try {
+      const groupData: Group = await this.getGroupById(id);
+      const userData = await this.userService.getUserWithUid(currentUser.uid);
+
+      const arrayToPush: any = [];
+      arrayToPush.push(currentUser.uid);
+      groupData.groupMembers.forEach(r => {
+        arrayToPush.push(r);
+      });
+      arrayToPush.push(currentUser.uid);
+
+      const arrayToPush2: any = [];
+      userData.gruppen.forEach(t => {
+        arrayToPush2.push(t);
+      });
+      arrayToPush2.push(id);
+
+      if (groupData.key === key) {
+        const setGroupData: Group = new Group(id, groupData.name, arrayToPush, groupData.key);
+        const setUserData = new User(userData.email, userData.firstName, userData.lastName, userData.password,
+          arrayToPush2, userData.reminderCount);
+        await this.userService.setUser(currentUser.uid, setUserData);
+        await this.setGroup(setGroupData);
+      } else {
+        this.alertsService.errors.clear();
+        this.alertsService.errors.set('key', 'Der eingegebene Key ist falsch');
+      }
+    } catch (e) {
+      this.alertsService.errors.clear();
+      this.alertsService.errors.set('groupId', 'Die eingegebene ID existiert nicht.');
+    }
   }
 }

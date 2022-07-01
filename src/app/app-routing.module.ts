@@ -65,6 +65,10 @@ const routes: Routes = [
     path: 'home',
     loadChildren: () => import('./group/group-overview/group-overview.module').then( m => m.GroupOverviewPageModule)
   },
+  {
+    path: 'profile',
+    loadChildren: () => import('./profile/profile.module').then( m => m.ProfilePageModule)
+  }
 ];
 
 @NgModule({

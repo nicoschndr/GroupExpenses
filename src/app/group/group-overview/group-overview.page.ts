@@ -15,14 +15,12 @@ import {PaymentsService} from "../../payments.service";
   styleUrls: ['./group-overview.page.scss'],
 })
 export class GroupOverviewPage implements OnInit {
-
-  @ViewChild('popover') popover;
-
-  groupId: string;
-  group: Group = new Group();
-  members: User[] = [];
-  currentUserId: string;
-  editMode = false;
+  public editMode = false;
+  public group: Group = new Group();
+  public members: User[] = [];
+  private currentUserId: string;
+  private groupId: string;
+  private isInGroup = false;
 
   constructor(
     private groupService: GroupService,
@@ -32,42 +30,51 @@ export class GroupOverviewPage implements OnInit {
     private router: Router,
     private navCtrl: NavController,
     private actionSheetController: ActionSheetController,
+    private alertsService: AlertsService,
     private alertController: AlertController,
-    private trackNav: TrackNavService,
   ) {
   }
 
-  ngOnInit() {
-    this.getUser();
-  }
-
-  ionViewWillEnter() {
-    this.trackNav.trackRouteChanges(this.route.snapshot.paramMap.get('gId'));
-    this.getGroup();
+  async ionViewDidEnter() {
+    await this.getGroup();
+    await this.getMembers();
+    await this.getUser();
   }
 
   async getUser() {
-    const user = JSON.parse(localStorage.getItem('currentUser'));
-    this.currentUserId = user.uid;
+    const auth = getAuth();
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        this.currentUserId = await this.userService.getCurrentUser();
+      } else {
+        await this.router.navigate(['grouplist']);
+      }
+    });
   }
 
   async getGroup() {
     this.groupId = this.route.snapshot.paramMap.get('gId');
-    this.group = await this.groupService.getGroup(this.groupId);
-    await this.getMembers();
+    this.group = await this.groupService.getGroupById(this.groupId);
   }
 
   async getMembers(): Promise<void> {
-    this.members = [];
+    const users: User[] = [new User()];
     for (const userId of this.group.groupMembers) {
       const user: User = await this.userService.getUserWithUid(userId);
       if (user.id === this.currentUserId) {
-        user.firstName = 'Ich';
-        this.members.push(user);
+        this.isInGroup = true;
+        users[0].id = user.id;
+        users[0].firstName = 'Ich';
+        users[0].lastName = user.lastName;
+        users[0].email = user.email;
+        users[0].password = user.password;
+        users[0].gruppen = user.gruppen;
+        users[0].reminderCount = user.reminderCount;
       } else {
-        this.members.push(user);
+        users.push(user);
       }
     }
+    this.members = users;
   }
 
   async deleteUserFromGroup(uId: string) {
@@ -75,12 +82,15 @@ export class GroupOverviewPage implements OnInit {
     if (deleteAction) {
       this.editMode = false;
       this.members.splice(0, this.members.length);
+      await this.alertsService.showConfirmation();
       await this.getGroup();
     } else if (deleteAction && this.editMode) {
-      this.router.navigate(['grouplist']);
+      await this.alertsService.showConfirmation();
+      await this.router.navigate(['grouplist']);
     }
     else {
-      this.router.navigate(['grouplist']);
+      await this.alertsService.showConfirmation();
+      await this.router.navigate(['grouplist']);
     }
   }
 
@@ -118,21 +128,21 @@ export class GroupOverviewPage implements OnInit {
   }
 
   async sendInvitationAlert() {
-      const alert = await this.alertController.create({
-        cssClass: 'alertText',
-        header: 'Sende eine Gruppeneinladung!',
-        message: 'Gruppen-ID: ' + this.group.id + '<br>' +
-          'Key: ' + this.group.key,
-        buttons: [{
-          text: 'teilen',
-          handler: () => {
-            this.sendInvitation();
-          }
-        }]
-      });
-      await alert.present();
-      await alert.onDidDismiss();
-    }
+    const alert = await this.alertController.create({
+      cssClass: 'alertText',
+      header: 'Sende eine Gruppeneinladung!',
+      message: 'Gruppen-ID: ' + this.group.id + '<br>' +
+        'Key: ' + this.group.key,
+      buttons: [{
+        text: 'teilen',
+        handler: () => {
+          this.sendInvitation();
+        }
+      }]
+    });
+    await alert.present();
+    await alert.onDidDismiss();
+  }
 
   sendInvitation() {
     // eslint-disable-next-line max-len
@@ -168,7 +178,7 @@ export class GroupOverviewPage implements OnInit {
       });
       await alertLeaveGroup.present();
       await alertLeaveGroup.onDidDismiss();
-      await this.showConfirmation();
+      await this.alertsService.showConfirmation();
     } else {
       const alertDeleteUser = await this.alertController.create({
         cssClass: 'alertText',
@@ -185,13 +195,8 @@ export class GroupOverviewPage implements OnInit {
       });
       await alertDeleteUser.present();
       await alertDeleteUser.onDidDismiss();
-      await this.showConfirmation();
+      await this.alertsService.showConfirmation();
     }
-  }
-
-  back() {
-    console.log('pop');
-    this.navCtrl.pop();
   }
 
   async sendReminder(uId: string, fN: string, pId: string) {
@@ -203,7 +208,7 @@ export class GroupOverviewPage implements OnInit {
         handler: () => {
           this.userService.setReminderCount(uId);
           this.paymentsService.setReminderForPayment(pId);
-          this.showConfirmation();
+          this.alertsService.showConfirmation();
         }
       }, {
         text: 'Nein',
@@ -212,15 +217,6 @@ export class GroupOverviewPage implements OnInit {
     });
     await alertSendReminder.present();
     await alertSendReminder.onDidDismiss();
-  }
-
-  async showConfirmation() {
-    const alertSendReminder = await this.alertController.create({
-      cssClass: 'alertText',
-      message: '<img alt="confirmation" style="color: #47517B;" src="/assets/icon/checkmark-circle-outline.svg">'
-    });
-    await alertSendReminder.present();
-    await setTimeout(() => alertSendReminder.dismiss(), 1500);
   }
 }
 

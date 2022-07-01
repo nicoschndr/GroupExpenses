@@ -6,7 +6,7 @@
     <h1>Deine Gruppen</h1>
   </ion-label>
   <ion-list>
-    <ion-card button *ngFor="let group of grouplist" (click)="showGroup(group.id)">
+    <ion-card button *ngFor="let group of grouplist" (click)="navToGroupoverview(group.id)">
       <ion-card-header>
         <ion-card-title>{{group.name}}</ion-card-title>
       </ion-card-header>
@@ -14,7 +14,7 @@
         {{leftToPay}}€ sind noch offen
       </ion-card-content>
     </ion-card>
-    <ion-button color="button" (click)="openCreateGroup()" expand="block" shape="round">Gruppe erstellen</ion-button>
+    <ion-button color="button" (click)="navToCreateGroup()" expand="block" shape="round">Gruppe erstellen</ion-button>
   </ion-list>
   <ion-list *ngIf="grouplist.length === 0">
     <ion-card>

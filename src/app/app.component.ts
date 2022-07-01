@@ -8,33 +8,35 @@ import {TrackNavService} from './track-nav.service';
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
 })
-export class AppComponent implements OnInit, OnChanges {
+export class AppComponent implements OnInit {
 
-  @Input() grouplistView = true;
+  public inGroupView: boolean;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private actionSheetController: ActionSheetController,
-    private trackNav: TrackNavService,
-  ) {}
-
-  ngOnInit() {
-    this.grouplistView = this.trackNav.trackRouteChanges(this.route.snapshot.paramMap.get('gId'));
-    console.log(this.grouplistView + 'onIn');
+    public trackNav: TrackNavService,
+  ) {
+    this.trackNav.checkIfInGroupView().subscribe( inGroupView => this.inGroupView = inGroupView);
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    this.grouplistView = this.trackNav.trackRouteChanges(this.route.snapshot.paramMap.get('gId'));
-    console.log(this.grouplistView + 'onCh');
+  async ngOnInit() {
+    const onboardingShownFromStorage: boolean = await JSON.parse(localStorage.getItem('onboardingShown'));
+    if (onboardingShownFromStorage) {
+      await localStorage.setItem('onboardingShown', JSON.stringify(true));
+    } else {
+      await localStorage.setItem('onboardingShown', JSON.stringify(false));
+    }
+    await localStorage.setItem('reminderCount', JSON.stringify(0));
   }
 
-  showGrouplist() {
+  navToGrouplist() {
     this.router.navigate(['grouplist']);
   }
 
-  showLogin() {
-    this.router.navigate(['login']);
+  navToProfile() {
+    this.router.navigate(['profile']);
   }
 
   navToAddGroup() {
