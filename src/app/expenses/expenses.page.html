@@ -59,7 +59,7 @@
               <p>Es wurden keine Eingaben erfasst.</p>
             </ion-card-content>
           </ion-card>
-          <ion-card button="true" *ngFor="let expense of expenses" id="openCardMenu">
+          <ion-card button="true" *ngFor="let expense of expenses" id="{{expense.id}}">
             <ion-card-content>
               <ion-row>
                 <ion-col class="amountCol" size="4">
@@ -71,32 +71,16 @@
                     <h2>{{expense.name}}</h2>
                   </ion-row>
                   <ion-row>
-                    <!-- Get user name by expense.userId -->
-                    <p>{{expense.userName}}</p>
-                  </ion-row>
-                  <ion-row>
                     <p>{{expense.date | date: 'dd.MM.yyyy'}}</p>
                   </ion-row>
                 </ion-col>
                 <ion-col class="ion-align-items-center" size="4">
-<!--                  <ion-row class="ion-justify-content-center">-->
-<!--                    <ion-buttons>-->
-<!--                      <ion-button (click)="editExpense(expense)">-->
-<!--                        <ion-icon name="create-outline" size="small"></ion-icon>-->
-<!--                      </ion-button>-->
-<!--                    </ion-buttons>-->
-<!--                  </ion-row>-->
-<!--                  <ion-row class="ion-justify-content-center">-->
-<!--                    <ion-buttons>-->
-<!--                      <ion-button (click)="deleteExpense(expense)">-->
-<!--                        <ion-icon name="trash-outline" size="small"></ion-icon>-->
-<!--                      </ion-button>-->
-<!--                    </ion-buttons>-->
-<!--                  </ion-row>-->
+                  <!-- Get user name by expense.userId -->
+                  <p class="userNameE">{{expense.userName}}</p>
                 </ion-col>
               </ion-row>
             </ion-card-content>
-            <ion-popover trigger="openCardMenu" [dismissOnSelect]="true" side="right" alignment="end">
+            <ion-popover trigger="{{expense.id}}" [dismissOnSelect]="true" side="right" alignment="end">
               <ng-template>
                 <ion-content>
                   <ion-list>
