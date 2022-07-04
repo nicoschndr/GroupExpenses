@@ -37,16 +37,16 @@ export class ProfilePage implements OnInit {
   }
 
   async updateUser() {
-    const auth = getAuth();
-    const user = auth.currentUser;
-    const result = await this.userService.getUserWithUid(user.uid);
+    const currentUser = this.userService.getCurrentUser();
+    const result = await this.userService.getUserWithUid(currentUser.uid);
     const userData = new User(this.user.email, this.user.firstName, this.user.lastName, result.password, result.gruppen);
-    await this.userService.setUser(user.uid, userData);
+    await this.userService.setUser(currentUser.uid, userData);
+    this.alertsService.errors.clear();
+    this.alertsService.errors.set('success', 'Bearbeitung erfolgreich!');
   }
 
   async changePassword() {
-    const auth = getAuth();
-    const currentUser = auth.currentUser;
+    const currentUser = this.userService.getCurrentUser();
     const user = await this.userService.getUserWithUid(currentUser.uid);
     if(user.password === this.altespw && this.pw === this.pw2) {
       this.password = true;

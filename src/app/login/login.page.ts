@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {Router} from '@angular/router';
 import {UserService} from '../services/user.service';
 import {getAuth, onAuthStateChanged} from '@angular/fire/auth';
-
+import {AlertsService} from '../services/alerts.service';
 
 
 @Component({
@@ -18,7 +18,7 @@ export class LoginPage implements OnInit{
 
 
 
-  constructor(public userService: UserService, private router: Router) { }
+  constructor(public userService: UserService, private router: Router, public alertsService: AlertsService) { }
 
   dologin(): void{
     this.userService.login(this.email, this.password);
