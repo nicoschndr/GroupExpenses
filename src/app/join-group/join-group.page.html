@@ -1,10 +1,8 @@
-<ion-row>
-  <ion-col>
-    <ion-button class="back">
-      <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
-    </ion-button>
-  </ion-col>
-</ion-row>
+<ion-header>
+  <ion-toolbar>
+    <ion-icon (click)="navCtrl.pop()" name="chevron-back-outline" size="large"></ion-icon>
+  </ion-toolbar>
+</ion-header>
 
 <ion-content>
   <ion-grid>

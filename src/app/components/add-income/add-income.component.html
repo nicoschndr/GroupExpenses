@@ -1,0 +1,77 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Einnahme</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="dismissModal()">
+        <ion-icon name="close-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end" *ngIf="editMode">
+      <ion-button (click)="deleteIncome()">
+        <ion-icon name="trash-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-grid>
+  <ion-list>
+    <ion-row>
+      <ion-input type="number" class="ion-text-start" [(ngModel)]="amount" placeholder="Betrag" required="true"></ion-input>
+      <p class="ion-text-end ion-padding-end" style="color:var(--ion-color-danger)"
+         *ngIf="errors.get('amount')">
+        {{errors.get('amount')}}
+      </p>
+    </ion-row>
+
+    <ion-row>
+      <ion-select placeholder="Von" [(ngModel)]="debitor" multiple="false">
+        <!-- *ngFor="let user of users" & {{user.firstname}} -->
+        <ion-select-option *ngFor="let user of groupMembers | keyvalue">{{user.value}}</ion-select-option>
+      </ion-select>
+      <p class="ion-text-end ion-padding-end" style="color:var(--ion-color-danger)"
+         *ngIf="errors.get('debitor')">
+        {{errors.get('debitor')}}
+      </p>
+    </ion-row>
+
+    <ion-row>
+      <ion-select placeholder="An" [(ngModel)]="creditor" multiple="false">
+        <!-- *ngFor="let user of users" & {{user.firstname}} -->
+        <ion-select-option *ngFor="let user of groupMembers | keyvalue">{{user.value}}</ion-select-option>
+      </ion-select>
+      <p class="ion-text-end ion-padding-end" style="color:var(--ion-color-danger)"
+         *ngIf="errors.get('creditor')">
+        {{errors.get('creditor')}}
+      </p>
+    </ion-row>
+
+    <ion-row>
+      <ion-input id="openDate" placeholder="Datum" value="{{date | date: 'dd.MM.yyyy'}}" required="true"></ion-input>
+      <ion-popover trigger="openDate">
+        <ng-template>
+          <ion-datetime presentation="date" [(ngModel)]="date"></ion-datetime>
+        </ng-template>
+      </ion-popover>
+      <p class="ion-text-end ion-padding-end" style="color:var(--ion-color-danger)"
+         *ngIf="errors.get('date')">
+        {{errors.get('date')}}
+      </p>
+    </ion-row>
+
+    <ion-row class="ion-justify-content-center" *ngIf="!editMode">
+      <ion-buttons>
+        <ion-button class="formBtn" (click)="save()">
+          hinzufügen
+        </ion-button>
+      </ion-buttons>
+    </ion-row>
+    <ion-row class="ion-justify-content-center" *ngIf="editMode">
+      <ion-buttons>
+        <ion-button class="formBtn" (click)="save()">
+          speichern
+        </ion-button>
+      </ion-buttons>
+    </ion-row>
+  </ion-list>
+</ion-grid>

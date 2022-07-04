@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import {UserService} from '../user.service';
 import {Router} from '@angular/router';
+import {UserService} from '../services/user.service';
 import {getAuth, onAuthStateChanged} from '@angular/fire/auth';
-import {AlertsService} from '../alerts.service';
-
+import {AlertsService} from '../services/alerts.service';
 
 
 @Component({
@@ -25,12 +24,14 @@ export class LoginPage implements OnInit{
     this.userService.login(this.email, this.password);
     this.email='';
     this.password='';
+    this.router.navigate(['grouplist']);
   }
 
   loginWithGoogle(): void{
     this.userService.loginWithGoogle();
     this.email='';
     this.password='';
+    this.router.navigate(['grouplist']);
   }
 
   navigateSignUp(): void{
