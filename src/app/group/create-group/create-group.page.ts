@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import {GroupService} from '../group.service';
 import {Group} from '../group.model';
-import {ActivatedRoute, Router} from '@angular/router';
+import {Router} from '@angular/router';
 import {NavController} from '@ionic/angular';
-import {TrackNavService} from "../../track-nav.service";
+import {getAuth, onAuthStateChanged} from '@angular/fire/auth';
+import {UserService} from '../../user.service';
+import {AlertsService} from '../../alerts.service';
 
 @Component({
   selector: 'app-create-group',
@@ -18,6 +20,7 @@ export class CreateGroupPage implements OnInit {
   constructor(
     private groupService: GroupService,
     private userService: UserService,
+    private alertService: AlertsService,
     private router: Router,
     public navCtrl: NavController,
   ) { }
@@ -34,11 +37,15 @@ export class CreateGroupPage implements OnInit {
   }
 
   async createGroup(): Promise<void> {
-    const key: string = this.groupname.trim();
-    const data: Group = new Group('', this.groupname, [this.founder], key);
-    const id = await this.groupService.addGroup(data);
-    await this.router.navigate(['group-overview/', {gId: id}]);
-    this.groupname = '';
+    try {
+      const key: string = Math.random().toString(36).slice(-5);
+      const data: Group = new Group('', this.groupname, [this.founder], key);
+      const id = await this.groupService.addGroup(data);
+      await this.router.navigate(['group-overview/', {gId: id}]);
+      this.groupname = '';
+    } catch (e) {
+      await this.alertService.showJoinGroupError();
+    }
   }
 
   async navToJoinGroup() {

@@ -8,10 +8,10 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <ion-list>
+  <ion-list lines="none">
     <img alt="threePeople" src="/assets/illustrations/groupOverview_fourPeople.png" class="image">
   </ion-list>
-  <ion-list class="ion-text-center" lines="none" >
+  <ion-list class="ion-text-center" lines="none">
     <ion-label class="ion-text-center">
       <h1>{{group.name}}</h1>
       <br>
@@ -28,17 +28,17 @@
             <ion-col class="ion-justify-content-start cols">
               <ion-icon *ngIf="member.reminderCount === 1"
                         name="hourglass-outline"
-                        style="color: #F2BF46; background-color: rgba(140, 184, 230, 0); display: inline-block; top: 50%; transform: translateY(-50%)"
+                        style="color: #F2BF46; background-color: rgba(140, 184, 230, 0); display: inline-block; transform: translateY(-50%)"
                         size="large"
               ></ion-icon>
               <ion-icon *ngIf="member.reminderCount === 2"
                         name="hourglass-outline"
-                        style="color: #F58814; background-color: rgba(140, 184, 230, 0); display: inline-block; top: 50%; transform: translateY(-50%)"
+                        style="color: #F58814; background-color: rgba(140, 184, 230, 0); display: inline-block; transform: translateY(-50%)"
                         size="large"
               ></ion-icon>
               <ion-icon *ngIf="member.reminderCount > 2"
                         name="hourglass-outline"
-                        style="color: #F54235; background-color: rgba(140, 184, 230, 0); display: inline-block; top: 50%; transform: translateY(-50%)"
+                        style="color: #F54235; background-color: rgba(140, 184, 230, 0); display: inline-block; transform: translateY(-50%)"
                         size="large"
               ></ion-icon>
             </ion-col>
@@ -47,7 +47,7 @@
             </ion-col>
           </ion-row>
           <ion-icon *ngIf="editMode"
-                    style="background-color: rgba(140, 184, 230, 0); position: absolute; top: 50%; right: 0px; transform: translateY(-50%)"
+                    style="background-color: rgba(140, 184, 230, 0); position: absolute; top: 50%; right: 0; transform: translateY(-50%)"
                     (click)="confirmDeleteAction(member.id)"
                     name="close-outline"
                     size="large"
@@ -56,7 +56,7 @@
           <ion-icon *ngIf="!editMode"
                     (click)="sendReminder(member.id, member.firstName, 'YhyD5Niv6gaDcgp18PB3')"
                     name="alarm-outline"
-                    style="background-color: rgba(140, 184, 230, 0); position: absolute; top: 50%; right: 0px; transform: translateY(-50%); padding-bottom: 8px; padding-top: 8px"
+                    style="background-color: rgba(140, 184, 230, 0); position: absolute; top: 50%; right: 0; transform: translateY(-50%)"
                     size="large"
                     button>
           </ion-icon>

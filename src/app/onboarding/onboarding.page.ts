@@ -20,8 +20,9 @@ export class OnboardingPage implements OnInit {
     this.counter = this.counter-1;
   }
 
-  getStarted(){
-    this.router.navigate(['login']);
+  async getStarted(){
+    localStorage.setItem('onboardingShown', JSON.stringify('true'));
+    await this.router.navigate(['login']);
   }
 
   ngOnInit() {

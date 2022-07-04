@@ -7,7 +7,7 @@ import {Group} from './Group.model';
 import {AlertsService} from './alerts.service';
 import {Router} from '@angular/router';
 import {Payment} from './payment.model';
-import {deleteUser, getAuth, updatePassword} from "@angular/fire/auth";
+import {deleteUser, getAuth, updatePassword} from '@angular/fire/auth';
 
 
 @Injectable({
@@ -65,7 +65,7 @@ export class UserService {
     const currentUser = this.getCurrentUser();
     await updatePassword(currentUser, password);
     const user: User = await this.getUserWithUid(currentUser.uid);
-    const userData = new User(user.email, user.firstName, user.lastName, password, user.gruppen);
+    const userData = new User(user.id, user.email, user.firstName, user.lastName, password, user.gruppen, user.reminderCount);
     await this.setUser(currentUser.uid, userData);
     this.alertsService.errors.clear();
     this.alertsService.errors.set('success', 'Ihr Passwort wurde geändert');
@@ -93,7 +93,7 @@ export class UserService {
     localStorage.clear();
     this.alertsService.errors.set('logout', 'Logout erfolgreich!');
     await this.router.navigate(['login']);
-    localStorage.setItem('onboardingShown', JSON.stringify(true));
+    await localStorage.setItem('onboardingShown', JSON.stringify(true));
   }
 
   async signUp(firstName, lastName, email, password) {

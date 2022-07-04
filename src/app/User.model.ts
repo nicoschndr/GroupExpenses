@@ -4,10 +4,17 @@ export class User {
   firstName?: string;
   lastName?: string;
   password?: string;
-  gruppen?: any;
+  gruppen?: string[];
   reminderCount?: number;
 
-  constructor(id?: string, email?: string, firstName?: string, lastName?: string, password?: string, gruppen?: any, reminderCount?: number) {
+  constructor(id?: string,
+              email?: string,
+              firstName?: string,
+              lastName?: string,
+              password?: string,
+              gruppen?: string[],
+              reminderCount?: number
+  ) {
     this.id = id;
     this.email = email;
     this.firstName = firstName;

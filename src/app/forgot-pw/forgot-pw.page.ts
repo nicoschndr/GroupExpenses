@@ -9,12 +9,16 @@ import {AlertController} from '@ionic/angular';
   styleUrls: ['./forgot-pw.page.scss'],
 })
 export class ForgotPWPage implements OnInit {
+
   email='';
 
   constructor(private userService: UserService, private router: Router, private alertController: AlertController) { }
 
-  navigateLogin(): void{
-    this.router.navigate(['login']);
+  ngOnInit() {
+  }
+
+  async navigateLogin() {
+    await this.router.navigate(['login']);
   }
 
   forgotPW(): void{
@@ -34,8 +38,4 @@ export class ForgotPWPage implements OnInit {
     }).then(res => res.present());
     this.email='';
   }
-
-  ngOnInit() {
-  }
-
 }

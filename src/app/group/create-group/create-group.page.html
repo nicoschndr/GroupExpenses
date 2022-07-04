@@ -13,10 +13,17 @@
     <h1>Erstelle eine neue Gruppe</h1>
   </ion-label>
   <br>
-  <ion-input [(ngModel)]="groupname" placeholder="Gruppenname"></ion-input>
-  <br>
-  <ion-button color="button" (click)="createGroup()" expand="block" shape="round">erstellen</ion-button>
-  <br>
-  <h5 button (click)="joinGroup()">Mit Gruppen-ID teilnehmen > </h5>
+  <ion-item class="listCreateGroup" lines="none">
+    <ion-input [(ngModel)]="groupname" placeholder="  Gruppenname"></ion-input>
+  </ion-item>
+    <br>
+    <ion-button color="button" (click)="createGroup()" expand="block" shape="round">erstellen</ion-button>
+
+  <ion-list>
+    <h5>oder:</h5>
+    <ion-button color="button" expand="block" shape="round" (click)="navToJoinGroup()">
+      Mit Gruppen-ID teilnehmen
+    </ion-button>
+  </ion-list>
 </ion-content>
 

@@ -4,17 +4,18 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {Group} from '../group.model';
 import {UserService} from '../../user.service';
 import {User} from '../../User.model';
-import {ActionSheetController, AlertController, NavController, PopoverController} from '@ionic/angular';
+import {ActionSheetController, AlertController, NavController, PopoverController, ViewDidEnter} from '@ionic/angular';
 import {Share} from '@capacitor/share';
-import {TrackNavService} from "../../track-nav.service";
-import {PaymentsService} from "../../payments.service";
+import {PaymentsService} from '../../payments.service';
+import {getAuth, onAuthStateChanged} from '@angular/fire/auth';
+import {AlertsService} from '../../alerts.service';
 
 @Component({
   selector: 'app-group-overview',
   templateUrl: './group-overview.page.html',
   styleUrls: ['./group-overview.page.scss'],
 })
-export class GroupOverviewPage implements OnInit {
+export class GroupOverviewPage implements ViewDidEnter{
   public editMode = false;
   public group: Group = new Group();
   public members: User[] = [];
@@ -36,9 +37,9 @@ export class GroupOverviewPage implements OnInit {
   }
 
   async ionViewDidEnter() {
+    await this.getUser();
     await this.getGroup();
     await this.getMembers();
-    await this.getUser();
   }
 
   async getUser() {
@@ -81,12 +82,11 @@ export class GroupOverviewPage implements OnInit {
     const deleteAction: boolean = await this.groupService.deleteUserFromGroup(uId, this.group.id);
     if (deleteAction) {
       this.editMode = false;
-      this.members.splice(0, this.members.length);
+      await this.getMembers();
       await this.alertsService.showConfirmation();
-      await this.getGroup();
     } else if (deleteAction && this.editMode) {
+      await this.getMembers();
       await this.alertsService.showConfirmation();
-      await this.router.navigate(['grouplist']);
     }
     else {
       await this.alertsService.showConfirmation();
@@ -164,7 +164,7 @@ export class GroupOverviewPage implements OnInit {
   async confirmDeleteAction(uId: string) {
     if (uId === this.currentUserId) {
       const alertLeaveGroup = await this.alertController.create({
-        cssClass: 'alertText',
+        cssClass: 'alert',
         header: 'Willst du die Gruppe wirklich verlassen?',
         buttons: [{
           text: 'Ja',
@@ -181,12 +181,13 @@ export class GroupOverviewPage implements OnInit {
       await this.alertsService.showConfirmation();
     } else {
       const alertDeleteUser = await this.alertController.create({
-        cssClass: 'alertText',
+        cssClass: 'alert',
         header: 'Willst du das Gruppenmitglied wirklich entfernen?',
         buttons: [{
           text: 'Ja',
           handler: () => {
             this.deleteUserFromGroup(uId);
+            this.router.navigate(['group-overview', {gId: this.groupId}]);
           }
         }, {
           text: 'Nein',
@@ -195,13 +196,12 @@ export class GroupOverviewPage implements OnInit {
       });
       await alertDeleteUser.present();
       await alertDeleteUser.onDidDismiss();
-      await this.alertsService.showConfirmation();
     }
   }
 
   async sendReminder(uId: string, fN: string, pId: string) {
     const alertSendReminder = await this.alertController.create({
-      cssClass: 'alertText',
+      cssClass: 'alert',
       header: 'Möchtest du ' + fN + ' eine Zahlungserinnerung senden?',
       buttons: [{
         text: 'Ja',

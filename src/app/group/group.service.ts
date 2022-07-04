@@ -1,39 +1,35 @@
 import { Injectable } from '@angular/core';
-import {
-  getDocs,
-  doc,
-  getDoc,
-  where,
-  query,
-  deleteDoc,
-  updateDoc,
-  Firestore,
-  collection,
-  addDoc,
-  CollectionReference,
-  DocumentData
-} from '@angular/fire/firestore';
 import {Group} from './group.model';
+import {Observable} from 'rxjs';
+import {
+  AngularFirestore,
+  AngularFirestoreCollection,
+  AngularFirestoreDocument} from '@angular/fire/compat/firestore';
+import {User} from '../User.model';
+import {UserService} from '../user.service';
+import {AlertsService} from '../alerts.service';
 
 @Injectable({
   providedIn: 'root'
 })
+
 export class GroupService {
 
   private groupCollection: AngularFirestoreCollection<Group>;
-  private groups: Observable<Group[]>;
+  private group: Observable<Group[]>;
 
   constructor(private afs: AngularFirestore,
               private userService: UserService,
               private alertsService: AlertsService,
   ) {
-    this.groupCollection = afs.collection<Group>('groups');
+    this.groupCollection = afs.collection<Group>('group');
   }
 
   async addGroup(group: Group): Promise<string> {
     group.id = this.afs.createId();
     const data = JSON.parse(JSON.stringify(group));
     await this.groupCollection.doc(group.id).set(data);
+    await this.joinGroup(group.id, group.key);
     return group.id;
   }
 
@@ -44,7 +40,7 @@ export class GroupService {
 
   async findGroupsFromUser(uId: string) {
     const id: string = uId;
-    return this.afs.collection('groups', docRef => docRef.where('groupMembers', 'array-contains', id)).snapshotChanges();
+    return this.afs.collection('group', docRef => docRef.where('groupMembers', 'array-contains', id)).snapshotChanges();
   }
 
   async deleteUserFromGroup(uId: string, gId: string): Promise<boolean> {
@@ -79,38 +75,23 @@ export class GroupService {
     });
   }
 
-  async joinGroup(id, key) {
-    const currentUser = this.userService.getCurrentUser();
-    try {
-      const groupData: Group = await this.getGroupById(id);
-      const userData = await this.userService.getUserWithUid(currentUser.uid);
+  async joinGroup(id: string, key: string): Promise<boolean> {
+    const currentUser: string = this.userService.getCurrentUser();
+    const groupData: Group = await this.getGroupById(id);
+    const userData: User = await this.userService.getUserWithUid(currentUser);
 
-      const arrayToPush: any = [];
-      arrayToPush.push(currentUser.uid);
-      groupData.groupMembers.forEach(r => {
-        arrayToPush.push(r);
-      });
-      arrayToPush.push(currentUser.uid);
-
-      const arrayToPush2: any = [];
-      userData.gruppen.forEach(t => {
-        arrayToPush2.push(t);
-      });
-      arrayToPush2.push(id);
-
-      if (groupData.key === key) {
-        const setGroupData: Group = new Group(id, groupData.name, arrayToPush, groupData.key);
-        const setUserData = new User(userData.email, userData.firstName, userData.lastName, userData.password,
-          arrayToPush2, userData.reminderCount);
-        await this.userService.setUser(currentUser.uid, setUserData);
-        await this.setGroup(setGroupData);
+    if (groupData) {
+      userData.gruppen.push(id);
+      groupData.groupMembers.push(currentUser);
+      if (groupData.id === id && groupData.key === key) {
+        await this.userService.setUser(currentUser, userData);
+        await this.setGroup(groupData);
+        return true;
       } else {
-        this.alertsService.errors.clear();
-        this.alertsService.errors.set('key', 'Der eingegebene Key ist falsch');
+        return false;
       }
-    } catch (e) {
-      this.alertsService.errors.clear();
-      this.alertsService.errors.set('groupId', 'Die eingegebene ID existiert nicht.');
+    } else {
+      return false;
     }
   }
 }

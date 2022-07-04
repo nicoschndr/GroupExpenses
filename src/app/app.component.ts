@@ -65,7 +65,4 @@ export class AppComponent implements OnInit {
     });
     await actionSheet.present();
   }
-
-
-
 }

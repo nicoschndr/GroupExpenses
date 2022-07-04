@@ -3,7 +3,7 @@ import {UserService} from '../user.service';
 import {AlertsService} from '../alerts.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {NavController} from '@ionic/angular';
-import {TrackNavService} from '../track-nav.service';
+import {GroupService} from '../group/group.service';
 
 @Component({
   selector: 'app-join-group',
@@ -12,26 +12,28 @@ import {TrackNavService} from '../track-nav.service';
 })
 export class JoinGroupPage implements OnInit {
 
-  id = '';
-  key = '';
+  public id: string;
+  public key: string;
 
   constructor(private userService: UserService,
+              private groupService: GroupService,
               public alertsService: AlertsService,
               public router: Router,
-              private route: ActivatedRoute,
               public navCtrl: NavController,
-              private trackNav: TrackNavService,
               ) { }
 
-   async join(id, key): Promise<void> {
-      await this.userService.joinGroup(id, key);
-      this.id='';
-      this.key='';
-      this.router.navigate(['group-overview', {gId: id}]);
-   }
-
   ngOnInit() {
-    this.trackNav.trackRouteChanges(this.route.snapshot.paramMap.get('gId'));
   }
 
+  async join(id: string, key: string): Promise<void> {
+    const joinSuccess: boolean = await this.groupService.joinGroup(id, key);
+    if (joinSuccess) {
+      this.id='';
+      this.key='';
+      await this.router.navigate(['group-overview', {gId: id}]);
+    } else  {
+      await this.alertsService.showJoinGroupError();
+      await this.router.navigate(['join-group']);
+    }
+  }
 }

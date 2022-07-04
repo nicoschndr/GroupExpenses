@@ -5,17 +5,18 @@ import {GroupService} from '../group.service';
 import {TrackNavService} from '../../track-nav.service';
 import {UserService} from '../../user.service';
 import {User} from '../../User.model';
-import {AlertController} from '@ionic/angular';
+import {AlertsService} from '../../alerts.service';
+import {getAuth, onAuthStateChanged} from '@angular/fire/auth';
+import {ViewDidEnter} from "@ionic/angular";
 
 @Component({
   selector: 'app-grouplist',
   templateUrl: './grouplist.page.html',
   styleUrls: ['./grouplist.page.scss'],
 })
-export class GrouplistPage implements OnInit {
+export class GrouplistPage implements ViewDidEnter{
 
   public grouplist: Group[] = [];
-  public leftToPay = 0;
   private currentUserId: string;
   private oldReminderCount: number;
   private onboardingShown: boolean;
@@ -27,7 +28,6 @@ export class GrouplistPage implements OnInit {
     private userService: UserService,
     private trackNav: TrackNavService,
     private alertsService: AlertsService,
-    private alertController: AlertController,
   ) {
   }
 
@@ -84,17 +84,10 @@ export class GrouplistPage implements OnInit {
   async handleReminderAlertsOnOpen() {
     const newReminderCount: number = await JSON.parse(localStorage.getItem('reminderCount'));
     if (this.oldReminderCount < newReminderCount) {
-      const alertPayReminder = await this.alertController.create({
-        cssClass: 'alertText',
-        header: 'Da war noch etwas...',
-        message: 'Du schuldest ' + 'Name' + ' noch ' + 'Betrag' +'€!',
-        buttons: [{
-          text: 'Ja',
-          role: 'cancel',
-        }]
-      });
-      await alertPayReminder.present();
-      await alertPayReminder.onDidDismiss();
+      await this.alertsService.showPaymentReminderAlert();
+      if (newReminderCount === 1 || newReminderCount === 2 || newReminderCount === 3) {
+        await this.alertsService.showNewShamementGroupAlert(newReminderCount);
+      }
     }
   }
 
