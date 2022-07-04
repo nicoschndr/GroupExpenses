@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import {GroupService} from '../group.service';
-import {Group} from '../group.model';
 import {Router} from '@angular/router';
 import {NavController} from '@ionic/angular';
 import {getAuth, onAuthStateChanged} from '@angular/fire/auth';
-import {UserService} from '../../user.service';
-import {AlertsService} from '../../alerts.service';
+import {AlertsService} from '../../services/alerts.service';
+import {UserService} from '../../services/user.service';
+import {GroupService} from '../../services/group.service';
+import {Group} from '../../models/classes/group.model';
 
 @Component({
   selector: 'app-create-group',
@@ -29,7 +29,7 @@ export class CreateGroupPage implements OnInit {
     const auth = getAuth();
     onAuthStateChanged(auth, async (user) => {
       if (user) {
-        this.founder = await this.userService.getCurrentUser();
+        this.founder = await this.userService.getCurrentUserId();
       } else {
         await this.router.navigate(['grouplist']);
       }
@@ -38,8 +38,8 @@ export class CreateGroupPage implements OnInit {
 
   async createGroup(): Promise<void> {
     try {
-      const key: string = Math.random().toString(36).slice(-5);
-      const data: Group = new Group('', this.groupname, [this.founder], key);
+      const key: string = Math.random().toString(36);
+      const data: Group = new Group('', this.groupname, [this.founder], key.slice(3, -2));
       const id = await this.groupService.addGroup(data);
       await this.router.navigate(['group-overview/', {gId: id}]);
       this.groupname = '';

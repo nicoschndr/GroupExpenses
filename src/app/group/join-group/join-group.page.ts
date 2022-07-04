@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import {UserService} from '../services/user.service';
-import {AlertsService} from '../services/alerts.service';
-import {ActivatedRoute, Router} from '@angular/router';
+import {Router} from '@angular/router';
 import {NavController} from '@ionic/angular';
-import {GroupService} from '../group/group.service';
+import {UserService} from '../../services/user.service';
+import {AlertsService} from '../../services/alerts.service';
+import {GroupService} from '../../services/group.service';
 
 @Component({
   selector: 'app-join-group',

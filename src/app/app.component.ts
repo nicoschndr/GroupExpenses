@@ -1,11 +1,7 @@
-import {Component, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
-import {ActivatedRoute, NavigationEnd, NavigationStart, Router} from '@angular/router';
-import {ActionSheetController, ModalController} from '@ionic/angular';
-import {TrackNavService} from './track-nav.service';
-import {AddIncomeComponent} from './components/add-income/add-income.component';
-import {AddExpenseComponent} from './components/add-expense/add-expense.component';
-
-
+import { Component, OnInit } from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
+import {ActionSheetController} from '@ionic/angular';
+import {TrackNavService} from './services/track-nav.service';
 
 @Component({
   selector: 'app-root',
@@ -21,7 +17,6 @@ export class AppComponent implements OnInit {
     private route: ActivatedRoute,
     private actionSheetController: ActionSheetController,
     public trackNav: TrackNavService,
-    private modalCtrl: ModalController
   ) {
     this.trackNav.checkIfInGroupView().subscribe( inGroupView => this.inGroupView = inGroupView);
   }
@@ -36,16 +31,16 @@ export class AppComponent implements OnInit {
     await localStorage.setItem('reminderCount', JSON.stringify(0));
   }
 
-  navToGrouplist() {
-    this.router.navigate(['grouplist']);
+  async navToGrouplist() {
+    await this.router.navigate(['grouplist']);
   }
 
-  navToProfile() {
-    this.router.navigate(['profile']);
+  async navToProfile() {
+    await this.router.navigate(['profile']);
   }
 
-  navToAddGroup() {
-    this.router.navigate(['create-group']);
+  async navToAddGroup() {
+    await this.router.navigate(['create-group']);
   }
 
   async showAddActions() {

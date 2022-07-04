@@ -1,14 +1,15 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {GroupService} from '../group.service';
+import {Component} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Group} from '../group.model';
-import {UserService} from '../../user.service';
-import {User} from '../../User.model';
 import {ActionSheetController, AlertController, NavController, PopoverController, ViewDidEnter} from '@ionic/angular';
 import {Share} from '@capacitor/share';
-import {PaymentsService} from '../../payments.service';
 import {getAuth, onAuthStateChanged} from '@angular/fire/auth';
-import {AlertsService} from '../../alerts.service';
+import {PaymentsService} from '../../services/payments.service';
+import {User} from '../../models/classes/User.model';
+import {UserService} from '../../services/user.service';
+import {AlertsService} from '../../services/alerts.service';
+import {Group} from "../../models/classes/group.model";
+import {GroupService} from "../../services/group.service";
+
 
 @Component({
   selector: 'app-group-overview',
@@ -19,8 +20,8 @@ export class GroupOverviewPage implements ViewDidEnter{
   public editMode = false;
   public group: Group = new Group();
   public members: User[] = [];
+  public groupId: string;
   private currentUserId: string;
-  private groupId: string;
   private isInGroup = false;
 
   constructor(
@@ -46,7 +47,7 @@ export class GroupOverviewPage implements ViewDidEnter{
     const auth = getAuth();
     onAuthStateChanged(auth, async (user) => {
       if (user) {
-        this.currentUserId = await this.userService.getCurrentUser();
+        this.currentUserId = await this.userService.getCurrentUserId();
       } else {
         await this.router.navigate(['grouplist']);
       }

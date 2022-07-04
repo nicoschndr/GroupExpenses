@@ -1,13 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Group} from '../group.model';
-import {GroupService} from '../group.service';
-import {TrackNavService} from '../../track-nav.service';
-import {UserService} from '../../user.service';
-import {User} from '../../User.model';
-import {AlertsService} from '../../alerts.service';
 import {getAuth, onAuthStateChanged} from '@angular/fire/auth';
-import {ViewDidEnter} from "@ionic/angular";
+import {ViewDidEnter} from '@ionic/angular';
+import {User} from '../../models/classes/User.model';
+import {UserService} from '../../services/user.service';
+import {AlertsService} from '../../services/alerts.service';
+import {TrackNavService} from '../../services/track-nav.service';
+import {Group} from '../../models/classes/group.model';
+import {GroupService} from '../../services/group.service';
 
 @Component({
   selector: 'app-grouplist',
@@ -56,7 +56,7 @@ export class GrouplistPage implements ViewDidEnter{
   }
 
   async showGrouplist() {
-    this.currentUserId = await this.userService.getCurrentUser();
+    this.currentUserId = await this.userService.getCurrentUserId();
     await this.getOldReminderCount();
     await this.setNewReminderCountStorage();
     await this.getAllGroups();

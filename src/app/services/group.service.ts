@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
-import {Group} from './group.model';
 import {Observable} from 'rxjs';
 import {
   AngularFirestore,
   AngularFirestoreCollection,
   AngularFirestoreDocument} from '@angular/fire/compat/firestore';
-import {User} from '../User.model';
-import {UserService} from '../user.service';
-import {AlertsService} from '../alerts.service';
+import {User} from '../models/classes/User.model';
+import {UserService} from './user.service';
+import {Group} from '../models/classes/group.model';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +19,6 @@ export class GroupService {
 
   constructor(private afs: AngularFirestore,
               private userService: UserService,
-              private alertsService: AlertsService,
   ) {
     this.groupCollection = afs.collection<Group>('group');
   }
@@ -29,7 +27,6 @@ export class GroupService {
     group.id = this.afs.createId();
     const data = JSON.parse(JSON.stringify(group));
     await this.groupCollection.doc(group.id).set(data);
-    await this.joinGroup(group.id, group.key);
     return group.id;
   }
 
@@ -76,7 +73,7 @@ export class GroupService {
   }
 
   async joinGroup(id: string, key: string): Promise<boolean> {
-    const currentUser: string = this.userService.getCurrentUser();
+    const currentUser: string = this.userService.getCurrentUserId();
     const groupData: Group = await this.getGroupById(id);
     const userData: User = await this.userService.getUserWithUid(currentUser);
 
