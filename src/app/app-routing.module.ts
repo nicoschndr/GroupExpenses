@@ -17,7 +17,7 @@ const routes: Routes = [
   },
   {
     path: 'join-group',
-    loadChildren: () => import('./join-group/join-group.module').then( m => m.JoinGroupPageModule)
+    loadChildren: () => import('./group/join-group/join-group.module').then( m => m.JoinGroupPageModule)
   },
   {
     path: 'signup',
@@ -31,7 +31,6 @@ const routes: Routes = [
     path: 'profile',
     loadChildren: () => import('./profile/profile.module').then( m => m.ProfilePageModule)
   },
-
   {
     path: 'expenses',
     loadChildren: () => import('./expenses/expenses.module').then(m => m.ExpensesPageModule)
@@ -59,10 +58,6 @@ const routes: Routes = [
   {
     path: 'onboarding',
     loadChildren: () => import('./onboarding/onboarding.module').then( m => m.OnboardingPageModule)
-  },
-  {
-    path: 'join-group',
-    loadChildren: () => import('./join-group/join-group.module').then( m => m.JoinGroupPageModule)
   },
   {
     path: 'signup',

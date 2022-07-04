@@ -5,25 +5,19 @@
 </ion-header>
 
 <ion-content>
-  <ion-grid>
+  <ion-list>
+    <img alt="threePeople" src="/assets/illustrations/grouplist_threePeople.png" class="image">
+  </ion-list>
 
-    <ion-row>
-      <ion-col class="center">
-        <img src="assets/people.svg" alt="joinGroupImg" width="200" height="150">
-      </ion-col>
-    </ion-row>
-
-    <ion-row>
-      <ion-col class="center">
-        <h1>Nehme an einer Gruppe teil</h1>
-      </ion-col>
-    </ion-row>
-
+    <ion-label class="ion-text-center">
+      <h1>Nehme an einer Gruppe teil</h1>
+    </ion-label>
+    <ion-grid>
     <ion-row>
       <ion-col class="center">
         <div>
-          <ion-item>
-            <ion-input type="text" placeholder="Gruppen-ID" [(ngModel)]="id"></ion-input>
+          <ion-item lines="none">
+            <ion-input type="text" placeholder="  Gruppen-ID" [(ngModel)]="id"></ion-input>
          </ion-item>
           <div>
             <p class="center"
@@ -39,8 +33,8 @@
     <ion-row>
       <ion-col class="center">
         <div>
-         <ion-item>
-            <ion-input type="text" class="key" placeholder="Key" [(ngModel)]="key"></ion-input>
+         <ion-item lines="none">
+            <ion-input type="text" class="key"  placeholder="  Key" [(ngModel)]="key"></ion-input>
           </ion-item>
           <div>
            <p class="center"
@@ -52,14 +46,6 @@
         </div>
       </ion-col>
     </ion-row>
-
-    <ion-row>
-      <ion-col class="center">
-        <ion-button class="beitreten" (click)="join(this.id, this.key)">
-          los geht's
-        </ion-button>
-      </ion-col>
-    </ion-row>
-
   </ion-grid>
+  <ion-button color="button" expand="block" shape="round" (click)="join(this.id, this.key)">los geht's</ion-button>
 </ion-content>

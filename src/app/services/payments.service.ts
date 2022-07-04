@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/compat/firestore';
-import {Payment} from './payment.model';
-
+import { Payment } from '../models/classes/payment.model';
 @Injectable({
   providedIn: 'root'
 })
@@ -19,7 +18,7 @@ export class PaymentsService {
   }
 
   async getOpenPaymentsForUser(uId: string) {
-    const doc = await this.paymentCollection.doc(uId)
+    const doc = await this.paymentCollection.doc(uId);
   }
 
   async setReminderForPayment(pId: string) {

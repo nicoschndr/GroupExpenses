@@ -1,50 +1,48 @@
-import {Component, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
-import {ActivatedRoute, NavigationEnd, NavigationStart, Router} from '@angular/router';
-import {ActionSheetController, ModalController} from '@ionic/angular';
-import {TrackNavService} from './track-nav.service';
-import {AddIncomeComponent} from './components/add-income/add-income.component';
-import {AddExpenseComponent} from './components/add-expense/add-expense.component';
-
-
+import { Component, OnInit } from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
+import {ActionSheetController} from '@ionic/angular';
+import {TrackNavService} from './services/track-nav.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
 })
-export class AppComponent implements OnInit, OnChanges {
+export class AppComponent implements OnInit {
 
-  @Input() grouplistView = true;
+  public inGroupView: boolean;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private actionSheetController: ActionSheetController,
-    private trackNav: TrackNavService,
-    private modalCtrl: ModalController
-  ) {}
-
-  ngOnInit() {
-    this.grouplistView = this.trackNav.trackRouteChanges(this.route.snapshot.paramMap.get('gId'));
-    console.log(this.grouplistView + 'onIn');
+    public trackNav: TrackNavService,
+  ) {
+    this.trackNav.checkIfInGroupView().subscribe( inGroupView => this.inGroupView = inGroupView);
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    this.grouplistView = this.trackNav.trackRouteChanges(this.route.snapshot.paramMap.get('gId'));
-    console.log(this.grouplistView + 'onCh');
+  async ngOnInit() {
+    const onboardingShownFromStorage: boolean = await JSON.parse(localStorage.getItem('onboardingShown'));
+    if (onboardingShownFromStorage) {
+      await localStorage.setItem('onboardingShown', JSON.stringify(true));
+    } else {
+      await localStorage.setItem('onboardingShown', JSON.stringify(false));
+    }
+    await localStorage.setItem('reminderCount', JSON.stringify(0));
   }
-  goToProfile(){
-    this.router.navigate(['profile']);
+
+  async navToGrouplist() {
+    await this.router.navigate(['grouplist']);
   }
-  showGrouplist() {
-    this.router.navigate(['grouplist']);
+
+  async navToProfile() {
+    await this.router.navigate(['profile']);
   }
-  showLogin() {
-    this.router.navigate(['login']);
+
+  async navToAddGroup() {
+    await this.router.navigate(['create-group']);
   }
-  navToAddGroup() {
-    this.router.navigate(['create-group']);
-  }
+
   async showAddActions() {
     const actionSheet = await this.actionSheetController.create({
       buttons: [{
@@ -64,67 +62,6 @@ export class AppComponent implements OnInit, OnChanges {
           console.log('canceled action sheet navbar');
         }
       }]
-    });
-    await actionSheet.present();
-  }
-  async addExpenseIncomeEntry(){
-    const actionSheet = await this.actionSheetController.create({
-      header: 'Ausgaben & Einnahmen',
-      buttons: [
-        {text: 'Ausgabe hinzufügen'},
-        {text: 'Einnahme hinzufügen'},
-        {text: 'Abbrechen', role: 'cancel'},
-      ],
-    });
-    await actionSheet.present();
-  }
-  async openModalExpense(){
-    const modal = await this.modalCtrl.create({
-      component: AddExpenseComponent
-    });
-    await modal
-      .present()
-      .then(() => console.log('No error with presenting modal'))
-      .catch(err => console.log('error modal: ', err));
-    await modal.onDidDismiss();
-  }
-  async openModalIncome(){
-    const modal = await this.modalCtrl.create({
-      component: AddIncomeComponent
-    });
-    await modal
-      .present()
-      .then(() => console.log('No error with presenting modal'))
-      .catch(err => console.log('error modal: ', err));
-    await modal.onDidDismiss();
-  }
-  async openActionSheet(){
-    console.log('Open Action Sheet');
-    const actionSheet = await this.actionSheetController.create({
-      header: 'Neuer Eintrag',
-      buttons: [
-        {
-          text: 'Ausgabe hinzufügen',
-          handler: () => {
-            console.log('Ausgabe hinzufügen');
-            this.openModalExpense();
-          }
-        },
-        {
-          text: 'Einnahme hinzufügen',
-          handler: () => {
-            console.log('Einnahme hinzufügen');
-          }
-        },
-        {
-          text: 'Abbrechen',
-          role: 'cancel',
-          handler: () => {
-            console.log('Vorgang abgebrochen');
-            this.openModalIncome();
-          }
-        },
-      ],
     });
     await actionSheet.present();
   }

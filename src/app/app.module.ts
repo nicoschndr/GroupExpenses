@@ -23,11 +23,10 @@ import {AngularFireModule} from '@angular/fire/compat';
     AngularFireStorageModule,
     AngularFireDatabaseModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
-    provideFirebaseApp(()=>initializeApp(environment.firebaseConfig)),
-    provideFirestore(()=>getFirestore())],
+  ],
   providers: [{
     provide: RouteReuseStrategy,
-    useClass: IonicRouteStrategy,
+    useClass: IonicRouteStrategy
   }],
   bootstrap: [AppComponent],
 })

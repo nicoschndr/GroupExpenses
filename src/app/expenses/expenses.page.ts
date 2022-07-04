@@ -9,8 +9,6 @@ import {AddIncomeComponent} from '../components/add-income/add-income.component'
 import {User} from '../models/classes/User.model';
 import {UserService} from '../services/user.service';
 import {ActivatedRoute, Router} from '@angular/router';
-import {GroupService} from '../group/group.service';
-import {ExpenseDetailsPage} from '../expense-details/expense-details.page';
 
 @Component({
   selector: 'app-expenses',
@@ -27,10 +25,14 @@ export class ExpensesPage implements OnInit {
   users: User[];
   split = [];
   currentUserId: string;
-  constructor(private actionSheet: ActionSheetController, public expensesService: ExpensesService,
-              private modalCtrl: ModalController, public incomingService: IncomingsService,
-              private alertCtrl: AlertController, private userService: UserService,
-              private router: Router, private route: ActivatedRoute) {
+  constructor(private actionSheet: ActionSheetController,
+              public expensesService: ExpensesService,
+              private modalCtrl: ModalController,
+              public incomingService: IncomingsService,
+              private alertCtrl: AlertController,
+              private userService: UserService,
+              private router: Router,
+              private route: ActivatedRoute) {
     this.groupId = this.route.snapshot.paramMap.get('gId');
     this.getCurrentUserData().catch((err) => console.log('Error: ', err));
     this.getExpenses(this.groupId);

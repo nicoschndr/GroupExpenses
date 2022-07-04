@@ -3,10 +3,10 @@ import {Income} from '../../models/classes/income';
 import {IncomingsService} from '../../services/incomings.service';
 import {AlertController, ModalController, NavParams} from '@ionic/angular';
 import {ActivatedRoute} from '@angular/router';
-import {GroupService} from '../../group/group.service';
-import {Group} from '../../group/group.model';
 import {UserService} from '../../services/user.service';
 import {User} from '../../models/classes/User.model';
+import {Group} from '../../models/classes/group.model';
+import {GroupService} from '../../services/group.service';
 
 @Component({
   selector: 'app-add-income',
@@ -43,7 +43,7 @@ export class AddIncomeComponent implements OnInit {
   }
 
   async ngOnInit() {
-    this.group = await this.groupService.getGroup(this.groupId);
+    this.group = await this.groupService.getGroupById(this.groupId);
     this.userGroupList = this.group.groupMembers;
     await this.getGroupMembers();
   }

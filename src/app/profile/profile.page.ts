@@ -39,7 +39,15 @@ export class ProfilePage implements OnInit {
   async updateUser() {
     const currentUser = this.userService.getCurrentUser();
     const result = await this.userService.getUserWithUid(currentUser.uid);
-    const userData = new User(this.user.email, this.user.firstName, this.user.lastName, result.password, result.gruppen);
+    const userData = new User(
+      this.user.id,
+      this.user.email,
+      this.user.firstName,
+      this.user.lastName,
+      result.password,
+      result.gruppen,
+      result.reminderCount
+    );
     await this.userService.setUser(currentUser.uid, userData);
     this.alertsService.errors.clear();
     this.alertsService.errors.set('success', 'Bearbeitung erfolgreich!');
@@ -56,7 +64,7 @@ export class ProfilePage implements OnInit {
       this.pw='';
       this.pw2='';
       this.altespw='';
-    }else{
+    } else {
       this.alertsService.errors.clear();
       this.alertsService.errors.set('changePW','Ihre Angaben waren fehlerhaft');
     }

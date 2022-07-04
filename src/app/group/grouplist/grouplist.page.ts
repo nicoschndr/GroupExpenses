@@ -1,24 +1,25 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Group} from '../group.model';
-import {GroupService} from '../group.service';
-import {TrackNavService} from '../../track-nav.service';
-import {UserService} from '../../services/user.service';
+import {getAuth, onAuthStateChanged} from '@angular/fire/auth';
+import {ViewDidEnter} from '@ionic/angular';
 import {User} from '../../models/classes/User.model';
-import {AlertController} from '@ionic/angular';
+import {UserService} from '../../services/user.service';
+import {AlertsService} from '../../services/alerts.service';
+import {TrackNavService} from '../../services/track-nav.service';
+import {Group} from '../../models/classes/group.model';
+import {GroupService} from '../../services/group.service';
 
 @Component({
   selector: 'app-grouplist',
   templateUrl: './grouplist.page.html',
   styleUrls: ['./grouplist.page.scss'],
 })
-export class GrouplistPage implements OnInit {
+export class GrouplistPage implements ViewDidEnter{
 
-  grouplist: Group[] = [];
-  leftToPay = 0;
-  currentUserId: string;
-  oldReminderCount: number;
-
+  public grouplist: Group[] = [];
+  private currentUserId: string;
+  private oldReminderCount: number;
+  private onboardingShown: boolean;
 
   constructor(
     private router: Router,
@@ -26,74 +27,75 @@ export class GrouplistPage implements OnInit {
     private groupService: GroupService,
     private userService: UserService,
     private trackNav: TrackNavService,
-    private alertController: AlertController,
+    private alertsService: AlertsService,
   ) {
   }
 
-  ionViewDidEnter() {
-    this.getAllGroups();
-    this.trackNav.trackRouteChanges(this.route.snapshot.paramMap.get('gId'));
+  async ionViewDidEnter() {
+    //get value of onboardingShown in localStorage
+    this.onboardingShown = await JSON.parse(localStorage.getItem('onboardingShown'));
+    //check if onboarding component was shown before
+    if (this.onboardingShown === false) {
+      await this.router.navigate(['onboarding']);
+    } else {
+      const auth = getAuth();
+      onAuthStateChanged(auth, async (user) => {
+        if (user && this.onboardingShown) {
+          await this.showGrouplist();
+        } else {
+          await this.handleLogout();
+        }
+      });
+    }
   }
 
-  ngOnInit() {
-    localStorage.setItem('reminderCount', JSON.stringify(0));
-    this.getUser();
-    this.getAllGroups();
-    this.getOldReminderCount();
+  async handleLogout() {
+    this.grouplist = [];
+    await this.alertsService.showLoggedOutAlert();
+    await this.router.navigate(['login']);
   }
 
-  async getUser() {
-    const user = await JSON.parse(localStorage.getItem('currentUser'));
-    const uId: string = user.uid;
-    this.currentUserId = uId;
-    await this.setReminderCountStorage();
+  async showGrouplist() {
+    this.currentUserId = await this.userService.getCurrentUserId();
+    await this.getOldReminderCount();
+    await this.setNewReminderCountStorage();
+    await this.getAllGroups();
   }
 
-  async setReminderCountStorage() {
-    console.log('setReminderCounterNew');
+  getOldReminderCount() {
+    this.oldReminderCount = JSON.parse(localStorage.getItem('reminderCount'));
+  }
+
+  async setNewReminderCountStorage() {
     const userFromService: User = await this.userService.getUserWithUid(this.currentUserId);
     await localStorage.setItem('reminderCount', JSON.stringify(userFromService.reminderCount));
     await this.handleReminderAlertsOnOpen();
   }
 
   async getAllGroups(): Promise<void> {
-    try {
-      this.grouplist = await this.groupService.findGroups(this.currentUserId);
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
-  showGroup(groupId: string) {
-    this.router.navigate(['group-overview', {gId: groupId}]);
-  }
-
-  openCreateGroup() {
-    this.router.navigate(['create-group']);
+    await (await (this.groupService.findGroupsFromUser(this.currentUserId))).subscribe((res) => {
+      this.grouplist = res.map((g) => ({
+        id: g.payload.doc.id,
+        ...g.payload.doc.data() as Group
+      }));
+    });
   }
 
   async handleReminderAlertsOnOpen() {
-    const newReminderCount: number = JSON.parse(localStorage.getItem('reminderCount'));
+    const newReminderCount: number = await JSON.parse(localStorage.getItem('reminderCount'));
     if (this.oldReminderCount < newReminderCount) {
-      const alertPayReminder = await this.alertController.create({
-        cssClass: 'alertText',
-        header: 'Da war noch etwas...',
-        message: 'Du schuldest ' + 'Name' + ' noch ' + 'Betrag' +'€!',
-        buttons: [{
-          text: 'Ja',
-          handler: () => {
-            this.userService.unsetReminderCount(this.currentUserId);
-            this.getUser();
-          }
-        }]
-      });
-      await alertPayReminder.present();
-      await alertPayReminder.onDidDismiss();
+      await this.alertsService.showPaymentReminderAlert();
+      if (newReminderCount === 1 || newReminderCount === 2 || newReminderCount === 3) {
+        await this.alertsService.showNewShamementGroupAlert(newReminderCount);
+      }
     }
   }
 
-  getOldReminderCount() {
-    console.log('getOldRemindercount');
-    this.oldReminderCount = JSON.parse(localStorage.getItem('reminderCount'));
+  async navToGroupoverview(groupId: string) {
+    await this.router.navigate(['group-overview', {gId: groupId}]);
+  }
+
+  async navToCreateGroup() {
+    await this.router.navigate(['create-group']);
   }
 }

@@ -20,30 +20,30 @@ export class LoginPage implements OnInit{
 
   constructor(public userService: UserService, private router: Router, public alertsService: AlertsService) { }
 
-  dologin(): void{
-    this.userService.login(this.email, this.password);
+  async dologin() {
+    await this.userService.login(this.email, this.password);
     this.email='';
     this.password='';
-    this.router.navigate(['grouplist']);
+    await this.router.navigate(['grouplist']);
   }
 
-  loginWithGoogle(): void{
-    this.userService.loginWithGoogle();
+  async loginWithGoogle() {
+    await this.userService.loginWithGoogle();
     this.email='';
     this.password='';
-    this.router.navigate(['grouplist']);
+    await this.router.navigate(['grouplist']);
   }
 
-  navigateSignUp(): void{
-    this.router.navigate(['signup']);
+  async navigateSignUp() {
+    await this.router.navigate(['signup']);
   }
 
-  navigateHome(): void{
-    this.router.navigate(['home']);
+  async navigateHome() {
+    await this.router.navigate(['home']);
   }
 
-  forgotPW(): void{
-    this.router.navigate(['forgot-pw']);
+  async forgotPW() {
+    await this.router.navigate(['forgot-pw']);
   }
 
   ngOnInit() {
