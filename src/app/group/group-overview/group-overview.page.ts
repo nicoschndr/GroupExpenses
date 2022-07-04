@@ -218,5 +218,8 @@ export class GroupOverviewPage implements ViewDidEnter{
     await alertSendReminder.present();
     await alertSendReminder.onDidDismiss();
   }
+  showExpensesOverview(groupId: string){
+    this.router.navigate(['expenses/', {gId: groupId}]).catch((err) => console.log('Error: ', err));
+  }
 }
 

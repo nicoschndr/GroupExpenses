@@ -1,0 +1,161 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button (click)="openAddExpensesModal()">Add Expense</ion-button>
+<!--      <ion-button (click)="openAddExpensesModal()">Add Expense</ion-button>-->
+      <ion-button (click)="openAddIncomeModal()">Add Income</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid>
+    <ion-row class="ion-justify-content-center">
+      <ion-segment [(ngModel)]="segment" (ionChange)="segmentChanged($event)">
+        <ion-segment-button value="Aufteilung">
+          <ion-label>Aufteilung</ion-label>
+        </ion-segment-button>
+
+        <ion-segment-button value="Ausgaben">
+          <ion-label>Ausgaben</ion-label>
+        </ion-segment-button>
+
+        <ion-segment-button value="Einnahmen">
+          <ion-label>Einnahmen</ion-label>
+        </ion-segment-button>
+
+        <ion-segment-button value="Statistik">
+          <ion-label>
+            <ion-icon name="stats-chart-outline"></ion-icon>
+          </ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </ion-row>
+
+    <div id="segment-content">
+      <!-- Segment 'Aufteilung' -->
+      <div class="segment-divs" *ngIf="segment === 'Aufteilung'">
+        <ion-row class="ion-justify-content-center">
+          <ion-card *ngIf="split.length === 0">
+            <ion-card-content class="emptyCard">
+              <p>Es wurden keine Eingaben erfasst.</p>
+            </ion-card-content>
+          </ion-card>
+          <!--     <ion-card>-->
+          <!--       <ion-card-content>-->
+          <!--       </ion-card-content>-->
+          <!--     </ion-card>-->
+        </ion-row>
+      </div>
+
+      <!-- Segment 'Ausgaben' -->
+      <div class="segment-divs" *ngIf="segment === 'Ausgaben'">
+        <ion-row class="ion-justify-content-center">
+          <ion-card class="no-entry" *ngIf="expenses.length === 0">
+            <ion-card-content class="emptyCard">
+              <p>Es wurden keine Eingaben erfasst.</p>
+            </ion-card-content>
+          </ion-card>
+          <ion-card button="true" *ngFor="let expense of expenses" id="{{expense.id}}">
+            <ion-card-content>
+              <ion-row>
+                <ion-col class="amountCol" size="4">
+                  <span></span>
+                  <h1 class="amountE">-{{expense.amount}}€</h1>
+                </ion-col>
+                <ion-col size="4">
+                  <ion-row>
+                    <h2>{{expense.name}}</h2>
+                  </ion-row>
+                  <ion-row>
+                    <p>{{expense.date | date: 'dd.MM.yyyy'}}</p>
+                  </ion-row>
+                </ion-col>
+                <ion-col class="ion-align-items-center" size="4">
+                  <!-- Get user name by expense.userId -->
+                  <p class="userNameE">{{expense.userName}}</p>
+                </ion-col>
+              </ion-row>
+            </ion-card-content>
+            <ion-popover trigger="{{expense.id}}" [dismissOnSelect]="true" side="right" alignment="end">
+              <ng-template>
+                <ion-content>
+                  <ion-list>
+                    <ion-item [button]="true" [detail]="false" (click)="showExpenseDetails(expense.id)">Details anzeigen</ion-item>
+                    <ion-item [button]="true" [detail]="false" (click)="editExpense(expense)">Bearbeiten</ion-item>
+                    <ion-item [button]="true" [detail]="false" (click)="deleteExpense(expense)" style="color: red">Löschen</ion-item>
+                  </ion-list>
+                </ion-content>
+              </ng-template>
+            </ion-popover>
+          </ion-card>
+        </ion-row>
+      </div>
+
+      <!-- Segment 'Einnahmen' -->
+      <div class="segment-divs" *ngIf="segment === 'Einnahmen'">
+        <ion-row class="ion-justify-content-center">
+          <ion-card class="no-entry" *ngIf="incoming.length === 0">
+            <ion-card-content class="emptyCard">
+              <p>Es wurden keine Eingaben erfasst.</p>
+            </ion-card-content>
+          </ion-card>
+          <ion-card *ngFor="let income of incoming">
+            <ion-card-content>
+              <ion-row>
+                <ion-col class="amountCol" size="4">
+                  <h1 class="amountI">+{{income.amount}}€</h1>
+                </ion-col>
+                <ion-col size="4">
+                  <ion-row>
+                    <!-- Get by income.creditor -->
+                    <h2>{{income.creditor}}</h2>
+                  </ion-row>
+                  <ion-row>
+                    <!-- Get by income.debitor -->
+                    <p>von {{income.debitor}}</p>
+                  </ion-row>
+                  <ion-row>
+                    <p>{{income.date | date: 'dd.MM.yyyy'}}</p>
+                  </ion-row>
+                </ion-col>
+                <ion-col class="ion-align-items-center" size="4">
+                  <ion-row class="ion-justify-content-center">
+                    <ion-buttons>
+                      <ion-button (click)="editIncome(income)">
+                        <ion-icon name="create-outline" size="small"></ion-icon>
+                      </ion-button>
+                    </ion-buttons>
+                  </ion-row>
+                  <ion-row class="ion-justify-content-center">
+                    <ion-buttons>
+                      <ion-button (click)="deleteIncome(income)">
+                        <ion-icon name="trash-outline" size="small"></ion-icon>
+                      </ion-button>
+                    </ion-buttons>
+                  </ion-row>
+                </ion-col>
+              </ion-row>
+            </ion-card-content>
+          </ion-card>
+        </ion-row>
+      </div>
+
+      <!-- Segment 'Statistik' -->
+      <div class="segment-divs" *ngIf="segment === 'Statistik'">
+        <ion-row class="ion-justify-content-center" id="statistic-month">
+
+        </ion-row>
+        <ion-row class="ion-justify-content-center" id="statistic-model">
+
+        </ion-row>
+        <ion-row class="ion-justify-content-center" id="statistic-key">
+
+        </ion-row>
+      </div>
+    </div>
+  </ion-grid>
+</ion-content>

@@ -19,7 +19,7 @@
       <br>
       <p>0 €</p>
       <br>
-      <h4 class="showDetails">Details anzeigen > </h4>
+      <h4 class="showDetails" (click)="showExpensesOverview(groupId)">Details anzeigen > </h4>
     </ion-label>
     <ion-card *ngFor="let member of members">
       <ion-card-header>

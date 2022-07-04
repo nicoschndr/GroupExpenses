@@ -1,7 +1,5 @@
-
 import {NgModule} from '@angular/core';
 import {PreloadAllModules, RouterModule, Routes} from '@angular/router';
-
 
 const routes: Routes = [
   {
@@ -28,6 +26,18 @@ const routes: Routes = [
   {
     path: 'forgot-pw',
     loadChildren: () => import('./forgot-pw/forgot-pw.module').then( m => m.ForgotPWPageModule)
+  },
+  {
+    path: 'profile',
+    loadChildren: () => import('./profile/profile.module').then( m => m.ProfilePageModule)
+  },
+  {
+    path: 'expenses',
+    loadChildren: () => import('./expenses/expenses.module').then(m => m.ExpensesPageModule)
+  },
+  {
+    path: 'expenses/:id',
+    loadChildren: () => import('./expenses/expenses.module').then(m => m.ExpensesPageModule)
   },
   {
     path: 'grouplist',
@@ -66,9 +76,14 @@ const routes: Routes = [
     loadChildren: () => import('./group/group-overview/group-overview.module').then( m => m.GroupOverviewPageModule)
   },
   {
-    path: 'profile',
-    loadChildren: () => import('./profile/profile.module').then( m => m.ProfilePageModule)
-  }
+    path: 'expense-details',
+    loadChildren: () => import('./expense-details/expense-details.module').then( m => m.ExpenseDetailsPageModule)
+  },
+  {
+    path: 'expense-details/:id',
+    loadChildren: () => import('./expense-details/expense-details.module').then( m => m.ExpenseDetailsPageModule)
+  },
+
 ];
 
 @NgModule({

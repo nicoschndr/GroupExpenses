@@ -1,0 +1,84 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Ausgabe</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="dismissModal()">
+        <ion-icon name="close-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end" *ngIf="editMode">
+      <ion-button (click)="deleteExpense()">
+        <ion-icon name="trash-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-grid>
+  <ion-list>
+    <ion-col>
+      <ion-row>
+        <ion-input type="text" class="ion-text-start" [(ngModel)]="name" placeholder="Name" required="true"></ion-input>
+        <p class="ion-text-end ion-padding-end" style="color:var(--ion-color-danger)"
+           *ngIf="errors.get('name')">
+          {{errors.get('name')}}
+        </p>
+      </ion-row>
+
+      <ion-row>
+        <ion-input type="number" class="ion-text-start" [(ngModel)]="amount" placeholder="Betrag" required="true"></ion-input>
+        <p class="ion-text-end ion-padding-end" style="color:var(--ion-color-danger)"
+           *ngIf="errors.get('amount')">
+          {{errors.get('amount')}}
+        </p>
+      </ion-row>
+
+      <ion-row>
+        <ion-input id="open" placeholder="Datum" value="{{date | date: 'dd.MM.yyyy'}}" required="true"></ion-input>
+        <ion-popover trigger="open">
+          <ng-template>
+            <ion-datetime presentation="date" [(ngModel)]="date"></ion-datetime>
+          </ng-template>
+        </ion-popover>
+        <p class="ion-text-end ion-padding-end" style="color:var(--ion-color-danger)"
+           *ngIf="errors.get('date')">
+          {{errors.get('date')}}
+        </p>
+      </ion-row>
+
+      <ion-row>
+        <ion-input type="file" class="ion-text-start" [(ngModel)]="receipt"
+                   accept=".jpg" multiple="false"
+                   (change)="uploadPhoto($event)">
+        </ion-input>
+      </ion-row>
+      <ion-row>
+        <p style="padding-left: 10px" *ngIf="uploadStatus">...wird hochgeladen</p>
+      </ion-row>
+
+      <ion-row>
+        <ion-col class="ion-text-start" size="8">
+          <ion-label>Monatlich wiederkehrend?</ion-label>
+        </ion-col>
+        <ion-col class="ion-text-end" size="4">
+          <ion-checkbox [(ngModel)]="interval"></ion-checkbox>
+        </ion-col>
+      </ion-row>
+
+      <ion-row class="ion-justify-content-center" *ngIf="!editMode">
+        <ion-buttons>
+          <ion-button class="formBtn" (click)="save()">
+            hinzufügen
+          </ion-button>
+        </ion-buttons>
+      </ion-row>
+      <ion-row class="ion-justify-content-center" *ngIf="editMode">
+        <ion-buttons>
+          <ion-button class="formBtn" (click)="save()">
+            speichern
+          </ion-button>
+        </ion-buttons>
+      </ion-row>
+    </ion-col>
+  </ion-list>
+</ion-grid>

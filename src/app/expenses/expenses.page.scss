@@ -1,0 +1,75 @@
+h1 {
+  font-size: 18px;
+  font-weight: bold;
+}
+h2 {
+  font-size: 15px;
+}
+p {
+  font-size: 12px;
+}
+ion-label {
+  font-size: 12px;
+}
+#segment-content {
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+}
+.segment-divs {
+  width: 100%;
+  margin: 0;
+  //align-content: center;
+  //justify-content: center;
+  justify-items: center;
+}
+ion-card {
+  width: 80%;
+  margin: 10px;
+  border: 1px solid #8CB8ED;
+  border-radius: 15px;
+  background-color: #8CB8ED;
+  color: #47517B;
+}
+ion-card-content {
+  padding: 5px;
+}
+.card-button {
+  display: flex;
+  justify-content: center;
+}
+.edit-button {
+  float: right;
+}
+.add-button {
+  width: 200px;
+  background-color: #8CB8ED;
+  border-radius: 15px;
+  color: white;
+}
+.amountCol {
+  text-align: center;
+  vertical-align: center;
+}
+.amountE {
+  position: absolute;
+  top: 35%;
+  right: 0;
+  transform: translateX(-50%);
+}
+.userNameE {
+  position: absolute;
+  top: 35%;
+  right: 0;
+  transform: translateX(-50%);
+  font-size: 15px;
+}
+.amountI {
+  position: absolute;
+  top: 35%;
+  right: 0;
+  transform: translateX(-90%);
+}
+.emptyCard {
+  text-align: center;
+}

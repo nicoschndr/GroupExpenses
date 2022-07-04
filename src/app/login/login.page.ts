@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import {UserService} from '../user.service';
 import {Router} from '@angular/router';
+import {UserService} from '../services/user.service';
 import {getAuth, onAuthStateChanged} from '@angular/fire/auth';
-import {AlertsService} from '../alerts.service';
-
+import {AlertsService} from '../services/alerts.service';
 
 
 @Component({

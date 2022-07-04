@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import {UserService} from '../user.service';
-import {AlertsService} from '../alerts.service';
+import {UserService} from '../services/user.service';
+import {AlertsService} from '../services/alerts.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {NavController} from '@ionic/angular';
 import {GroupService} from '../group/group.service';

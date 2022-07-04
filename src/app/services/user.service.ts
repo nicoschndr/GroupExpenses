@@ -2,22 +2,23 @@ import { Injectable } from '@angular/core';
 import {AngularFireAuth} from '@angular/fire/compat/auth';
 import {AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument} from '@angular/fire/compat/firestore';
 import firebase from 'firebase/compat/app';
-import {User} from './User.model';
-import {Group} from './Group.model';
+import {User} from '../models/classes/User.model';
+import {Group} from '../models/classes/Group.model';
 import {AlertsService} from './alerts.service';
 import {Router} from '@angular/router';
 import {Payment} from './payment.model';
 import {deleteUser, getAuth, updatePassword} from '@angular/fire/auth';
 
 
-@Injectable({
-  providedIn: 'root'
-})
-export class UserService {
-  isLoggedIn = false;
-  private userCollection: AngularFirestoreCollection<User>;
-  private groupCollection: AngularFirestoreCollection<Group>;
-  private paymentCollection: AngularFirestoreCollection<Payment>;
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class UserService {
+    isLoggedIn = false;
+    currentUser: any[] =[];
+    private userCollection: AngularFirestoreCollection<User>;
+    private groupCollection: AngularFirestoreCollection<Group>;
+    private paymentCollection: AngularFirestoreCollection<Payment>;
 
   constructor(private afa: AngularFireAuth, private afs: AngularFirestore, public alertsService: AlertsService, private router: Router) {
     this.userCollection = afs.collection<User>('user');
@@ -25,7 +26,12 @@ export class UserService {
     this.paymentCollection = afs.collection<Payment>('payment');
   }
 
-  getCurrentUser(): any {
+    getCurrentUser(): any{
+      const auth = getAuth();
+      return auth.currentUser;
+    }
+
+  getCurrentUserId(): any {
     const auth = getAuth();
     const currentUser = auth.currentUser;
     return currentUser.uid;
@@ -90,7 +96,6 @@ export class UserService {
     }
     this.isLoggedIn = false;
     this.alertsService.errors.clear();
-    localStorage.clear();
     this.alertsService.errors.set('logout', 'Logout erfolgreich!');
     await this.router.navigate(['login']);
     await localStorage.setItem('onboardingShown', JSON.stringify(true));
@@ -167,15 +172,25 @@ export class UserService {
     });
   }
 
-  async setReminderCount(uid: string) {
-    const userData: User = await this.getUserWithUid(uid);
-    ++userData.reminderCount;
-    await this.setUser(uid, userData);
-  }
+    async setGroup(id, groupData) {
+      const groupRef: AngularFirestoreDocument<Group> = this.afs.doc(`group/${id}`);
+      const group: Group = {
+        groupMembers: groupData.groupMembers,
+        key: groupData.key,
+        name: groupData.name
+      };
+      return groupRef.set(group, {
+        merge: true,
+      });
+    }
+    async setReminderCount(uid: string) {
+      const userData: User = await this.getUserWithUid(uid);
+      ++userData.reminderCount;
+      await this.setUser(uid, userData);
+    }
+    async unsetReminderCount(uId: string) {
+      const userData: User = await this.getUserWithUid(uId);
+      --userData.reminderCount;
+      await this.setUser(uId, userData);
+    }
 
-  async unsetReminderCount(uId: string) {
-    const userData: User = await this.getUserWithUid(uId);
-    --userData.reminderCount;
-    await this.setUser(uId, userData);
-  }
-}
