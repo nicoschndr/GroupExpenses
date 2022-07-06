@@ -5,12 +5,12 @@ import {ActionSheetController, AlertController, ModalController} from '@ionic/an
 import {ExpensesService} from '../services/expenses.service';
 import {AddExpenseComponent} from '../components/add-expense/add-expense.component';
 import {IncomingsService} from '../services/incomings.service';
-import {AddIncomeComponent} from '../components/add-income/add-income.component';
 import {User} from '../models/classes/User.model';
 import {UserService} from '../services/user.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {GroupService} from '../group/group.service';
 import {ExpenseDetailsPage} from '../expense-details/expense-details.page';
+import {Group} from '../models/classes/Group.model';
 
 @Component({
   selector: 'app-expenses',
@@ -27,10 +27,11 @@ export class ExpensesPage implements OnInit {
   users: User[];
   split = [];
   currentUserId: string;
+  currentGroup: Group;
   constructor(private actionSheet: ActionSheetController, public expensesService: ExpensesService,
               private modalCtrl: ModalController, public incomingService: IncomingsService,
               private alertCtrl: AlertController, private userService: UserService,
-              private router: Router, private route: ActivatedRoute) {
+              private router: Router, private route: ActivatedRoute, private groupService: GroupService) {
     this.groupId = this.route.snapshot.paramMap.get('gId');
     this.getCurrentUserData().catch((err) => console.log('Error: ', err));
     this.getExpenses(this.groupId);
@@ -42,13 +43,22 @@ export class ExpensesPage implements OnInit {
   segmentChanged(ev: any){
     console.log('Segment changed to ', ev);
   }
-  //methods for expenses
-  async getExpenseById(expense: Expense){
-    this.expense = await this.expensesService.getEntryById(expense.id);
-  }
+
+  /**
+   * This function will get id of current / logged-in user by calling getCurrentUserId() from userService.
+   */
   async getCurrentUserData(){
     this.currentUserId = await this.userService.getCurrentUserId();
   }
+
+  /****************************
+   * Functions for expenses   *
+   ***************************/
+
+  /**
+   *
+   * @param id
+   */
   getExpenses(id: string){
     this.expensesService.getAllExpenses(id).subscribe((res) => {
       this.expenses = res.map((e) => ({
@@ -63,6 +73,7 @@ export class ExpensesPage implements OnInit {
       component: AddExpenseComponent,
       componentProps: {
         groupId: this.groupId,
+        type: 'expense',
       }
     });
     await modal
@@ -71,10 +82,13 @@ export class ExpensesPage implements OnInit {
       .catch(err => console.log('error modal: ', err));
     await modal.onDidDismiss();
   }
-  async editExpense(expense: Expense){
+  async editExpense(entryId: string){
     const modal = await this.modalCtrl.create({
       component: AddExpenseComponent,
-      componentProps: expense,
+      componentProps: {
+        id: entryId,
+        type: 'expense',
+      },
     });
     await modal.present()
       .then(() => console.log('No error with presenting modal'))
@@ -104,10 +118,15 @@ export class ExpensesPage implements OnInit {
     });
     await alertConfirm.present();
   }
-  //methods for incoming
-  async getOneIncome(income: Income){
-    this.income = await this.incomingService.getEntryById(income.id);
-  }
+
+  /**************************
+   * Functions for incoming *
+   **************************/
+
+  /**
+   *
+   * @param id
+   */
   getIncoming(id: string){
     this.incomingService.getAllIncoming(id).subscribe((res) => {
       this.incoming = res.map((e) => ({
@@ -118,9 +137,10 @@ export class ExpensesPage implements OnInit {
   }
   async openAddIncomeModal(){
     const modal = await this.modalCtrl.create({
-      component: AddIncomeComponent,
+      component: AddExpenseComponent,
       componentProps: {
         groupId: this.groupId,
+        type: 'income',
       }
     });
     await modal
@@ -129,10 +149,13 @@ export class ExpensesPage implements OnInit {
       .catch(err => console.log('error modal: ', err));
     await modal.onDidDismiss();
   }
-  async editIncome(income: Income){
+  async editIncome(entryId: string){
     const modal = await this.modalCtrl.create({
-      component: AddIncomeComponent,
-      componentProps: income,
+      component: AddExpenseComponent,
+      componentProps: {
+        id: entryId,
+        type: 'income',
+      },
     });
     await modal.present()
       .then(() => console.log('No error with presenting modal'))
@@ -166,5 +189,37 @@ export class ExpensesPage implements OnInit {
       buttons: ['OK']
     });
     await alertSuccess.present();
+  }
+  async calcShare(){
+    console.log('calc share');
+    this.currentGroup = await this.groupService.getGroup(this.groupId);
+    const group: Group = new Group(
+      ['qnJ51aAi7iZevuMRAUhp5FXrLI63', '94u305hugwo', '98h435h02gj94', 'fn82303z543214'],
+      'kjhji',
+      'kjhji'
+    );
+    for(const uId of group.groupMembers){
+      // Can not fetch data for some reasons, still working on it
+      const userIncoming: Income[] = this.incomingService.getIncomingByUserId(this.groupId, uId);
+      let userSum = 0;
+      let share = 0;
+      const incomingTest: Income[] = [
+        new Income(
+          '8if9z435h23',
+          'qnJ51aAi7iZevuMRAUhp5FXrLI63',
+          'Benjamin',
+          '84h209gh4',
+          'Max',
+          10,
+          new Date(),
+          'hf8345iuhwge'),
+      ];
+      console.log('user Incoming: ', JSON.stringify(userIncoming));
+      for(const income of incomingTest){
+        userSum += income.amount;
+      }
+      share = userSum / group.groupMembers.length;
+      await this.incomingService.addShare(this.groupId, uId, share);
+    }
   }
 }

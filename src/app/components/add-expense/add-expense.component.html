@@ -1,14 +1,17 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Ausgabe</ion-title>
+    <ion-title>{{pageTitle}}</ion-title>
     <ion-buttons slot="start">
       <ion-button (click)="dismissModal()">
         <ion-icon name="close-circle-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-buttons slot="end" *ngIf="editMode">
-      <ion-button (click)="deleteExpense()">
+    <ion-buttons slot="end">
+      <ion-button *ngIf="editMode" (click)="deleteExpense()">
         <ion-icon name="trash-outline"></ion-icon>
+      </ion-button>
+      <ion-button (click)="save()">
+        <ion-icon name="save-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -19,11 +22,11 @@
     <ion-col>
       <ion-row>
         <ion-input type="text" class="ion-text-start" [(ngModel)]="name" placeholder="Name" required="true"></ion-input>
-        <p class="ion-text-end ion-padding-end" style="color:var(--ion-color-danger)"
-           *ngIf="errors.get('name')">
-          {{errors.get('name')}}
-        </p>
       </ion-row>
+      <p class="ion-text-end ion-padding-end" style="color:var(--ion-color-danger); margin-right: 10px"
+         *ngIf="errors.get('name')">
+        {{errors.get('name')}}
+      </p>
 
       <ion-row>
         <ion-input type="number" class="ion-text-start" [(ngModel)]="amount" placeholder="Betrag" required="true"></ion-input>
@@ -56,7 +59,7 @@
         <p style="padding-left: 10px" *ngIf="uploadStatus">...wird hochgeladen</p>
       </ion-row>
 
-      <ion-row>
+      <ion-row *ngIf="type === 'expense'">
         <ion-col class="ion-text-start" size="8">
           <ion-label>Monatlich wiederkehrend?</ion-label>
         </ion-col>
@@ -65,20 +68,25 @@
         </ion-col>
       </ion-row>
 
-      <ion-row class="ion-justify-content-center" *ngIf="!editMode">
-        <ion-buttons>
-          <ion-button class="formBtn" (click)="save()">
-            hinzufügen
-          </ion-button>
-        </ion-buttons>
+      <ion-row *ngIf="!uploadStatus">
+        <ion-img *ngIf="receipt !== undefined" src="{{receipt}}" alt="receipt-img">
+        </ion-img>
       </ion-row>
-      <ion-row class="ion-justify-content-center" *ngIf="editMode">
-        <ion-buttons>
-          <ion-button class="formBtn" (click)="save()">
-            speichern
-          </ion-button>
-        </ion-buttons>
-      </ion-row>
+
+<!--      <ion-row class="ion-justify-content-center" *ngIf="!editMode">-->
+<!--        <ion-buttons>-->
+<!--          <ion-button class="formBtn" (click)="save()">-->
+<!--            hinzufügen-->
+<!--          </ion-button>-->
+<!--        </ion-buttons>-->
+<!--      </ion-row>-->
+<!--      <ion-row class="ion-justify-content-center" *ngIf="editMode">-->
+<!--        <ion-buttons>-->
+<!--          <ion-button class="formBtn" (click)="save()">-->
+<!--            speichern-->
+<!--          </ion-button>-->
+<!--        </ion-buttons>-->
+<!--      </ion-row>-->
     </ion-col>
   </ion-list>
 </ion-grid>

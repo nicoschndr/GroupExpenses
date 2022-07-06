@@ -5,8 +5,8 @@ import {AlertController, ModalController, NavController, NavParams} from '@ionic
 import {ActivatedRoute} from '@angular/router';
 import {UserService} from '../../services/user.service';
 import {User} from '../../models/classes/User.model';
-import {File} from '../../models/interfaces/file';
 import {PhotoService} from '../../services/photo.service';
+import {IncomingsService} from '../../services/incomings.service';
 
 @Component({
   selector: 'app-add-expense',
@@ -15,41 +15,83 @@ import {PhotoService} from '../../services/photo.service';
 })
 export class AddExpenseComponent implements OnInit {
   @ViewChild('popover') popover;
+  pageTitle: string;
   entry: Expense = new Expense();
   id: string;
   name: string;
   amount: number;
   date: any;
   receipt: any;
-  interval: boolean;
-  editMode = false;
   userId: string;
   userName: string;
-  currentUser: User;
   groupId: string;
+  type: string;
+  interval: boolean;
+  editMode = false;
+  currentUser: User;
   errors: Map<string, string> = new Map<string, string>();
   fileName: string;
   uploadStatus = false;
-  constructor(private expensesService: ExpensesService, private modalCtrl: ModalController,
-              private route: ActivatedRoute, private navCtrl: NavController,
-              private navParams: NavParams, private userService: UserService,
-              private alertCtrl: AlertController, private photoService: PhotoService) {
-    this.id = navParams.get('id');
+  constructor(private expensesService: ExpensesService,
+              private incomingService: IncomingsService,
+              private modalCtrl: ModalController,
+              private route: ActivatedRoute,
+              private navCtrl: NavController,
+              private navParams: NavParams,
+              private userService: UserService,
+              private alertCtrl: AlertController,
+              private photoService: PhotoService) {
+    this.entry = navParams.get('id');
     if(this.id){
       this.editMode = true;
+      this.setValuesInInputs().catch((err) => console.log('Error: ', err));
     }
     this.groupId = this.navParams.get('groupId');
+    this.type = this.navParams.get('type');
+    console.log('Receipt: ', this.receipt);
+  }
+  ngOnInit() {
+    this.setPageTitle().catch((err) => console.log('Error: ', err));
     this.getCurrentUserData().catch((err) => console.log('Error: ', err));
   }
 
-  ngOnInit() {
-    console.log('Group Id: ', this.groupId);
-  }
+  /**
+   * This function will get data from current / logged-in user.
+   */
   async getCurrentUserData(){
     this.userId = await this.userService.getCurrentUserId();
     this.currentUser = await this.userService.getUserWithUid(this.userId);
     this.userName = this.currentUser.firstName;
   }
+
+  /**
+   * This function will set pageTitle according to the data that was passed to the component.
+   */
+  async setPageTitle(){
+    if(this.type === 'expense' && this.id !== ''){
+      this.pageTitle = 'Ausgabe bearbeiten';
+    } else if(this.type === 'expense' && this.id === '') {
+      this.pageTitle = 'Ausgabe hinzufügen';
+    } else if(this.type === 'income' && this.id !== '') {
+      this.pageTitle = 'Einnahme bearbeiten';
+    } else if(this.type === 'income' && this.id === ''){
+      this.pageTitle = 'Einnahme hinzufügen';
+    }
+  }
+
+  async setValuesInInputs(){
+    this.id = this.entry.id;
+    this.name = this.entry.name;
+    this.amount = this.entry.amount;
+    this.date = this.entry.date;
+    this.receipt = this.entry.receipt;
+    this.type = this.entry.type;
+    this.interval = this.entry.interval;
+  }
+  /**
+   * This function will check if all required inputs have values and will add or update entry according to
+   * the boolean value of local variable editMode.
+   */
   save(){
     this.errors.clear();
     if(!this.name){
@@ -66,17 +108,58 @@ export class AddExpenseComponent implements OnInit {
       }
     }
   }
+
+  /**
+   * This function will add data to firebase collection.
+   */
   addExpenseEntry(){
-    this.entry = new Expense('', this.name, this.amount, this.date, this.receipt, this.interval, this.userId, this.userName, this.groupId);
-    this.expensesService.addExpense(this.entry);
-    this.modalCtrl.dismiss();
+    this.entry = new Expense(
+      '',
+      this.name,
+      this.amount,
+      this.date,
+      this.receipt,
+      this.userId,
+      this.userName,
+      this.groupId,
+      this.type,
+      this.interval
+    );
+    if(this.type === 'expense'){
+      this.expensesService.addExpense(this.entry).catch((err) => console.log('Error: ', err));
+    } else if(this.type === 'income'){
+      this.incomingService.addIncome(this.entry).catch((err) => console.log('Error: ', err));
+    }
+    this.modalCtrl.dismiss().catch((err) => console.log('Error: ', err));
   }
+
+  /**
+   * This function will update entry in firebase collection.
+   */
   updateExpenseEntry(){
-    this.entry = new Expense(this.id, this.name, this.amount, this.date, this.receipt, this.interval,
-      this.userId, this.userName, this.groupId);
-    this.expensesService.updateExpense(this.entry);
-    this.modalCtrl.dismiss();
+    this.entry = new Expense(
+      this.id,
+      this.name,
+      this.amount,
+      this.date,
+      this.receipt,
+      this.userId,
+      this.userName,
+      this.groupId,
+      this.type,
+      this.interval
+    );
+    if(this.type === 'expense'){
+      this.expensesService.updateExpense(this.entry);
+    } else if(this.type === 'income'){
+      this.incomingService.updateIncome(this.entry);
+    }
+    this.modalCtrl.dismiss().catch((err) => console.log('Error: ', err));
   }
+
+  /**
+   * This function will delete entry.
+   */
   async deleteExpense(){
     const alertConfirm = await this.alertCtrl.create({
       header: 'Sind Sie sicher?',
@@ -103,6 +186,13 @@ export class AddExpenseComponent implements OnInit {
       buttons: ['OK']
     });
   }
+
+  /**
+   * This function will by triggered by an event and will pass data to function to add this to the firebase
+   * collection.
+   *
+   * @param event
+   */
   uploadPhoto(event){
     this.uploadStatus = true;
     this.receipt = this.photoService.storeImg(event.target.files[0]).then((res: any) => {
@@ -116,7 +206,11 @@ export class AddExpenseComponent implements OnInit {
         console.log('Error: ', error);
       });
   }
+
+  /**
+   * This function will dismiss modal.
+   */
   dismissModal(){
-    this.modalCtrl.dismiss();
+    this.modalCtrl.dismiss().catch((err) => console.log('Error: ', err));
   }
 }

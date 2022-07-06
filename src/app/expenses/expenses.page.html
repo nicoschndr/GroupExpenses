@@ -5,8 +5,8 @@
     </ion-buttons>
     <ion-buttons slot="end">
       <ion-button (click)="openAddExpensesModal()">Add Expense</ion-button>
-<!--      <ion-button (click)="openAddExpensesModal()">Add Expense</ion-button>-->
       <ion-button (click)="openAddIncomeModal()">Add Income</ion-button>
+      <ion-button (click)="calcShare()">Add Share</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -85,7 +85,7 @@
                 <ion-content>
                   <ion-list>
                     <ion-item [button]="true" [detail]="false" (click)="showExpenseDetails(expense.id)">Details anzeigen</ion-item>
-                    <ion-item [button]="true" [detail]="false" (click)="editExpense(expense)">Bearbeiten</ion-item>
+                    <ion-item [button]="true" [detail]="false" (click)="editExpense(expense.id)">Bearbeiten</ion-item>
                     <ion-item [button]="true" [detail]="false" (click)="deleteExpense(expense)" style="color: red">Löschen</ion-item>
                   </ion-list>
                 </ion-content>
@@ -125,7 +125,7 @@
                 <ion-col class="ion-align-items-center" size="4">
                   <ion-row class="ion-justify-content-center">
                     <ion-buttons>
-                      <ion-button (click)="editIncome(income)">
+                      <ion-button (click)="editIncome(income.id)">
                         <ion-icon name="create-outline" size="small"></ion-icon>
                       </ion-button>
                     </ion-buttons>

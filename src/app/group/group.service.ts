@@ -50,7 +50,7 @@ export class GroupService {
   async getGroup(groupId: string): Promise<Group> {
     const docRef = doc(this.groupCollectionRef.withConverter(this.groupConverter), groupId);
     const groupDoc = await getDoc(docRef);
-    return groupDoc.data();
+    return groupDoc.data() as Group;
   }
 
   async findGroups(uId: string): Promise<Group[]>{

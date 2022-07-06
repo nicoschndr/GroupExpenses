@@ -1,9 +1,9 @@
 export class Group{
-  groupMembers: any;
+  groupMembers: string[];
   key: string;
   name: string;
 
-  constructor(groupMembers: any, key: string, name: string) {
+  constructor(groupMembers: string[], key: string, name: string) {
     this.groupMembers = groupMembers;
     this.key = key;
     this.name = name;
