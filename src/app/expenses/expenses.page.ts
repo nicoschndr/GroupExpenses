@@ -131,7 +131,7 @@ export class ExpensesPage implements OnInit {
     this.incomingService.getAllIncoming(id).subscribe((res) => {
       this.incoming = res.map((e) => ({
         id: e.payload.doc.id,
-        ...e.payload.doc.data() as Income
+        ...e.payload.doc.data() as Expense
       }));
     });
   }
@@ -193,32 +193,15 @@ export class ExpensesPage implements OnInit {
   async calcShare(){
     console.log('calc share');
     this.currentGroup = await this.groupService.getGroup(this.groupId);
-    const group: Group = new Group(
-      ['qnJ51aAi7iZevuMRAUhp5FXrLI63', '94u305hugwo', '98h435h02gj94', 'fn82303z543214'],
-      'kjhji',
-      'kjhji'
-    );
-    for(const uId of group.groupMembers){
-      // Can not fetch data for some reasons, still working on it
-      const userIncoming: Income[] = this.incomingService.getIncomingByUserId(this.groupId, uId);
+    for(const uId of this.currentGroup.groupMembers){
+      const userIncoming = this.incoming.filter((obj) => obj.userId === uId);
       let userSum = 0;
       let share = 0;
-      const incomingTest: Income[] = [
-        new Income(
-          '8if9z435h23',
-          'qnJ51aAi7iZevuMRAUhp5FXrLI63',
-          'Benjamin',
-          '84h209gh4',
-          'Max',
-          10,
-          new Date(),
-          'hf8345iuhwge'),
-      ];
       console.log('user Incoming: ', JSON.stringify(userIncoming));
-      for(const income of incomingTest){
+      for(const income of userIncoming){
         userSum += income.amount;
       }
-      share = userSum / group.groupMembers.length;
+      share = userSum / this.currentGroup.groupMembers.length;
       await this.incomingService.addShare(this.groupId, uId, share);
     }
   }

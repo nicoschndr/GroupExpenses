@@ -28,18 +28,6 @@ export class IncomingsService {
   getAllIncoming(id: string){
     return this.afs.collection('incoming', ref => ref.where('groupId', '==', id)).snapshotChanges();
   }
-  getIncomingByUserId(groupId: string, userId: string){
-    const db = firebase.firestore().collection('incoming');
-    let userIncoming: Income[] = [];
-    db.where('groupId', '==', groupId).where('debitorId', '==', userId)
-      .get().then((res) => {
-      userIncoming = res.docs.map((e) => ({
-        id: e.id,
-        ...e.data() as Income
-      }));
-    });
-    return userIncoming;
-  }
   async getEntryById(id: string) {
     const document = await this.incomingCollections.doc(id).get().toPromise();
     return document.data() as Expense;
@@ -59,10 +47,6 @@ export class IncomingsService {
    *
    */
   async addShare(gId: string, uId: string, money: number){
-    // temporary testData
-    const groupId = 'VHrpRwIDhaRAaBfKmPGd';
-    const share = 10;
-    const userId = '9h4hqvZqhXFgjwf5xldY';
     const decrement = firebase.firestore.FieldValue.increment(-money);
     firebase.firestore().collection('group').doc(gId).collection('paymentTest').doc(uId)
       .collection('groupMembers').get().then((snapshot) => {
