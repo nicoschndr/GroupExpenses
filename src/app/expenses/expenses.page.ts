@@ -22,7 +22,7 @@ export class ExpensesPage implements OnInit {
   expense: Expense;
   expenses: Expense[] = [];
   income: Income;
-  incoming: Income[] = [];
+  incoming: Expense[] = [];
   groupId: string;
   users: User[];
   split = [];
