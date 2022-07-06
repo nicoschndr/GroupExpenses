@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import {Expense} from '../models/classes/expense';
-import{Income} from '../models/classes/income';
 import {ActionSheetController, AlertController, ModalController} from '@ionic/angular';
 import {ExpensesService} from '../services/expenses.service';
 import {AddExpenseComponent} from '../components/add-expense/add-expense.component';
@@ -10,6 +9,7 @@ import {UserService} from '../services/user.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {GroupService} from '../group/group.service';
 import {Group} from '../models/classes/Group.model';
+import {DetailsPageComponent} from '../components/details-page/details-page.component';
 
 @Component({
   selector: 'app-expenses',
@@ -20,17 +20,22 @@ export class ExpensesPage implements OnInit {
   segment = 'Aufteilung';
   expense: Expense;
   expenses: Expense[] = [];
-  income: Income;
+  income: Expense;
   incoming: Expense[] = [];
   groupId: string;
   users: User[];
   split = [];
   currentUserId: string;
   currentGroup: Group;
-  constructor(private actionSheet: ActionSheetController, public expensesService: ExpensesService,
-              private modalCtrl: ModalController, public incomingService: IncomingsService,
-              private alertCtrl: AlertController, private userService: UserService,
-              private router: Router, private route: ActivatedRoute, private groupService: GroupService) {
+  constructor(private actionSheet: ActionSheetController,
+              public expensesService: ExpensesService,
+              private modalCtrl: ModalController,
+              public incomingService: IncomingsService,
+              private alertCtrl: AlertController,
+              private userService: UserService,
+              private router: Router,
+              private route: ActivatedRoute,
+              private groupService: GroupService) {
     this.groupId = this.route.snapshot.paramMap.get('gId');
     this.getCurrentUserData().catch((err) => console.log('Error: ', err));
     this.getExpenses(this.groupId);
@@ -55,11 +60,16 @@ export class ExpensesPage implements OnInit {
    ***************************/
 
   /**
+   * This function will get all expenses of the current group with the given group id.
    *
-   * @param id
+   * @example
+   * Call it with a group id as a string
+   * getExpenses('h8f5h2gg4')
+   *
+   * @param groupId
    */
-  getExpenses(id: string){
-    this.expensesService.getAllExpenses(id).subscribe((res) => {
+  getExpenses(groupId: string){
+    this.expensesService.getAllExpenses(groupId).subscribe((res) => {
       this.expenses = res.map((e) => ({
         id: e.payload.doc.id,
         ...e.payload.doc.data() as Expense
@@ -67,11 +77,16 @@ export class ExpensesPage implements OnInit {
     });
     this.expenses.sort();
   }
+
+  /**
+   * This function will open and pass group id and type to modal form to create a new expense.
+   */
   async openAddExpensesModal(){
     const modal = await this.modalCtrl.create({
       component: AddExpenseComponent,
       componentProps: {
         groupId: this.groupId,
+        id: '',
         type: 'expense',
       }
     });
@@ -81,11 +96,21 @@ export class ExpensesPage implements OnInit {
       .catch(err => console.log('error modal: ', err));
     await modal.onDidDismiss();
   }
-  async editExpense(entryId: string){
+
+  /**
+   * This function will open and pass expense id and type to modal form for user to update expense data.
+   *
+   * @example
+   * Call it with an expense id as a string
+   * editExpense('z5t84hug')
+   *
+   * @param expense
+   */
+  async editExpense(expense: Expense){
     const modal = await this.modalCtrl.create({
       component: AddExpenseComponent,
       componentProps: {
-        id: entryId,
+        data: expense,
         type: 'expense',
       },
     });
@@ -94,9 +119,38 @@ export class ExpensesPage implements OnInit {
       .catch(err => console.log('error modal: ', err));
     await modal.onDidDismiss();
   }
-  showExpenseDetails(id: string){
-    this.router.navigate(['expense-details/', {eId: id}]).catch((err) => console.log('Error: ', err));
+
+  /**
+   * This function will navigate to details page with expense id.
+   *
+   * @example
+   * Call it with an expense id as a string
+   * showExpenseDetails('fu98tq3')
+   *
+   * @param expense
+   */
+  async showExpenseDetails(expense: Expense){
+    const modal = await this.modalCtrl.create({
+      component: DetailsPageComponent,
+      componentProps: {
+        data: expense
+      }
+    });
+    await modal.present()
+      .then(() => console.log('No error with presenting modal'))
+      .catch(err => console.log('error modal: ', err));
+    await modal.onDidDismiss();
   }
+
+  /**
+   * This function will delete expense from firestore with given expense object.
+   *
+   * @example
+   * Call it with an object of type Expense
+   * deleteExpense(expense: Expense)
+   *
+   * @param expense
+   */
   async deleteExpense(expense: Expense){
     const alertConfirm = await this.alertCtrl.create({
       header: 'Sind Sie sicher?',
@@ -123,22 +177,32 @@ export class ExpensesPage implements OnInit {
    **************************/
 
   /**
+   * This function will get all incoming from current group with given group id
    *
-   * @param id
+   * @example
+   * Call it with a group id as a string
+   * getIncoming('fnt4gtr')
+   *
+   * @param groupId
    */
-  getIncoming(id: string){
-    this.incomingService.getAllIncoming(id).subscribe((res) => {
+  getIncoming(groupId: string){
+    this.incomingService.getAllIncoming(groupId).subscribe((res) => {
       this.incoming = res.map((e) => ({
         id: e.payload.doc.id,
         ...e.payload.doc.data() as Expense
       }));
     });
   }
+
+  /**
+   * This function will open and pass group id and type to modal form to create a new income.
+   */
   async openAddIncomeModal(){
     const modal = await this.modalCtrl.create({
       component: AddExpenseComponent,
       componentProps: {
         groupId: this.groupId,
+        id: '',
         type: 'income',
       }
     });
@@ -148,11 +212,21 @@ export class ExpensesPage implements OnInit {
       .catch(err => console.log('error modal: ', err));
     await modal.onDidDismiss();
   }
-  async editIncome(entryId: string){
+
+  /**
+   * This function will open and pass expense id and type to modal form for user to update income data.
+   *
+   * @example
+   * Call it with an expense id as a string
+   * editExpense('z5t84hug')
+   *
+   * @param income
+   */
+  async editIncome(income: Expense){
     const modal = await this.modalCtrl.create({
       component: AddExpenseComponent,
       componentProps: {
-        id: entryId,
+        data: income,
         type: 'income',
       },
     });
@@ -161,7 +235,30 @@ export class ExpensesPage implements OnInit {
       .catch(err => console.log('error modal: ', err));
     await modal.onDidDismiss();
   }
-  async deleteIncome(income: Income){
+
+  async showIncomeDetails(income: Expense){
+    const modal = await this.modalCtrl.create({
+      component: DetailsPageComponent,
+      componentProps: {
+        data: income
+      }
+    });
+    await modal.present()
+      .then(() => console.log('No error with presenting modal'))
+      .catch(err => console.log('error modal: ', err));
+    await modal.onDidDismiss();
+  }
+
+  /**
+   * This function will delete expense from firestore with given income object.
+   *
+   * @example
+   * Call it with an object of type Expense
+   * deleteExpense(income: Expense)
+   *
+   * @param income
+   */
+  async deleteIncome(income: Expense){
     const alertConfirm = await this.alertCtrl.create({
       header: 'Sind Sie sicher?',
       message: 'Soll der Eintrag wirklich gelöscht werden?',

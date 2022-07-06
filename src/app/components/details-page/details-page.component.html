@@ -1,0 +1,69 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{pageTitle}} "{{entry.name}}"</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="dismissModal()">
+        <ion-icon name="close-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-col class="ion-justify-content-center">
+    <!-- name of entry -->
+    <ion-row class="ion-text-start">
+      <ion-col>
+        <p>Name</p>
+      </ion-col>
+      <ion-col>
+        <p>{{entry.name}}</p>
+      </ion-col>
+    </ion-row>
+    <!-- amount of entry -->
+    <ion-row class="ion-text-start">
+      <ion-col>
+        <p>Betrag</p>
+      </ion-col>
+      <ion-col>
+        <p>{{entry.amount}}</p>
+      </ion-col>
+    </ion-row>
+    <!-- date of entry -->
+    <ion-row class="ion-text-start">
+      <ion-col>
+        <p>Datum</p>
+      </ion-col>
+      <ion-col>
+        <p>{{entry.date | date: 'dd.MM.yyyy'}}</p>
+      </ion-col>
+    </ion-row>
+    <!-- interval of entry -->
+    <ion-row class="ion-text-start" *ngIf="interval !== ''">
+      <ion-col>
+        <p>
+          Monatlich wiederkehrend?
+        </p>
+      </ion-col>
+      <ion-col>
+        <p>{{interval}}</p>
+      </ion-col>
+    </ion-row>
+    <!-- username of entry -->
+    <ion-row class="ion-text-start">
+      <ion-col>
+        <p>Betrag von</p>
+      </ion-col>
+      <ion-col>
+        <p>{{entry.userName}}</p>
+      </ion-col>
+    </ion-row>
+    <!-- receipt of entry -->
+    <ion-row class="ion-text-start">
+      <ion-img *ngIf="entry.receipt !== undefined"
+               src="{{entry.receipt}}"
+               alt="receipt-image">
+      </ion-img>
+    </ion-row>
+  </ion-col>
+</ion-content>

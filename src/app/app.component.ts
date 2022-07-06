@@ -2,7 +2,6 @@ import {Component, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angul
 import {ActivatedRoute, NavigationEnd, NavigationStart, Router} from '@angular/router';
 import {ActionSheetController, ModalController} from '@ionic/angular';
 import {TrackNavService} from './track-nav.service';
-import {AddIncomeComponent} from './components/add-income/add-income.component';
 import {AddExpenseComponent} from './components/add-expense/add-expense.component';
 
 
@@ -80,7 +79,10 @@ export class AppComponent implements OnInit, OnChanges {
   }
   async openModalExpense(){
     const modal = await this.modalCtrl.create({
-      component: AddExpenseComponent
+      component: AddExpenseComponent,
+      componentProps: {
+        type: 'expense'
+      }
     });
     await modal
       .present()
@@ -90,7 +92,10 @@ export class AppComponent implements OnInit, OnChanges {
   }
   async openModalIncome(){
     const modal = await this.modalCtrl.create({
-      component: AddIncomeComponent
+      component: AddExpenseComponent,
+      componentProps: {
+        type: 'income'
+      }
     });
     await modal
       .present()

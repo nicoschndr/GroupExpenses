@@ -26,7 +26,7 @@ export class AddExpenseComponent implements OnInit {
   userName: string;
   groupId: string;
   type: string;
-  interval: boolean;
+  interval = false;
   editMode = false;
   currentUser: User;
   errors: Map<string, string> = new Map<string, string>();
@@ -41,14 +41,14 @@ export class AddExpenseComponent implements OnInit {
               private userService: UserService,
               private alertCtrl: AlertController,
               private photoService: PhotoService) {
-    this.entry = navParams.get('id');
-    if(this.id){
+    this.entry = this.navParams.get('data');
+    this.id = this.navParams.get('id');
+    this.type = this.navParams.get('type');
+    this.groupId = this.navParams.get('groupId');
+    if(this.entry){
       this.editMode = true;
       this.setValuesInInputs().catch((err) => console.log('Error: ', err));
     }
-    this.groupId = this.navParams.get('groupId');
-    this.type = this.navParams.get('type');
-    console.log('Receipt: ', this.receipt);
   }
   ngOnInit() {
     this.setPageTitle().catch((err) => console.log('Error: ', err));
@@ -77,6 +77,10 @@ export class AddExpenseComponent implements OnInit {
     } else if(this.type === 'income' && this.id === ''){
       this.pageTitle = 'Einnahme hinzufügen';
     }
+  }
+
+  async getExpenseData(){
+    this.entry = await this.expensesService.getEntryById(this.id);
   }
 
   async setValuesInInputs(){

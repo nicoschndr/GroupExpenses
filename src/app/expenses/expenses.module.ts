@@ -7,8 +7,8 @@ import { IonicModule } from '@ionic/angular';
 import { ExpensesPageRoutingModule } from './expenses-routing.module';
 
 import { ExpensesPage } from './expenses.page';
-import {AddExpenseComponent} from '../components/add-expense/add-expense.component';
-import {AddIncomeComponent} from '../components/add-income/add-income.component';
+import { AddExpenseComponent } from '../components/add-expense/add-expense.component';
+import { DetailsPageComponent} from '../components/details-page/details-page.component';
 
 @NgModule({
     imports: [
@@ -18,9 +18,10 @@ import {AddIncomeComponent} from '../components/add-income/add-income.component'
         ExpensesPageRoutingModule,
     ],
     exports: [
-        AddExpenseComponent
+        AddExpenseComponent,
+        DetailsPageComponent
     ],
-    declarations: [ExpensesPage, AddExpenseComponent, AddIncomeComponent],
-    entryComponents: [AddExpenseComponent, AddIncomeComponent],
+    declarations: [ExpensesPage, AddExpenseComponent, DetailsPageComponent],
+    entryComponents: [AddExpenseComponent, DetailsPageComponent],
 })
 export class ExpensesPageModule {}

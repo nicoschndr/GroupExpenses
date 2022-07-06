@@ -18,15 +18,25 @@ export class IncomingsService {
   constructor(private afs: AngularFirestore) {
     this.incomingCollections = this.afs.collection('incoming');
   }
-  async addIncome(entry: Expense) {
-    entry.id = this.afs.createId();
-    const data = JSON.parse(JSON.stringify(entry));
-    await this.incomingCollections.doc(entry.id).set(data)
+
+  /**
+   * This function will add given data to firebase collection.
+   *
+   * @example
+   * Call it with an income object of type Expense
+   * addIncome(income: Expense)
+   *
+   * @param income
+   */
+  async addIncome(income: Expense) {
+    income.id = this.afs.createId();
+    const data = JSON.parse(JSON.stringify(income));
+    await this.incomingCollections.doc(income.id).set(data)
       .catch((err) => console.log('Error: ' + err));
   }
 
   /**
-   * This function will fetch all data from the collection with the given group id.
+   * This function will return an observable containing all data from the collection with the given group id.
    *
    * @example
    * Call it with a group id as a string
