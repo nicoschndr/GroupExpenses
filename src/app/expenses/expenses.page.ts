@@ -9,7 +9,6 @@ import {User} from '../models/classes/User.model';
 import {UserService} from '../services/user.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {GroupService} from '../group/group.service';
-import {ExpenseDetailsPage} from '../expense-details/expense-details.page';
 import {Group} from '../models/classes/Group.model';
 
 @Component({
@@ -191,13 +190,12 @@ export class ExpensesPage implements OnInit {
     await alertSuccess.present();
   }
   async calcShare(){
-    console.log('calc share');
     this.currentGroup = await this.groupService.getGroup(this.groupId);
+    let userIncoming: Expense[] = [];
     for(const uId of this.currentGroup.groupMembers){
-      const userIncoming = this.incoming.filter((obj) => obj.userId === uId);
+      userIncoming = this.incoming.filter((obj) => obj.userId === uId);
       let userSum = 0;
       let share = 0;
-      console.log('user Incoming: ', JSON.stringify(userIncoming));
       for(const income of userIncoming){
         userSum += income.amount;
       }

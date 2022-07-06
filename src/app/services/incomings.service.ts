@@ -3,7 +3,6 @@ import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/compat
 import {Observable} from 'rxjs';
 import {Expense} from '../models/classes/expense';
 import firebase from 'firebase/compat/app';
-import {Income} from '../models/classes/income';
 
 @Injectable({
   providedIn: 'root'
@@ -25,20 +24,59 @@ export class IncomingsService {
     await this.incomingCollections.doc(entry.id).set(data)
       .catch((err) => console.log('Error: ' + err));
   }
-  getAllIncoming(id: string){
-    return this.afs.collection('incoming', ref => ref.where('groupId', '==', id)).snapshotChanges();
+
+  /**
+   * This function will fetch all data from the collection with the given group id.
+   *
+   * @example
+   * Call it with a group id as a string
+   * getAllIncoming('nf9o45t')
+   *
+   * @param groupId
+   */
+  getAllIncoming(groupId: string){
+    return this.afs.collection('incoming', ref => ref.where('groupId', '==', groupId)).snapshotChanges();
   }
-  async getEntryById(id: string) {
-    const document = await this.incomingCollections.doc(id).get().toPromise();
+
+  /**
+   * This function will fetch data with given id from firebase collection.
+   *
+   * @example
+   * Call it with an id as a string
+   * getEntryById('35rht2g6')
+   *
+   * @param incomeId
+   */
+  async getEntryById(incomeId: string) {
+    const document = await this.incomingCollections.doc(incomeId).get().toPromise();
     return document.data() as Expense;
   }
-  updateIncome(entry: Expense){
-    const data = JSON.parse(JSON.stringify(entry));
-    this.incomingCollections.doc(entry.id).update(data)
+
+  /**
+   * This function will update income of object Expense in firebase.
+   *
+   * @example
+   * Call it with an income object of type Expense
+   * updateIncome(income: Expense)
+   *
+   * @param income
+   */
+  updateIncome(income: Expense){
+    const data = JSON.parse(JSON.stringify(income));
+    this.incomingCollections.doc(income.id).update(data)
       .catch((err) => console.log('Error: ', err));
   }
-  async removeEntry(id: string){
-    await this.incomingCollections.doc(id).delete();
+
+  /**
+   * This function will remove income entry with given income id string.
+   *
+   * @example
+   * Call it with an income id as a string
+   *
+   * @param incomeId
+   */
+  async removeEntry(incomeId: string){
+    await this.incomingCollections.doc(incomeId).delete();
   }
 
   /**
@@ -46,8 +84,8 @@ export class IncomingsService {
    * of debitor with the given userId.
    *
    */
-  async addShare(gId: string, uId: string, money: number){
-    const decrement = firebase.firestore.FieldValue.increment(-money);
+  async addShare(gId: string, uId: string, share: number){
+    const decrement = firebase.firestore.FieldValue.increment(-share);
     firebase.firestore().collection('group').doc(gId).collection('paymentTest').doc(uId)
       .collection('groupMembers').get().then((snapshot) => {
         for(const user of snapshot.docs) {
