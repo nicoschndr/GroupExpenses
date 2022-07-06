@@ -24,7 +24,7 @@ ion-label {
   justify-items: center;
 }
 ion-card {
-  width: 80%;
+  width: 90%;
   margin: 10px;
   border: 1px solid #8CB8ED;
   border-radius: 15px;
@@ -55,13 +55,13 @@ ion-card-content {
   position: absolute;
   top: 35%;
   right: 0;
-  transform: translateX(-50%);
+  transform: translateX(-30%);
 }
 .userNameE {
   position: absolute;
   top: 35%;
   right: 0;
-  transform: translateX(-50%);
+  transform: translateX(-30%);
   font-size: 15px;
 }
 .amountI {
@@ -70,6 +70,20 @@ ion-card-content {
   right: 0;
   transform: translateX(-90%);
 }
+ion-segment-button {
+  ion-label {
+    ion-icon {
+      padding-top: 15px;
+    }
+  }
+}
 .emptyCard {
   text-align: center;
+}
+@media only screen and (max-width: 360px) {
+  ion-segment-button {
+    ion-label {
+      font-size: 10px;
+    }
+  }
 }
