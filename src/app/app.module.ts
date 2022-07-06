@@ -12,6 +12,7 @@ import {initializeApp, provideFirebaseApp} from '@angular/fire/app';
 import {environment} from '../environments/environment';
 import {getFirestore, provideFirestore} from '@angular/fire/firestore';
 import {AngularFireModule} from '@angular/fire/compat';
+import {SharedModule} from './shared/shared.modules';
 
 @NgModule({
   declarations: [AppComponent],
@@ -24,7 +25,9 @@ import {AngularFireModule} from '@angular/fire/compat';
     AngularFireDatabaseModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
     provideFirebaseApp(()=>initializeApp(environment.firebaseConfig)),
-    provideFirestore(()=>getFirestore())],
+    provideFirestore(()=>getFirestore()),
+    SharedModule,
+  ],
   providers: [{
     provide: RouteReuseStrategy,
     useClass: IonicRouteStrategy,

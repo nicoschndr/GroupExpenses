@@ -154,7 +154,7 @@ export class ExpensesPage implements OnInit {
   async deleteExpense(expense: Expense){
     const alertConfirm = await this.alertCtrl.create({
       header: 'Sind Sie sicher?',
-      message: 'Soll der Eintrag ' + expense.name + ' wirklich gelöscht werden?',
+      message: 'Soll der Eintrag ' + '"'+ expense.name +'"' + ' wirklich gelöscht werden?',
       buttons: [
         {
           text: 'Ja',
@@ -261,7 +261,7 @@ export class ExpensesPage implements OnInit {
   async deleteIncome(income: Expense){
     const alertConfirm = await this.alertCtrl.create({
       header: 'Sind Sie sicher?',
-      message: 'Soll der Eintrag wirklich gelöscht werden?',
+      message: 'Soll der Eintrag '+'"'+ income.name + '"'+ ' wirklich gelöscht werden?',
       buttons: [
         {
           text: 'Ja',

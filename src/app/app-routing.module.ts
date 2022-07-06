@@ -76,15 +76,6 @@ const routes: Routes = [
     path: 'home',
     loadChildren: () => import('./group/group-overview/group-overview.module').then( m => m.GroupOverviewPageModule)
   },
-  {
-    path: 'expense-details',
-    loadChildren: () => import('./expense-details/expense-details.module').then( m => m.ExpenseDetailsPageModule)
-  },
-  {
-    path: 'expense-details/:id',
-    loadChildren: () => import('./expense-details/expense-details.module').then( m => m.ExpenseDetailsPageModule)
-  },
-
 ];
 
 @NgModule({
