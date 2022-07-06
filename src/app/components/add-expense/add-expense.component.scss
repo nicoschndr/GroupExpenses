@@ -39,3 +39,8 @@ ion-img {
   height: 100px;
   object-fit: cover;
 }
+@media only screen and (max-width: 360px) {
+  ion-title {
+    font-size: 15px;
+  }
+}

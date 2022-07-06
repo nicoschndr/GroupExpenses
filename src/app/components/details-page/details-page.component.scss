@@ -1,0 +1,9 @@
+ion-col {
+  display: inline-block;
+  justify-content: center;
+}
+@media only screen and (max-width: 360px) {
+  ion-title {
+    font-size: 15px;
+  }
+}
