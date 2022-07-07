@@ -7,8 +7,10 @@ import {PaymentsService} from '../../services/payments.service';
 import {User} from '../../models/classes/User.model';
 import {UserService} from '../../services/user.service';
 import {AlertsService} from '../../services/alerts.service';
-import {Group} from "../../models/classes/group.model";
-import {GroupService} from "../../services/group.service";
+import {Group} from '../../models/classes/group.model';
+import {GroupService} from '../../services/group.service';
+import {DebtsService} from '../../services/debts.service';
+import {Debt} from '../../models/classes/debt';
 
 
 @Component({
@@ -20,14 +22,18 @@ export class GroupOverviewPage implements ViewDidEnter{
   public editMode = false;
   public group: Group = new Group();
   public members: User[] = [];
+  public membersDebt: Map<string, number> = new Map();
   public groupId: string;
+  public debtOfUser: number;
   private currentUserId: string;
   private isInGroup = false;
+  private debts: Debt[] = [];
 
   constructor(
     private groupService: GroupService,
     private userService: UserService,
     private paymentsService: PaymentsService,
+    private debtsService: DebtsService,
     private route: ActivatedRoute,
     private router: Router,
     private navCtrl: NavController,
@@ -40,6 +46,7 @@ export class GroupOverviewPage implements ViewDidEnter{
   async ionViewDidEnter() {
     await this.getUser();
     await this.getGroup();
+    await this.getDebts(this.groupId);
     await this.getMembers();
   }
 
@@ -74,8 +81,10 @@ export class GroupOverviewPage implements ViewDidEnter{
         users[0].reminderCount = user.reminderCount;
       } else {
         users.push(user);
+        this.membersDebt.set(user.id, 0);
       }
     }
+    await this.getMembersDebts();
     this.members = users;
   }
 
@@ -200,7 +209,7 @@ export class GroupOverviewPage implements ViewDidEnter{
     }
   }
 
-  async sendReminder(uId: string, fN: string, pId: string) {
+  public async sendReminder(uId: string, fN: string, pId: string) {
     const alertSendReminder = await this.alertController.create({
       cssClass: 'alert',
       header: 'Möchtest du ' + fN + ' eine Zahlungserinnerung senden?',
@@ -210,6 +219,7 @@ export class GroupOverviewPage implements ViewDidEnter{
           this.userService.setReminderCount(uId);
           this.paymentsService.setReminderForPayment(pId);
           this.alertsService.showConfirmation();
+          this.getMembers();
         }
       }, {
         text: 'Nein',
@@ -219,8 +229,42 @@ export class GroupOverviewPage implements ViewDidEnter{
     await alertSendReminder.present();
     await alertSendReminder.onDidDismiss();
   }
-  showExpensesOverview(groupId: string){
+
+  public showExpensesOverview(groupId: string){
     this.router.navigate(['expenses/', {gId: groupId}]).catch((err) => console.log('Error: ', err));
+  }
+
+  public async markDebtAsPaid(dId: string) {
+    for (const debt of this.debts) {
+      if (debt.dId === dId && debt.cId === this.currentUserId) {
+        await this.debtsService.markDebtAsPaid(this.groupId, debt.id);
+        await this.userService.unsetReminderCount(dId);
+        await this.getMembers();
+      }
+    }
+  }
+
+  private async getDebts(groupId: string) {
+    this.debts = await this.debtsService.getDebts(groupId);
+    await this.getBalanceOfUser();
+  }
+
+  private getBalanceOfUser() {
+    let sum: number = 0;
+    for (const debt of this.debts) {
+      if (debt.dId === this.currentUserId) {
+        sum += debt.amount;
+      }
+    }
+    this.debtOfUser = sum;
+  }
+
+  private async getMembersDebts() {
+    for (const debt of this.debts) {
+      if (debt.dId !== this.currentUserId) {
+        this.membersDebt.set(debt.dId, debt.amount);
+      }
+    }
   }
 }
 

@@ -9,6 +9,7 @@ import {AddIncomeComponent} from '../components/add-income/add-income.component'
 import {User} from '../models/classes/User.model';
 import {UserService} from '../services/user.service';
 import {ActivatedRoute, Router} from '@angular/router';
+import {DebtsService} from '../services/debts.service';
 
 @Component({
   selector: 'app-expenses',
@@ -32,16 +33,18 @@ export class ExpensesPage implements OnInit {
               private alertCtrl: AlertController,
               private userService: UserService,
               private router: Router,
-              private route: ActivatedRoute) {
+              private route: ActivatedRoute,
+              public debtsService: DebtsService,
+              ) {}
+
+  async ngOnInit() {
     this.groupId = this.route.snapshot.paramMap.get('gId');
     this.getCurrentUserData().catch((err) => console.log('Error: ', err));
-    this.getExpenses(this.groupId);
+    await this.getExpenses(this.groupId);
     this.getIncoming(this.groupId);
   }
-
-  ngOnInit() {
-  }
   segmentChanged(ev: any){
+    console.log(this.expenses);
     console.log('Segment changed to ', ev);
   }
   //methods for expenses
@@ -51,7 +54,7 @@ export class ExpensesPage implements OnInit {
   async getCurrentUserData(){
     this.currentUserId = await this.userService.getCurrentUserId();
   }
-  getExpenses(id: string){
+  async getExpenses(id: string){
     this.expensesService.getAllExpenses(id).subscribe((res) => {
       this.expenses = res.map((e) => ({
         id: e.payload.doc.id,
@@ -168,5 +171,9 @@ export class ExpensesPage implements OnInit {
       buttons: ['OK']
     });
     await alertSuccess.present();
+  }
+
+  async showDebts() {
+    await this.debtsService.calculateDebts(this.groupId, this.expenses);
   }
 }
