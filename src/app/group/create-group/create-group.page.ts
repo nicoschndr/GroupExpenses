@@ -3,7 +3,7 @@ import {GroupService} from '../group.service';
 import {Group} from '../group.model';
 import {ActivatedRoute, Router} from '@angular/router';
 import {NavController} from '@ionic/angular';
-import {TrackNavService} from "../../track-nav.service";
+import {TrackNavService} from '../../track-nav.service';
 
 @Component({
   selector: 'app-create-group',

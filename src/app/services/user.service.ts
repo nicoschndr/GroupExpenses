@@ -3,7 +3,7 @@ import {AngularFireAuth} from '@angular/fire/compat/auth';
 import {AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument} from '@angular/fire/compat/firestore';
 import firebase from 'firebase/compat/app';
 import {User} from '../models/classes/User.model';
-import {Group} from '../models/classes/Group.model';
+import {Group} from '../models/classes/group.model';
 import {AlertsService} from './alerts.service';
 import {Router} from '@angular/router';
 import {deleteUser, getAuth, updatePassword} from '@angular/fire/auth';
