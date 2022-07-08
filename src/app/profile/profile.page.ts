@@ -1,8 +1,9 @@
-import {Component, OnInit,} from '@angular/core';
+import {Component, OnInit, ViewChild,} from '@angular/core';
 import {UserService} from '../services/user.service';
 import {User } from '../models/classes/User.model';
 import {getAuth, onAuthStateChanged} from '@angular/fire/auth';
 import {AlertsService} from '../services/alerts.service';
+import {IonInput} from '@ionic/angular';
 
 @Component({
   selector: 'app-profile',
@@ -10,6 +11,8 @@ import {AlertsService} from '../services/alerts.service';
   styleUrls: ['./profile.page.scss'],
 })
 export class ProfilePage implements OnInit {
+  @ViewChild('firstName')
+  public firstName: IonInput;
 
   user: any = {};
   editMode = false;
@@ -19,6 +22,11 @@ export class ProfilePage implements OnInit {
   altespw='';
 
   constructor(private userService: UserService, public alertsService: AlertsService) {
+    if (this.userService.google === true) {
+      this.editMode = true;
+      this.alertsService.errors.clear();
+      this.alertsService.errors.set('googleUser', 'Bitte machen Sie noch ein Paar Angaben!');
+    }
   }
 
   changeMode() {
@@ -31,6 +39,9 @@ export class ProfilePage implements OnInit {
       if (user) {
         const result = await this.userService.getUserWithUid(user.uid);
         Object.assign(this.user, result);
+        if(this.editMode){
+          await this.firstName.setFocus();
+        }
       } else {
       }
     });

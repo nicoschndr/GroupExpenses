@@ -15,6 +15,7 @@ import {Payment} from '../models/classes/payment.model';
   })
   export class UserService {
     isLoggedIn = false;
+    google = false;
     currentUser: any[] = [];
     private userCollection: AngularFirestoreCollection<User>;
     private groupCollection: AngularFirestoreCollection<Group>;
@@ -87,6 +88,14 @@ import {Payment} from '../models/classes/payment.model';
 
     async loginWithGoogle(): Promise<void> {
       await this.afa.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(() => this.isLoggedIn = true);
+      const user = this.getCurrentUser();
+      const userInDatabase = await this.getUserWithUid(user.uid);
+      const userData: User = new User(user.uid, user.email, '', '', '', [],0);
+      if (!userInDatabase) {
+        await this.setUser(user.uid, userData);
+        this.google = true;
+        await this.router.navigate(['profile']);
+      }
     }
 
     async logout() {
@@ -99,6 +108,7 @@ import {Payment} from '../models/classes/payment.model';
       this.alertsService.errors.set('logout', 'Logout erfolgreich!');
       await this.router.navigate(['login']);
       await localStorage.setItem('onboardingShown', JSON.stringify(true));
+      window.location.reload();
     }
 
     async signUp(firstName, lastName, email, password) {
@@ -160,6 +170,7 @@ import {Payment} from '../models/classes/payment.model';
     async setUser(uid, userData) {
       const userRef: AngularFirestoreDocument<User> = this.afs.doc(`user/${uid}`);
       const user: User = {
+        id: uid,
         email: userData.email,
         firstName: userData.firstName,
         lastName: userData.lastName,

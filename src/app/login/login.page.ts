@@ -27,11 +27,14 @@ export class LoginPage implements OnInit{
     await this.router.navigate(['grouplist']);
   }
 
-  async loginWithGoogle() {
+  async loginWithGoogle(): Promise<void> {
+    this.alertsService.errors.clear();
     await this.userService.loginWithGoogle();
     this.email='';
     this.password='';
-    await this.router.navigate(['grouplist']);
+    if(this.userService.google===false){
+      await this.router.navigate(['grouplist']);
+    }
   }
 
   async navigateSignUp() {
