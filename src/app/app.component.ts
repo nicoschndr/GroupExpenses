@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {ActionSheetController} from '@ionic/angular';
-import {TrackNavService} from './services/track-nav.service';
+import {ActionSheetController, ModalController} from '@ionic/angular';
 import {AddExpenseComponent} from './components/add-expense/add-expense.component';
+import {TrackNavService} from './services/track-nav.service';
 
 @Component({
   selector: 'app-root',
@@ -18,6 +18,7 @@ export class AppComponent implements OnInit {
     private route: ActivatedRoute,
     private actionSheetController: ActionSheetController,
     public trackNav: TrackNavService,
+    private modalCtrl: ModalController,
   ) {
     this.trackNav.checkIfInGroupView().subscribe( inGroupView => this.inGroupView = inGroupView);
   }

@@ -8,6 +8,8 @@ import {AlertsService} from '../../services/alerts.service';
 import {TrackNavService} from '../../services/track-nav.service';
 import {Group} from '../../models/classes/group.model';
 import {GroupService} from '../../services/group.service';
+import {DebtsService} from '../../services/debts.service';
+import {Debt} from '../../models/classes/debt';
 
 @Component({
   selector: 'app-grouplist',
@@ -16,11 +18,12 @@ import {GroupService} from '../../services/group.service';
 })
 export class GrouplistPage implements ViewDidEnter{
 
-  leftToPay;
   public grouplist: Group[] = [];
+  public debtInGroup: Map<string, number> = new Map();
   private currentUserId: string;
   private oldReminderCount: number;
   private onboardingShown: boolean;
+  private debts: Debt[] = [];
 
   constructor(
     private router: Router,
@@ -29,19 +32,23 @@ export class GrouplistPage implements ViewDidEnter{
     private userService: UserService,
     private trackNav: TrackNavService,
     private alertsService: AlertsService,
+    private debtService: DebtsService,
   ) {
   }
 
   async ionViewDidEnter() {
     //get value of onboardingShown in localStorage
     this.onboardingShown = await JSON.parse(localStorage.getItem('onboardingShown'));
-    //check if onboarding component was shown before
+    //check if onboarding page was shown before
     if (this.onboardingShown === false) {
+      //if not show
       await this.router.navigate(['onboarding']);
     } else {
       const auth = getAuth();
       onAuthStateChanged(auth, async (user) => {
+        //check if a user is logged in and the onboarding page was shown bevore
         if (user && this.onboardingShown) {
+          //show all groups the user is a member from
           await this.showGrouplist();
         } else {
           await this.handleLogout();
@@ -50,31 +57,42 @@ export class GrouplistPage implements ViewDidEnter{
     }
   }
 
+
+
+  /**
+   * This function will empty the grouplist and navigate the user back to the login page
+   */
   async handleLogout() {
     this.grouplist = [];
-    await this.alertsService.showLoggedOutAlert();
     await this.router.navigate(['login']);
   }
 
+  /***************************************
+   * Functions for showing the grouplist *
+   **************************************/
+
+  /**
+   * This function will trigger all functions needed for showing the grouplist
+   */
   async showGrouplist() {
     this.currentUserId = await this.userService.getCurrentUserId();
     await this.getOldReminderCount();
+    await this.getAllGroupsFromUser(this.currentUserId);
+    await this.getDebtInGroup();
     await this.setNewReminderCountStorage();
-    await this.getAllGroups();
   }
 
-  getOldReminderCount() {
-    this.oldReminderCount = JSON.parse(localStorage.getItem('reminderCount'));
-  }
-
-  async setNewReminderCountStorage() {
-    const userFromService: User = await this.userService.getUserWithUid(this.currentUserId);
-    await localStorage.setItem('reminderCount', JSON.stringify(userFromService.reminderCount));
-    await this.handleReminderAlertsOnOpen();
-  }
-
-  async getAllGroups(): Promise<void> {
-    await (await (this.groupService.findGroupsFromUser(this.currentUserId))).subscribe((res) => {
+  /**
+   * This function will get all groups in which the currently logged in user is a member of
+   *
+   * @example
+   * Call it with a userId type of string
+   * getIncoming('2uGkBIjf5WYoL4UZdObrca9T6mv1')
+   *
+   * @param userId
+   */
+  async getAllGroupsFromUser(userId: string): Promise<void> {
+    await (await (this.groupService.findGroupsFromUser(userId))).subscribe((res) => {
       this.grouplist = res.map((g) => ({
         id: g.payload.doc.id,
         ...g.payload.doc.data() as Group
@@ -82,15 +100,82 @@ export class GrouplistPage implements ViewDidEnter{
     });
   }
 
+  async getDebtInGroup() {
+    for (const group of this.grouplist) {
+      let sum = 0;
+      const debts: Debt[] = await this.debtService.getDebts(group.id);
+      for (const debt of debts) {
+        if (debt.dId === this.currentUserId && !debt.paid) {
+          sum += debt.amount;
+        }
+      }
+      this.debtInGroup.set(group.id, sum);
+    }
+  }
+
+
+  /*****************************************
+   * Functions for handling reminder alerts *
+   *****************************************/
+
+  /**
+   * This function will get the value of the field reminderCount from the localStorage an saves it
+   */
+  getOldReminderCount() {
+    this.oldReminderCount = JSON.parse(localStorage.getItem('reminderCount'));
+  }
+
+  /**
+   * This function will save the value of reminderCount from the currently logged in user in the localStorage
+   */
+  async setNewReminderCountStorage() {
+    //get user with its values from the service
+    const userFromService: User = await this.userService.getUserWithUid(this.currentUserId);
+    //save the value of reminderCount in the localStorage
+    await localStorage.setItem('reminderCount', JSON.stringify(userFromService.reminderCount));
+    //check if there is a difference between the old and new value
+    await this.handleReminderAlertsOnOpen();
+  }
+
+  /**
+   * This function checks if there was a change in the reminderCounter
+   */
   async handleReminderAlertsOnOpen() {
+    //get the value current value of the counter from localStorage
     const newReminderCount: number = await JSON.parse(localStorage.getItem('reminderCount'));
+    //check if the new value of the counter is bigger than the old one
     if (this.oldReminderCount < newReminderCount) {
-      await this.alertsService.showPaymentReminderAlert();
+      //then there has sent somebody a paymentreminder - so show it
+      await this.showPaymentReminderAlert();
+      //check if the user is now in a new reminderGroup
       if (newReminderCount === 1 || newReminderCount === 2 || newReminderCount === 3) {
+        //then show the alert
         await this.alertsService.showNewShamementGroupAlert(newReminderCount);
       }
     }
   }
+
+  /**
+   * This function collects all groups in which are still debts for the u
+   */
+  async showPaymentReminderAlert() {
+    const groupsToPay: string[] = [];
+    for (const group of this.grouplist) {
+      this.debts = await this.debtService.getDebts(group.id);
+      for (const debt of this.debts) {
+        if (!debt.paid) {
+          groupsToPay.push(group.name);
+          break;
+        }
+      }
+    }
+    await this.alertsService.showPaymentReminder(groupsToPay);
+  }
+
+
+  /****************************
+   * Functions for navigation *
+   ***************************/
 
   async navToGroupoverview(groupId: string) {
     await this.router.navigate(['group-overview', {gId: groupId}]);

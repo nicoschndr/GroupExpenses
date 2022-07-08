@@ -241,6 +241,7 @@ export class GroupOverviewPage implements ViewDidEnter{
         await this.debtsService.markDebtAsPaid(this.groupId, debt.id);
         await this.userService.unsetReminderCount(dId);
         await this.getMembers();
+        await this.getMembersDebts();
       }
     }
   }
@@ -251,9 +252,10 @@ export class GroupOverviewPage implements ViewDidEnter{
   }
 
   private getBalanceOfUser() {
+    this.debtOfUser = 0;
     let sum = 0;
     for (const debt of this.debts) {
-      if (debt.dId === this.currentUserId) {
+      if (debt.dId === this.currentUserId && debt.paid === false) {
         sum += debt.amount;
       }
     }
@@ -261,8 +263,14 @@ export class GroupOverviewPage implements ViewDidEnter{
   }
 
   private async getMembersDebts() {
-    for (const debt of this.debts) {
-        this.membersDebt.set(debt.dId, debt.amount);
+    for (const user of this.members) {
+      let sum = 0;
+      for (const debt of this.debts) {
+          if (debt.dId === user.id && debt.cId === this.currentUserId) {
+            sum += debt.amount;
+          }
+      }
+      this.membersDebt.set(user.id, sum);
     }
   }
 }

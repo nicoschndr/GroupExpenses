@@ -8,9 +8,9 @@ import {User} from '../models/classes/User.model';
 import {UserService} from '../services/user.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {DebtsService} from '../services/debts.service';
-import {GroupService} from '../group/group.service';
 import {Group} from '../models/classes/Group.model';
 import {DetailsPageComponent} from '../components/details-page/details-page.component';
+import {GroupService} from '../services/group.service';
 
 @Component({
   selector: 'app-expenses',
@@ -27,6 +27,7 @@ export class ExpensesPage implements OnInit {
   users: User[];
   split = [];
   currentUserId: string;
+  currentGroup: Group;
   constructor(private actionSheet: ActionSheetController,
               public expensesService: ExpensesService,
               private modalCtrl: ModalController,
@@ -55,7 +56,6 @@ export class ExpensesPage implements OnInit {
   async getCurrentUserData(){
     this.currentUserId = await this.userService.getCurrentUserId();
   }
-
   /****************************
    * Functions for expenses   *
    ***************************/
@@ -69,15 +69,10 @@ export class ExpensesPage implements OnInit {
    *
    * @param groupId
    */
-  async getExpenses(groupId: string){
-    this.expensesService.getAllExpenses(groupId).subscribe((res) => {
-      this.expenses = res.map((e) => ({
-        id: e.payload.doc.id,
-        ...e.payload.doc.data() as Expense
-      }));
-    });
-    this.expenses.sort();
+  async getExpenses(groupId: string) {
+    this.expenses = await this.expensesService.getAllExpenses(groupId);
   }
+
 
   /**
    * This function will open and pass group id and type to modal form to create a new expense.
@@ -186,13 +181,8 @@ export class ExpensesPage implements OnInit {
    *
    * @param groupId
    */
-  getIncoming(groupId: string){
-    this.incomingService.getAllIncoming(groupId).subscribe((res) => {
-      this.incoming = res.map((e) => ({
-        id: e.payload.doc.id,
-        ...e.payload.doc.data() as Expense
-      }));
-    });
+  async getIncoming(groupId: string){
+    this.incoming = await this.incomingService.getAllIncoming(groupId);
   }
 
   /**
@@ -289,10 +279,14 @@ export class ExpensesPage implements OnInit {
   }
 
   async showDebts() {
-    await this.debtsService.calculateDebts(this.groupId, this.expenses);
+    await this.debtsService.calculateDebtsForExpenses(this.groupId, this.expenses);
+    await this.debtsService.calculateDebtsForIncomes(this.groupId, this.incoming);
+    await this.getExpenses(this.groupId);
+    await this.getIncoming(this.groupId);
   }
+
   async calcShare(){
-    this.currentGroup = await this.groupService.getGroup(this.groupId);
+    this.currentGroup = await this.groupService.getGroupById(this.groupId);
     let userIncoming: Expense[] = [];
     for(const uId of this.currentGroup.groupMembers){
       userIncoming = this.incoming.filter((obj) => obj.userId === uId);

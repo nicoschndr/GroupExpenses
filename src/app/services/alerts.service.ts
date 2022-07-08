@@ -39,20 +39,6 @@ export class AlertsService {
     await setTimeout(() => alertSendReminder.dismiss(), 1500);
   }
 
-  async showPaymentReminderAlert() {
-    const alertPayReminder = await this.alertController.create({
-      cssClass: 'alertDanger',
-      header: 'Da war noch etwas...',
-      message: 'Du schuldest ' + 'Name' + ' noch ' + 'Betrag' +'€!',
-      buttons: [{
-        text: 'Ja',
-        role: 'cancel',
-      }]
-    });
-    await alertPayReminder.present();
-    await alertPayReminder.onDidDismiss();
-  }
-
   async showNewShamementGroupAlert(reminderCount: number) {
     if (reminderCount === 1) {
       const alertShamementGroupOne = await this.alertController.create({
@@ -105,5 +91,19 @@ export class AlertsService {
     });
     await alertShamementGroupThree.present();
     await alertShamementGroupThree.onDidDismiss();
+  }
+
+  async showPaymentReminder(groupNames: string[]) {
+    const alertPayReminder = await this.alertController.create({
+      cssClass: 'alertDanger',
+      header: 'Da war noch etwas...',
+      message: 'Du hast noch offene Beträge in den Gruppen'+ groupNames + ' auszugleichen!',
+      buttons: [{
+        text: 'Ja',
+        role: 'cancel',
+      }]
+    });
+    await alertPayReminder.present();
+    await alertPayReminder.onDidDismiss();
   }
 }

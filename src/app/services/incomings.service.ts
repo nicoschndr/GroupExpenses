@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/compat/firestore';
 import {Observable} from 'rxjs';
+import {getDocs} from '@angular/fire/firestore';
+import {Debt} from '../models/classes/debt';
 import {Expense} from '../models/classes/expense';
 import firebase from 'firebase/compat/app';
 
@@ -44,8 +46,16 @@ export class IncomingsService {
    *
    * @param groupId
    */
-  getAllIncoming(groupId: string){
-    return this.afs.collection('incoming', ref => ref.where('groupId', '==', groupId)).snapshotChanges();
+  async getAllIncoming(groupId: string){
+    const incomingRef = firebase.firestore().collection('incoming').where('groupId', '==', groupId);
+    const incomingDocs = await getDocs(incomingRef);
+    const incoming: Debt[] = [];
+    incomingDocs.forEach(recordDoc => {
+      if (!recordDoc.data().split) {
+        incoming.push(recordDoc.data());
+      }
+    });
+    return incoming;
   }
 
   /**

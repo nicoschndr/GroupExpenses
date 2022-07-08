@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {Router} from '@angular/router';
 import {NavController} from '@ionic/angular';
-import {TrackNavService} from '../../track-nav.service';
 import {getAuth, onAuthStateChanged} from '@angular/fire/auth';
 import {AlertsService} from '../../services/alerts.service';
 import {UserService} from '../../services/user.service';
@@ -39,11 +38,13 @@ export class CreateGroupPage implements OnInit {
 
   async createGroup(): Promise<void> {
     try {
-      const key: string = Math.random().toString(36);
-      const data: Group = new Group('', this.groupname, [this.founder], key.slice(3, -2));
-      const id = await this.groupService.addGroup(data);
-      await this.router.navigate(['group-overview/', {gId: id}]);
-      this.groupname = '';
+      if (this.groupname !== '') {
+        const key: string = Math.random().toString(36);
+        const data: Group = new Group('', this.groupname, [this.founder], key.slice(3, -2));
+        const id = await this.groupService.addGroup(data);
+        await this.router.navigate(['group-overview/', {gId: id}]);
+        this.groupname = '';
+      }
     } catch (e) {
       await this.alertService.showJoinGroupError();
     }

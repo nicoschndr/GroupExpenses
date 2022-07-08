@@ -9,8 +9,19 @@ export class Expense {
   groupId?: string;
   type?: string;
   interval?: boolean;
-  constructor(id?: string, name?: string, amount?: number, date?: Date, receipt?: any,
-              userId?: string, userName?: string, groupId?: string, type?: string, interval?: boolean) {
+  split?: boolean;
+  constructor(id?: string,
+              name?: string,
+              amount?: number,
+              date?: Date,
+              receipt?: any,
+              userId?: string,
+              userName?: string,
+              groupId?: string,
+              type?: string,
+              interval?: boolean,
+              split?: boolean,
+  ) {
     this.id = id;
     this.userId = userId;
     this.userName = userName;
@@ -21,5 +32,6 @@ export class Expense {
     this.receipt = receipt;
     this.type = type;
     this.interval = interval;
+    this.split = split;
   }
 }

@@ -11,7 +11,7 @@
         <ion-card-title>{{group.name}}</ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        {{leftToPay}}€ sind noch offen
+        <p *ngIf="debtInGroup.get(group.id) < 0" style="color: #A62020; font-size: 16px">schulde ich: {{debtInGroup.get(group.id)}} €</p>
       </ion-card-content>
     </ion-card>
   </ion-list>

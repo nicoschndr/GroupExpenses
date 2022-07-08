@@ -23,7 +23,7 @@
           <ion-label>Einnahmen</ion-label>
         </ion-segment-button>
 
-        <ion-segment-button value="Aufteilung" (click)="showDebts()">
+        <ion-segment-button value="Aufteilung">
           <ion-label>Aufteilung</ion-label>
         </ion-segment-button>
 
@@ -156,3 +156,6 @@
     </div>
   </ion-grid>
 </ion-content>
+<footer>
+  <ion-button color="button" (click)="showDebts()" expand="block" shape="round">Ausgaben & Einnahmen aufteilen</ion-button>
+</footer>

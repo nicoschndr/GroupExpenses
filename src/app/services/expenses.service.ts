@@ -5,6 +5,7 @@ import {Observable} from 'rxjs';
 import{AngularFireStorage} from '@angular/fire/compat/storage';
 import firebase from 'firebase/compat/app';
 import {Debt} from '../models/classes/debt';
+import {getDocs} from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root'
@@ -24,8 +25,16 @@ export class ExpensesService {
       .catch((err) => console.log('Error: ' + err));
     return this.addExpenseStatus = false;
   }
-  getAllExpenses(id: string){
-    return this.afs.collection('expenses', ref => ref.where('groupId', '==', id)).snapshotChanges();
+  async getAllExpenses(id: string){
+    const expRef = firebase.firestore().collection('expenses').where('groupId', '==', id);
+    const expDocs = await getDocs(expRef);
+    const expenses: Debt[] = [];
+    expDocs.forEach(recordDoc => {
+      if (!recordDoc.data().split) {
+        expenses.push(recordDoc.data());
+      }
+    });
+    return expenses;
   }
   async getEntryById(id: string) {
     const document = await this.expensesCollections.doc(id).get().toPromise();
