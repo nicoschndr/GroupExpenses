@@ -24,3 +24,120 @@
 @import "~@ionic/angular/css/text-alignment.css";
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
+
+@media screen and (min-resolution: 1.0dppx) {
+
+  ion-icon {
+    color: #47517B;
+    background-color: rgba(255, 255, 255, 0);
+  }
+
+  :root {
+    --ion-color-button: #8CB8ED;
+    --ion-color-button-rgb: rgba(140, 184, 237);
+  }
+
+  .alert .alert-wrapper  {
+    .alert-head {
+      h2 {
+        text-align: center;
+        padding-bottom: 10px;
+        padding-top: 40px;
+        color: #47517B;
+      }
+    }
+    .alert-button {
+      background-color: rgba(140, 184, 237);
+      color: #ffffff;
+      border-radius: 15px;
+      padding-left: 20px;
+      padding-right: 20px;
+      margin-left: 10px;
+      margin-right: 10px;
+      font-weight: bold;
+    }
+    .alert-button-group {
+      justify-content: center;
+      padding-bottom: 40px;
+      padding-top: 20px;
+    }
+    .alert-message {
+      text-align: center;
+      color: #47517B;
+    }
+  }
+
+  .alertDanger .alert-wrapper {
+    .alert-head {
+      h2 {
+        text-align: center;
+        padding-bottom: 10px;
+        padding-top: 40px;
+        color: #47517B;
+      }
+    }
+    .alert-button {
+      background-color: rgba(140, 184, 237);
+      color: #ffffff;
+      border-radius: 15px;
+      padding-left: 20px;
+      padding-right: 20px;
+      margin-left: 10px;
+      margin-right: 10px;
+      font-weight: bold;
+    }
+    .alert-button-group {
+      justify-content: center;
+      padding-bottom: 40px;
+      padding-top: 20px;
+    }
+    .alert-message {
+      text-align: center;
+      color: #A62020;
+    }
+  }
+
+  .alertShamement .alert-wrapper {
+    .alert-head {
+      h2 {
+        text-align: center;
+        padding-bottom: 10px;
+        padding-top: 40px;
+        color: #A62020;
+      }
+    }
+    .alert-button {
+      background-color: #A62020;
+      color: #ffffff;
+      border-radius: 15px;
+      padding-left: 20px;
+      padding-right: 20px;
+      margin-left: 10px;
+      margin-right: 10px;
+      font-weight: bold;
+    }
+    .alert-button-group {
+      justify-content: center;
+      padding-bottom: 40px;
+      padding-top: 20px;
+    }
+  }
+
+  ion-button {
+    background-color: rgba(140, 184, 237);
+    color: #ffffff;
+    border-radius: 25px;
+    text-transform: lowercase;
+    margin-left: 30px;
+    margin-right: 30px;
+    height: 45px;
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+
+  ion-back-button {
+    color: #47517B;
+  }
+};
+
+

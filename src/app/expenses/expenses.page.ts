@@ -7,6 +7,7 @@ import {IncomingsService} from '../services/incomings.service';
 import {User} from '../models/classes/User.model';
 import {UserService} from '../services/user.service';
 import {ActivatedRoute, Router} from '@angular/router';
+import {DebtsService} from '../services/debts.service';
 import {GroupService} from '../group/group.service';
 import {Group} from '../models/classes/Group.model';
 import {DetailsPageComponent} from '../components/details-page/details-page.component';
@@ -26,7 +27,6 @@ export class ExpensesPage implements OnInit {
   users: User[];
   split = [];
   currentUserId: string;
-  currentGroup: Group;
   constructor(private actionSheet: ActionSheetController,
               public expensesService: ExpensesService,
               private modalCtrl: ModalController,
@@ -35,14 +35,15 @@ export class ExpensesPage implements OnInit {
               private userService: UserService,
               private router: Router,
               private route: ActivatedRoute,
-              private groupService: GroupService) {
+              public debtsService: DebtsService,
+              private groupService: GroupService
+              ) {}
+
+  async ngOnInit() {
     this.groupId = this.route.snapshot.paramMap.get('gId');
     this.getCurrentUserData().catch((err) => console.log('Error: ', err));
-    this.getExpenses(this.groupId);
+    await this.getExpenses(this.groupId);
     this.getIncoming(this.groupId);
-  }
-
-  ngOnInit() {
   }
   segmentChanged(ev: any){
     console.log('Segment changed to ', ev);
@@ -68,7 +69,7 @@ export class ExpensesPage implements OnInit {
    *
    * @param groupId
    */
-  getExpenses(groupId: string){
+  async getExpenses(groupId: string){
     this.expensesService.getAllExpenses(groupId).subscribe((res) => {
       this.expenses = res.map((e) => ({
         id: e.payload.doc.id,
@@ -285,6 +286,10 @@ export class ExpensesPage implements OnInit {
       buttons: ['OK']
     });
     await alertSuccess.present();
+  }
+
+  async showDebts() {
+    await this.debtsService.calculateDebts(this.groupId, this.expenses);
   }
   async calcShare(){
     this.currentGroup = await this.groupService.getGroup(this.groupId);

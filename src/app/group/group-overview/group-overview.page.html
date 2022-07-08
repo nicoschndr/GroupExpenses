@@ -1,43 +1,73 @@
 <ion-header>
   <ion-toolbar>
-    <ion-icon button (click)="back()" name="chevron-back-outline" size="large"></ion-icon>
+    <ion-buttons slot="start">
+      <ion-back-button class="backButton" defaultHref="grouplist"></ion-back-button>
+    </ion-buttons>
     <ion-icon *ngIf="!editMode" button (click)="showActions()" name="ellipsis-horizontal-outline" slot="end" size="large"></ion-icon>
     <ion-icon *ngIf="editMode" button (click)="leaveEditMode()" name="save-outline" slot="end" size="large"></ion-icon>
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <ion-list>
+  <ion-list lines="none">
     <img alt="threePeople" src="/assets/illustrations/groupOverview_fourPeople.png" class="image">
   </ion-list>
-  <ion-list class="ion-text-center" lines="none" >
+  <ion-list class="ion-text-center" lines="none">
     <ion-label class="ion-text-center">
       <h1>{{group.name}}</h1>
       <br>
       <h4>meine Bilanz</h4>
       <br>
-      <p>0 €</p>
+      <p *ngIf="debtOfUser >= 0">{{debtOfUser}} €</p>
+      <p *ngIf="debtOfUser < 0" style="color: #A62020;">{{debtOfUser}} €</p>
       <br>
       <h4 class="showDetails" (click)="showExpensesOverview(groupId)">Details anzeigen > </h4>
     </ion-label>
-    <ion-card *ngFor="let member of members">
-      <ion-card-header>
-        <ion-card-title>
-          <h6>{{member.firstName}}</h6>
-          <ion-icon *ngIf="editMode"
-                    style="background-color: rgba(140, 184, 230, 0); position: absolute; top: 50%; right: 0px; transform: translateY(-50%); padding-bottom: 8px; padding-top: 8px"
-                    (click)="confirmDeleteAction(member.id)"
-                    name="close-outline"
-                    size="large"
-                    button>
-          </ion-icon>
-          <ion-icon *ngIf="!editMode"
-                    (click)="sendReminder(member.id, member.firstName, 'YhyD5Niv6gaDcgp18PB3')"
-                    name="alarm-outline"
-                    style="background-color: rgba(140, 184, 230, 0); position: absolute; top: 50%; right: 0px; transform: translateY(-50%); padding-bottom: 8px; padding-top: 8px"
-                    button>
-          </ion-icon>
-        </ion-card-title>
-      </ion-card-header>
-    </ion-card>
+    <ion-item *ngFor="let member of members" id="{{member.id}}">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>
+            <ion-row>
+              <ion-col class="ion-justify-content-start cols">
+                <ion-icon *ngIf="member.reminderCount === 1"
+                          name="hourglass-outline"
+                          style="color: #F2BF46; background-color: rgba(140, 184, 230, 0); display: inline-block; transform: translateY(-50%)"
+                          size="large"
+                ></ion-icon>
+                <ion-icon *ngIf="member.reminderCount === 2"
+                          name="hourglass-outline"
+                          style="color: #F58814; background-color: rgba(140, 184, 230, 0); display: inline-block; transform: translateY(-50%)"
+                          size="large"
+                ></ion-icon>
+                <ion-icon *ngIf="member.reminderCount > 2"
+                          name="hourglass-outline"
+                          style="color: #F54235; background-color: rgba(140, 184, 230, 0); display: inline-block; transform: translateY(-50%)"
+                          size="large"
+                ></ion-icon>
+              </ion-col>
+              <ion-col>
+                <h6 style="display: inline-block">{{member.firstName}}</h6>
+                <p *ngIf="membersDebt.get(member.id) < 0" style="color: #A62020; font-size: 16px">schuldet mir noch: {{membersDebt.get(member.id)}} €</p>
+              </ion-col>
+            </ion-row>
+          </ion-card-title>
+        </ion-card-header>
+      </ion-card>
+      <ion-popover *ngIf="membersDebt.get(member.id) < 0" side="top" trigger="{{member.id}}" [dismissOnSelect]="true">
+        <ng-template>
+          <ion-content>
+            <ion-list>
+              <ion-item [button]="true"
+                        [detail]="false"
+                        (click)="sendReminder(member.id)"
+              >Zahlungserinnerung senden</ion-item>
+              <ion-item [button]="true"
+                        [detail]="false"
+                        (click)="markDebtAsPaid(member.id)"
+              >Zahlung erhalten</ion-item>
+            </ion-list>
+          </ion-content>
+        </ng-template>
+      </ion-popover>
+    </ion-item>
   </ion-list>
 </ion-content>

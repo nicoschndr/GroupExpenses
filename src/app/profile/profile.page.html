@@ -35,10 +35,16 @@
 <ion-content>
   <ion-grid *ngIf="!password">
 
+    <p class="center"
+       style="color:var(--ion-color-danger)"
+       *ngIf="alertsService.errors.get('googleUser')">
+      {{alertsService.errors.get('googleUser')}}
+    </p>
+
     <ion-row>
       <ion-col class="center">
         <ion-item class="border">
-          <ion-input [readonly]="!editMode" [(ngModel)]="user.firstName"></ion-input>
+          <ion-input #firstName placeholder="Vorname" [readonly]="!editMode" [(ngModel)]="user.firstName"></ion-input>
         </ion-item>
       </ion-col>
     </ion-row>
@@ -46,7 +52,7 @@
     <ion-row>
       <ion-col class="center">
         <ion-item class="border">
-          <ion-input [readonly]="!editMode" [(ngModel)]="user.lastName"></ion-input>
+          <ion-input placeholder="Nachname" [readonly]="!editMode" [(ngModel)]="user.lastName"></ion-input>
         </ion-item>
       </ion-col>
     </ion-row>
@@ -54,7 +60,7 @@
     <ion-row>
       <ion-col class="center">
           <ion-item class="border">
-           <ion-input [readonly]="!editMode" [(ngModel)]="user.email"></ion-input>
+           <ion-input placeholder="E-Mail" [readonly]="!editMode" [(ngModel)]="user.email"></ion-input>
           </ion-item>
       </ion-col>
     </ion-row>

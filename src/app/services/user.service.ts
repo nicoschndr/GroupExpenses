@@ -7,9 +7,7 @@ import {Group} from '../models/classes/group.model';
 import {AlertsService} from './alerts.service';
 import {Router} from '@angular/router';
 import {deleteUser, getAuth, updatePassword} from '@angular/fire/auth';
-import {Payment} from '../payment.model';
-
-
+import {Payment} from '../models/classes/payment.model';
 
 
   @Injectable({
@@ -17,11 +15,11 @@ import {Payment} from '../payment.model';
   })
   export class UserService {
     isLoggedIn = false;
-    currentUser: any[] =[];
+    google = false;
+    currentUser: any[] = [];
     private userCollection: AngularFirestoreCollection<User>;
     private groupCollection: AngularFirestoreCollection<Group>;
     private paymentCollection: AngularFirestoreCollection<Payment>;
-
 
     constructor(private afa: AngularFireAuth, private afs: AngularFirestore, public alertsService: AlertsService, private router: Router) {
       this.userCollection = afs.collection<User>('user');
@@ -29,9 +27,15 @@ import {Payment} from '../payment.model';
       this.paymentCollection = afs.collection<Payment>('payment');
     }
 
-    getCurrentUser(): any{
+    getCurrentUser(): any {
       const auth = getAuth();
       return auth.currentUser;
+    }
+
+    getCurrentUserId(): any {
+      const auth = getAuth();
+      const currentUser = auth.currentUser;
+      return currentUser.uid;
     }
 
     async login(email: string, password: string) {
@@ -41,34 +45,34 @@ import {Payment} from '../payment.model';
           const currentUser = this.getCurrentUser();
           this.updatePassword(currentUser.uid, password);
         });
-      }catch (e) {
+      } catch (e) {
         this.alertsService.errors.clear();
-          if (e.code === 'auth/internal-error') {
-            this.alertsService.errors.set('loginpw', 'Geben Sie ein Passwort ein.');
-          }
-          if (e.code === 'auth/user-not-found') {
-            this.alertsService.errors.set('loginmail', 'Es existiert kein Nutzer mit dieser E-Mail.');
-          }
-          if (e.code === 'auth/invalid-email') {
-            this.alertsService.errors.set('loginmail', 'Ungültige E-Mail.');
-          }
-          if (e.code === 'auth/wrong-password') {
-            this.alertsService.errors.set('loginpw', 'Falsches Passwort.');
-          }
+        if (e.code === 'auth/internal-error') {
+          this.alertsService.errors.set('loginpw', 'Geben Sie ein Passwort ein.');
         }
+        if (e.code === 'auth/user-not-found') {
+          this.alertsService.errors.set('loginmail', 'Es existiert kein Nutzer mit dieser E-Mail.');
+        }
+        if (e.code === 'auth/invalid-email') {
+          this.alertsService.errors.set('loginmail', 'Ungültige E-Mail.');
+        }
+        if (e.code === 'auth/wrong-password') {
+          this.alertsService.errors.set('loginpw', 'Falsches Passwort.');
+        }
+      }
     }
 
     async updatePassword(uid, password) {
-        const user: User = await this.getUserWithUid(uid);
-        const userData = new User(user.email, user.firstName, user.lastName, password, user.gruppen);
-        await this.setUser(uid, userData);
+      const user: User = await this.getUserWithUid(uid);
+      const userData = new User(uid, user.email, user.firstName, user.lastName, password, user.gruppen, user.reminderCount);
+      await this.setUser(uid, userData);
     }
 
     async changePassword(password) {
       const currentUser = this.getCurrentUser();
       await updatePassword(currentUser, password);
       const user: User = await this.getUserWithUid(currentUser.uid);
-      const userData = new User(user.email, user.firstName, user.lastName, password, user.gruppen);
+      const userData = new User(user.id, user.email, user.firstName, user.lastName, password, user.gruppen, user.reminderCount);
       await this.setUser(currentUser.uid, userData);
       this.alertsService.errors.clear();
       this.alertsService.errors.set('success', 'Ihr Passwort wurde geändert');
@@ -84,6 +88,14 @@ import {Payment} from '../payment.model';
 
     async loginWithGoogle(): Promise<void> {
       await this.afa.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(() => this.isLoggedIn = true);
+      const user = this.getCurrentUser();
+      const userInDatabase = await this.getUserWithUid(user.uid);
+      const userData: User = new User(user.uid, user.email, '', '', '', [],0);
+      if (!userInDatabase) {
+        await this.setUser(user.uid, userData);
+        this.google = true;
+        await this.router.navigate(['profile']);
+      }
     }
 
     async logout() {
@@ -95,52 +107,17 @@ import {Payment} from '../payment.model';
       this.alertsService.errors.clear();
       this.alertsService.errors.set('logout', 'Logout erfolgreich!');
       await this.router.navigate(['login']);
-    }
-
-    async joinGroup(id, key) {
-      const currentUser = this.getCurrentUser();
-      try {
-        const groupData = await this.getGroupWithUid(id);
-        const userData = await this.getUserWithUid(currentUser.uid);
-
-        const arrayToPush: any = [];
-        arrayToPush.push(currentUser.uid);
-        groupData.groupMembers.forEach(r => {
-          arrayToPush.push(r);
-        });
-        arrayToPush.push(currentUser.uid);
-
-        const arrayToPush2: any = [];
-        userData.gruppen.forEach(t => {
-          arrayToPush2.push(t);
-        });
-        arrayToPush2.push(id);
-
-        if (groupData.key === key) {
-          const setGroupData = new Group(arrayToPush, groupData.key, groupData.name);
-          const setUserData = new User(userData.email, userData.firstName, userData.lastName, userData.password,
-            arrayToPush2);
-          await this.setUser(currentUser.uid, setUserData);
-          await this.setGroup(id, setGroupData);
-          this.router.navigate(['home']);
-        } else {
-          this.alertsService.errors.clear();
-          this.alertsService.errors.set('key', 'Der eingegebene Key ist falsch');
-        }
-      } catch (e) {
-        this.alertsService.errors.clear();
-        this.alertsService.errors.set('groupId', 'Die eingegebene ID existiert nicht.');
-      }
+      await localStorage.setItem('onboardingShown', JSON.stringify(true));
+      window.location.reload();
     }
 
     async signUp(firstName, lastName, email, password) {
       try {
         await this.afa.createUserWithEmailAndPassword(email, password).then(async res => {
           const uid = res.user.uid;
-          const userData: User = new User(email, firstName, lastName, password, []);
+          const userData: User = new User(uid, email, firstName, lastName, password, [], 0);
           await this.setUser(uid, userData);
           await this.login(email, password);
-          this.router.navigate(['home']);
         });
       } catch (e) {
         this.alertsService.errors.clear();
@@ -193,6 +170,7 @@ import {Payment} from '../payment.model';
     async setUser(uid, userData) {
       const userRef: AngularFirestoreDocument<User> = this.afs.doc(`user/${uid}`);
       const user: User = {
+        id: uid,
         email: userData.email,
         firstName: userData.firstName,
         lastName: userData.lastName,
@@ -205,33 +183,15 @@ import {Payment} from '../payment.model';
       });
     }
 
-    async setGroup(id, groupData) {
-      const groupRef: AngularFirestoreDocument<Group> = this.afs.doc(`group/${id}`);
-      const group: Group = {
-        groupMembers: groupData.groupMembers,
-        key: groupData.key,
-        name: groupData.name
-      };
-      return groupRef.set(group, {
-        merge: true,
-      });
-    }
     async setReminderCount(uid: string) {
       const userData: User = await this.getUserWithUid(uid);
       ++userData.reminderCount;
       await this.setUser(uid, userData);
     }
+
     async unsetReminderCount(uId: string) {
       const userData: User = await this.getUserWithUid(uId);
       --userData.reminderCount;
       await this.setUser(uId, userData);
-    }
-    async getCurrentUserId(){
-      // const auth = getAuth();
-      // const user = auth.currentUser;
-      const user = JSON.parse(localStorage.getItem('currentUser'));
-      // this.currentUserId = user.uid;
-      console.log('User Id: ', user.uid);
-      return user.uid;
     }
   }

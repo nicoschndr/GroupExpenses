@@ -19,6 +19,7 @@ export class RegistrationPage implements OnInit {
   signUp(): void {
       this.userService.signUp(this.user.firstName, this.user.lastName, this.user.email, this.user.password);
       this.user = {};
+      this.router.navigate(['grouplist']);
   }
 
   navigateLogin(): void{

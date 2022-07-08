@@ -1,49 +1,49 @@
-import {Component, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
-import {ActivatedRoute, NavigationEnd, NavigationStart, Router} from '@angular/router';
-import {ActionSheetController, ModalController} from '@ionic/angular';
-import {TrackNavService} from './track-nav.service';
+import { Component, OnInit } from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
+import {ActionSheetController} from '@ionic/angular';
+import {TrackNavService} from './services/track-nav.service';
 import {AddExpenseComponent} from './components/add-expense/add-expense.component';
-
-
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
 })
-export class AppComponent implements OnInit, OnChanges {
+export class AppComponent implements OnInit {
 
-  @Input() grouplistView = true;
+  public inGroupView: boolean;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private actionSheetController: ActionSheetController,
-    private trackNav: TrackNavService,
-    private modalCtrl: ModalController
-  ) {}
-
-  ngOnInit() {
-    this.grouplistView = this.trackNav.trackRouteChanges(this.route.snapshot.paramMap.get('gId'));
-    console.log(this.grouplistView + 'onIn');
+    public trackNav: TrackNavService,
+  ) {
+    this.trackNav.checkIfInGroupView().subscribe( inGroupView => this.inGroupView = inGroupView);
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    this.grouplistView = this.trackNav.trackRouteChanges(this.route.snapshot.paramMap.get('gId'));
-    console.log(this.grouplistView + 'onCh');
+  async ngOnInit() {
+    const onboardingShownFromStorage: boolean = await JSON.parse(localStorage.getItem('onboardingShown'));
+    if (onboardingShownFromStorage) {
+      await localStorage.setItem('onboardingShown', JSON.stringify(true));
+    } else {
+      await localStorage.setItem('onboardingShown', JSON.stringify(false));
+    }
+    await localStorage.setItem('reminderCount', JSON.stringify(0));
   }
-  goToProfile(){
-    this.router.navigate(['profile']);
+
+  async navToGrouplist() {
+    await this.router.navigate(['grouplist']);
   }
-  showGrouplist() {
-    this.router.navigate(['grouplist']);
+
+  async navToProfile() {
+    await this.router.navigate(['profile']);
   }
-  showLogin() {
-    this.router.navigate(['login']);
+
+  async navToAddGroup() {
+    await this.router.navigate(['create-group']);
   }
-  navToAddGroup() {
-    this.router.navigate(['create-group']);
-  }
+
   async showAddActions() {
     const actionSheet = await this.actionSheetController.create({
       buttons: [{

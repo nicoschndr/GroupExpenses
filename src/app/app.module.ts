@@ -24,13 +24,11 @@ import {SharedModule} from './shared/shared.modules';
     AngularFireStorageModule,
     AngularFireDatabaseModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
-    provideFirebaseApp(()=>initializeApp(environment.firebaseConfig)),
-    provideFirestore(()=>getFirestore()),
     SharedModule,
   ],
   providers: [{
     provide: RouteReuseStrategy,
-    useClass: IonicRouteStrategy,
+    useClass: IonicRouteStrategy
   }],
   bootstrap: [AppComponent],
 })

@@ -15,16 +15,16 @@
   <ion-grid>
     <ion-row class="ion-justify-content-center">
       <ion-segment [(ngModel)]="segment" (ionChange)="segmentChanged($event)">
-        <ion-segment-button value="Aufteilung">
-          <ion-label>Aufteilung</ion-label>
-        </ion-segment-button>
-
         <ion-segment-button value="Ausgaben">
           <ion-label>Ausgaben</ion-label>
         </ion-segment-button>
 
         <ion-segment-button value="Einnahmen">
           <ion-label>Einnahmen</ion-label>
+        </ion-segment-button>
+
+        <ion-segment-button value="Aufteilung" (click)="showDebts()">
+          <ion-label>Aufteilung</ion-label>
         </ion-segment-button>
 
         <ion-segment-button value="Statistik">

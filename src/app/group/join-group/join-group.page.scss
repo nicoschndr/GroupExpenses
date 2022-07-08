@@ -1,12 +1,13 @@
-h1 {
-  font-weight: bold;
-  color: #47517B;
+.back{
+  width: 50px;
+  --background: transparentize(100);
+  display: flex;
+  float: left;
+  margin-left: 0;
+  margin-right: auto;
 }
-
-h5 {
+h1{
   color: #47517B;
-  font-weight: bold;
-  text-align: center;
 }
 
 ion-input {
@@ -16,5 +17,7 @@ ion-input {
   border: 2px solid rgba(140, 184, 237);
   border-radius: 15px;
   color: #47517B;
+  position: relative;
   justify-content: center;
+  width: 100%;
 }
