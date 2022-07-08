@@ -3,7 +3,6 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {ActionSheetController, AlertController, NavController, PopoverController, ViewDidEnter} from '@ionic/angular';
 import {Share} from '@capacitor/share';
 import {getAuth, onAuthStateChanged} from '@angular/fire/auth';
-import {PaymentsService} from '../../services/payments.service';
 import {User} from '../../models/classes/User.model';
 import {UserService} from '../../services/user.service';
 import {AlertsService} from '../../services/alerts.service';
@@ -32,7 +31,6 @@ export class GroupOverviewPage implements ViewDidEnter{
   constructor(
     private groupService: GroupService,
     private userService: UserService,
-    private paymentsService: PaymentsService,
     private debtsService: DebtsService,
     private route: ActivatedRoute,
     private router: Router,
@@ -209,25 +207,28 @@ export class GroupOverviewPage implements ViewDidEnter{
     }
   }
 
-  public async sendReminder(uId: string, fN: string, pId: string) {
-    const alertSendReminder = await this.alertController.create({
-      cssClass: 'alert',
-      header: 'Möchtest du ' + fN + ' eine Zahlungserinnerung senden?',
-      buttons: [{
-        text: 'Ja',
-        handler: () => {
-          this.userService.setReminderCount(uId);
-          this.paymentsService.setReminderForPayment(pId);
-          this.alertsService.showConfirmation();
-          this.getMembers();
-        }
-      }, {
-        text: 'Nein',
-        role: 'cancel',
-      }]
-    });
-    await alertSendReminder.present();
-    await alertSendReminder.onDidDismiss();
+  public async sendReminder(debitorId: string) {
+    for (const debt of this.debts) {
+      if (debt.dId === debitorId && debt.cId === this.currentUserId) {
+        const alertSendReminder = await this.alertController.create({
+          cssClass: 'alert',
+          header: 'Möchtest du eine Zahlungserinnerung senden?',
+          buttons: [{
+            text: 'Ja',
+            handler: () => {
+              this.userService.setReminderCount(debitorId);
+              this.alertsService.showConfirmation();
+              this.getMembers();
+            }
+          }, {
+            text: 'Nein',
+            role: 'cancel',
+          }]
+        });
+        await alertSendReminder.present();
+        await alertSendReminder.onDidDismiss();
+      }
+    }
   }
 
   public showExpensesOverview(groupId: string){
@@ -261,9 +262,7 @@ export class GroupOverviewPage implements ViewDidEnter{
 
   private async getMembersDebts() {
     for (const debt of this.debts) {
-      if (debt.dId !== this.currentUserId) {
         this.membersDebt.set(debt.dId, debt.amount);
-      }
     }
   }
 }
