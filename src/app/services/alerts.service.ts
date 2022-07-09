@@ -7,6 +7,9 @@ import {Router} from '@angular/router';
 })
 export class AlertsService {
 
+  /**
+   * Map containing error name and message. Can be setted, getted and cleared.
+   */
   errors: Map<string, string> = new Map<string, string>();
 
   // @ts-ignore

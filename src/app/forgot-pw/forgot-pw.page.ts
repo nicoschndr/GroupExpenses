@@ -17,10 +17,17 @@ export class ForgotPWPage implements OnInit {
   ngOnInit() {
   }
 
+  /**
+   * This function navigates the user to the login page.
+   */
   async navigateLogin() {
     await this.router.navigate(['login']);
   }
 
+  /**
+   * This function call the forgotPassword function from the user Service with email in the input field. It then creates
+   * an alert to give the user feedback. If its dismissed the user gets navigated to the login.
+   */
   forgotPW(): void{
     this.userService.forgotPassword(this.email);
     this.alertController.create({

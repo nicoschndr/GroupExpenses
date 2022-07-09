@@ -27,17 +27,36 @@ import {Payment} from '../models/classes/payment.model';
       this.paymentCollection = afs.collection<Payment>('payment');
     }
 
+    /**
+     * This function gets the user that is currently logged in with the getAuth() method from firebase.
+     */
     getCurrentUser(): any {
       const auth = getAuth();
       return auth.currentUser;
     }
 
+    /**
+     * This function gets the id of the user that is currently logged in with the getAuth() method from firebase.
+     */
     getCurrentUserId(): any {
       const auth = getAuth();
       const currentUser = auth.currentUser;
       return currentUser.uid;
     }
 
+    /**
+     * This function will log in a user by using the signInWithEmailAndPassword() method from AngularFireAuth.
+     * Furthermore, it updates the password of the user in the database every time in case that it was changed with the
+     * sendPasswordResetEmail() method.
+     * It will throw an alert in case of an error occurring in the process by setting an error in the alertsService.
+     *
+     * @example
+     * Call it with an email and a password both as a string.
+     * login('max.mustermann@mail.de', '123456')
+     *
+     * @param email
+     * @param password
+     */
     async login(email: string, password: string) {
       try {
         await this.afa.signInWithEmailAndPassword(email, password).then(res => {
@@ -62,15 +81,36 @@ import {Payment} from '../models/classes/payment.model';
       }
     }
 
+    /**
+     * This function updates the password of a user by first getting a user with the uid by calling the getUserWithUid()
+     * function and then setting the user with the updated data by calling the setUser() function.
+     *
+     * @example
+     * Call it with uid and a password both as a string.
+     * updatePassword('h8f5h2gg4', '123456)
+     *
+     * @param uid
+     * @param password
+     */
     async updatePassword(uid, password) {
       const user: User = await this.getUserWithUid(uid);
       const userData = new User(uid, user.email, user.firstName, user.lastName, password, user.gruppen, user.reminderCount);
       await this.setUser(uid, userData);
     }
 
+    /**
+     * This function changes the password of a user in case that he has not forgotten it but wants to change it anyway.
+     * It gets the user that is logged in and then sets the user with the updated data.
+     * In case of success it throws an alert.
+     *
+     * @example
+     * Call it with a password as a string.
+     * changePassword('1234567')
+     *
+     * @param password
+     */
     async changePassword(password) {
       const currentUser = this.getCurrentUser();
-      await updatePassword(currentUser, password);
       const user: User = await this.getUserWithUid(currentUser.uid);
       const userData = new User(user.id, user.email, user.firstName, user.lastName, password, user.gruppen, user.reminderCount);
       await this.setUser(currentUser.uid, userData);
@@ -78,14 +118,40 @@ import {Payment} from '../models/classes/payment.model';
       this.alertsService.errors.set('success', 'Ihr Passwort wurde geändert');
     }
 
+    /**
+     * This function gets all data from a user matching the given uid.
+     *
+     * @example
+     * Call it with a uid with type any.
+     * getUserWithUid('h8f5h2gg4')
+     *
+     * @param uid
+     */
     async getUserWithUid(uid: any): Promise<User> {
       return await this.userCollection.doc(uid).get().toPromise().then(snapshot => snapshot.data());
     }
 
+    /**
+     * This function gets all data from a group matching the given uid.
+     *
+     * @example
+     * Call it with a uid with type any.
+     * getGroupWithUid('h8f5h2gg4')
+     *
+     * @param uid
+     */
     async getGroupWithUid(uid: any): Promise<Group> {
       return await this.groupCollection.doc(uid).get().toPromise().then(snapshot => snapshot.data());
     }
 
+
+    /**
+     * This function signs in a user with the Google login from AngularFireAuth by calling the signInWithPopup() method.
+     * The user then can choose one of his Google accounts to login. If the user is not in the database yet,
+     * it gets the data given from the function (email and uid) and sets the user into the Firestore database.
+     * But because we want to have a first- and lastname too, the user get navigated to the profile page and gets
+     * requested to make a few more declarations.
+     */
     async loginWithGoogle(): Promise<void> {
       await this.afa.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(() => this.isLoggedIn = true);
       const user = this.getCurrentUser();
@@ -98,6 +164,10 @@ import {Payment} from '../models/classes/payment.model';
       }
     }
 
+    /**
+     * this function is logging out the current user by calling the signOut() method from AngularFireAuth.
+     * It then sets the boolean "onboardingShown" to true because we want the Onboarding to only be shown once.
+     */
     async logout() {
       const currentUser = this.getCurrentUser();
       if (currentUser) {
@@ -111,6 +181,20 @@ import {Payment} from '../models/classes/payment.model';
       window.location.reload();
     }
 
+    /**
+     * This function is signing up a new user with the createUserWithEmailAndPassword() method from AngularFireAuth.
+     * It then sets the user into the database and is logging in the user. In case of an error it throws an alert
+     * based on the error code.
+     *
+     * @example
+     * Call it with a firstName, lastName, email and a password all as a string.
+     * signUp('Max', 'Mustermann', max@mustermann.de, '123456')
+     *
+     * @param firstName
+     * @param lastName
+     * @param email
+     * @param password
+     */
     async signUp(firstName, lastName, email, password) {
       try {
         await this.afa.createUserWithEmailAndPassword(email, password).then(async res => {
@@ -148,6 +232,16 @@ import {Payment} from '../models/classes/payment.model';
       }
     };
 
+    /**
+     * This function sends an Email with a password reset form by calling the sendPasswordResetEmail() method from
+     * AngularFireAuth.
+     *
+     * @example
+     * Call it with an email as a string.
+     * forgotPassword('max@mustermann.de')
+     *
+     * @param email
+     */
     async forgotPassword(email) {
       await this.afa.sendPasswordResetEmail(email).then(res => {
         console.log('email sent');
@@ -160,6 +254,15 @@ import {Payment} from '../models/classes/payment.model';
         });
     }
 
+    /**
+     * This function deletes a user from the database with the given uid.
+     *
+     * @example
+     * Call it with an uid with type any.
+     * deleteUser('z5t84hug')
+     *
+     * @param uid
+     */
     async deleteUser(uid) {
       const userRef: AngularFirestoreDocument<User> = this.afs.doc(`user/${uid}`);
       await userRef.delete();
@@ -167,6 +270,17 @@ import {Payment} from '../models/classes/payment.model';
       await deleteUser(currentUser);
     }
 
+
+    /**
+     * This function set a user into the Firestore database with the given uid and data.
+     *
+     * @example
+     * Call it with a uid with type any and userData with type "User".
+     * setUser('z5t84hug', newUser('z5t84hug', 'max@mustermann.de', 'Max', 'Mustermann', '123456', '[]', 0 ))
+     *
+     * @param uid
+     * @param userData
+     */
     async setUser(uid, userData) {
       const userRef: AngularFirestoreDocument<User> = this.afs.doc(`user/${uid}`);
       const user: User = {
@@ -183,12 +297,28 @@ import {Payment} from '../models/classes/payment.model';
       });
     }
 
+    /**
+     * This function increments the reminder Count of a User with the given uid.
+     *
+     * @example
+     * Call it with setReminderCount('z5t84hug')
+     *
+     * @param uid
+     */
     async setReminderCount(uid: string) {
       const userData: User = await this.getUserWithUid(uid);
       ++userData.reminderCount;
       await this.setUser(uid, userData);
     }
 
+    /**
+     * This function decrements the reminder Count of a User with the given uid.
+     *
+     * @example
+     * Call it with setReminderCount('z5t84hug')
+     *
+     * @param uId
+     */
     async unsetReminderCount(uId: string) {
       const userData: User = await this.getUserWithUid(uId);
       --userData.reminderCount;

@@ -16,12 +16,19 @@ export class RegistrationPage implements OnInit {
 
   constructor(private userService: UserService, private router: Router, public alertsService: AlertsService) { }
 
+  /**
+   * This function calls the signUp method of the user Service with the data from the input fields and then navigates
+   * the user to the grouplist page.
+   */
   signUp(): void {
       this.userService.signUp(this.user.firstName, this.user.lastName, this.user.email, this.user.password);
       this.user = {};
       this.router.navigate(['grouplist']);
   }
 
+  /**
+   * This function navigates the user to the login page.
+   */
   navigateLogin(): void{
     this.router.navigate(['login']);
   }
