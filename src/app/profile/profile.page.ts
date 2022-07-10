@@ -4,6 +4,7 @@ import {User } from '../models/classes/User.model';
 import {getAuth, onAuthStateChanged} from '@angular/fire/auth';
 import {AlertsService} from '../services/alerts.service';
 import {IonInput} from '@ionic/angular';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-profile',
@@ -21,7 +22,7 @@ export class ProfilePage implements OnInit {
   pw2='';
   altespw='';
 
-  constructor(private userService: UserService, public alertsService: AlertsService) {
+  constructor(private userService: UserService, public alertsService: AlertsService, private router: Router) {
     /**
      * If the Page is called while the boolean "google" is on true it throws an alert. That is the case when a new User
      * that is not in the database yet signs in with the Google provider.
@@ -125,6 +126,20 @@ export class ProfilePage implements OnInit {
    */
   logout() {
     this.userService.logout();
+  }
+
+  /**
+   * This function navigates the user to the grouplist Page.
+   */
+  navigateGrouplist(){
+    this.router.navigate(['grouplist']);
+  }
+
+  /**
+   * This function navigates the user to the profile Page.
+   */
+  navigateProfile(){
+    this.router.navigate(['profile']);
   }
 }
 

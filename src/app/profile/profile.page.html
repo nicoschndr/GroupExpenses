@@ -1,30 +1,22 @@
-<ion-item style="--background: #00000;" lines="none">
-<ion-row *ngIf="password">
-   <ion-col>
-    <ion-button class="back" (click)="password=false; this.altespw=''; this.pw=''; this.pw2='';alertsService.errors.clear();">
-      <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
-    </ion-button>
-   </ion-col>
-</ion-row>
-  <ion-row *ngIf="!password">
-    <ion-col>
-      <ion-button class="back">
-        <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
-      </ion-button>
-    </ion-col>
-  </ion-row>
-  <div style="margin-right: 0  ; margin-left: auto; text-align: right">
-    <ion-button *ngIf="!editMode&&!password" class="back" (click)="changeMode()">
-      <ion-icon slot="icon-only" name="create-outline"></ion-icon>
-    </ion-button>
-    <ion-button *ngIf="password" class="back" (click)="changePassword()">
-      <ion-icon slot="icon-only" name="save-outline"></ion-icon>
-    </ion-button>
-    <ion-button *ngIf="editMode" class="back" (click)="changeMode(); updateUser()">
-      <ion-icon slot="icon-only" name="save-outline"></ion-icon>
-    </ion-button>
-  </div>
-</ion-item>
+  <ion-header>
+    <ion-toolbar>
+      <ion-buttons slot="start" *ngIf="!password">
+        <ion-icon style="cursor:pointer;" slot="icon-only" name="arrow-back-outline" (click)="navigateGrouplist()"></ion-icon>
+      </ion-buttons>
+      <ion-buttons slot="end">
+        <ion-icon style="cursor: pointer" slot="icon-only" name="create-outline" *ngIf="!editMode&&!password" class="back" (click)="changeMode()"></ion-icon>
+      </ion-buttons>
+      <ion-buttons slot="end" *ngIf="password" class="back" (click)="changePassword()">
+        <ion-icon style="cursor: pointer" slot="icon-only" name="save-outline"></ion-icon>
+      </ion-buttons>
+      <ion-buttons slot="end" *ngIf="editMode" class="back" (click)="changeMode(); updateUser()">
+        <ion-icon style="cursor: pointer" slot="icon-only" name="save-outline"></ion-icon>
+      </ion-buttons>
+      <ion-buttons *ngIf="password" slot="start" (click)="password=false; this.altespw=''; this.pw=''; this.pw2='';alertsService.errors.clear(); navigateProfile()">
+        <ion-icon style="cursor: pointer" slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
 
 <div class="center" *ngIf="!password">
   <h1>Dein Profil</h1>
