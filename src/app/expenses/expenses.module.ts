@@ -8,7 +8,7 @@ import { ExpensesPageRoutingModule } from './expenses-routing.module';
 
 import { ExpensesPage } from './expenses.page';
 import { AddExpenseComponent } from '../components/add-expense/add-expense.component';
-import { ChartComponent } from '../chart/chart.component';
+import { ChartComponent } from '../components/chart/chart.component';
 
 @NgModule({
     imports: [
