@@ -1,5 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { NavParams } from '@ionic/angular';
+
 import { Chart, registerables } from 'chart.js'; Chart.register(...registerables);
+import { ExpensesService } from '../../services/expenses.service';
 
 
 @Component({
@@ -9,31 +12,48 @@ import { Chart, registerables } from 'chart.js'; Chart.register(...registerables
 })
 export class ChartComponent implements OnInit {
 
+  @Input() grpid = '';
+
   doughnutChart: any;
 
-  constructor() { }
 
-  doughnutChartMethod() {
+  constructor(
+    private expensesService: ExpensesService
+  ) {
+  }
+
+  async doughnutChartMethod() {
+    console.log('groupid: ', this.grpid);
+
+    const allExpenses = await this.expensesService.getAllExpenses(this.grpid);
+    console.log(allExpenses);
+
+    const allIncoming = await this.expensesService.getAllIncoming(this.grpid);
+    console.log(allIncoming);
+
+    let expensesSum = 0;
+    for (const expense of allExpenses) {
+      expensesSum += expense.amount;
+    }
+
+    let incomingSum = 0;
+    for (const incoming of allIncoming) {
+      incomingSum += incoming.amount;
+    }
+
     this.doughnutChart = new Chart('canvas1', {
       type: 'doughnut',
       data: {
-        labels: ['BJP', 'Congress', 'AAP', 'CPM', 'SP'],
+        labels: ['Einnahmen', 'Ausgaben'],
         datasets: [{
-          label: '# of Votes',
-          data: [50, 29, 15, 10, 7],
+          data: [incomingSum, expensesSum],
           backgroundColor: [
             'rgba(255, 159, 64, 0.2)',
             'rgba(255, 99, 132, 0.2)',
-            'rgba(54, 162, 235, 0.2)',
-            'rgba(255, 206, 86, 0.2)',
-            'rgba(75, 192, 192, 0.2)'
           ],
           hoverBackgroundColor: [
             '#FFCE56',
             '#FF6384',
-            '#36A2EB',
-            '#FFCE56',
-            '#FF6384'
           ]
         }]
       }

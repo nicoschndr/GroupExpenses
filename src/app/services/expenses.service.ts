@@ -55,4 +55,15 @@ export class ExpensesService {
     await this.expensesCollections.doc(debt.id).set(data);
     await firebase.firestore().collection('group').doc(gId).collection('debts').doc(debt.id).set(data);
   }
+  async getAllIncoming(id: string){
+    const incRef = firebase.firestore().collection('incoming').where('groupId', '==', id);
+    const incDocs = await getDocs(incRef);
+    const incoming: Debt[] = []; // TODO: add class for incoming?
+    incDocs.forEach(recordDoc => {
+      if (!recordDoc.data().split) {
+        incoming.push(recordDoc.data());
+      }
+    });
+    return incoming;
+  }
 }
