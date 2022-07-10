@@ -23,13 +23,13 @@ export class ChartComponent implements OnInit {
   }
 
   async doughnutChartMethod() {
-    console.log('groupid: ', this.grpid);
+    // console.log('groupid: ', this.grpid);
 
     const allExpenses = await this.expensesService.getAllExpenses(this.grpid);
-    console.log(allExpenses);
+    // console.log(allExpenses);
 
     const allIncoming = await this.expensesService.getAllIncoming(this.grpid);
-    console.log(allIncoming);
+    // console.log(allIncoming);
 
     let expensesSum = 0;
     for (const expense of allExpenses) {
@@ -48,12 +48,12 @@ export class ChartComponent implements OnInit {
         datasets: [{
           data: [incomingSum, expensesSum],
           backgroundColor: [
-            'rgba(255, 159, 64, 0.2)',
-            'rgba(255, 99, 132, 0.2)',
+            '#86E3CB',
+            '#8698E3',
           ],
           hoverBackgroundColor: [
-            '#FFCE56',
-            '#FF6384',
+            '#86E3CB',
+            '#8698E3',
           ]
         }]
       }
