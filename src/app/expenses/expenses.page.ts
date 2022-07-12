@@ -26,6 +26,8 @@ export class ExpensesPage implements OnInit {
   groupId: string;
   users: User[];
   split = [];
+  splittedExpense: Expense[] = [];
+  splittedIncome: Expense[] = [];
   currentUserId: string;
   currentGroup: Group;
   constructor(private actionSheet: ActionSheetController,
@@ -39,12 +41,11 @@ export class ExpensesPage implements OnInit {
               public debtsService: DebtsService,
               private groupService: GroupService
               ) {}
-
   async ngOnInit() {
     this.groupId = this.route.snapshot.paramMap.get('gId');
     this.getCurrentUserData().catch((err) => console.log('Error: ', err));
     await this.getExpenses(this.groupId);
-    this.getIncoming(this.groupId);
+    await this.getIncoming(this.groupId);
   }
   segmentChanged(ev: any){
     console.log('Segment changed to ', ev);
@@ -70,9 +71,17 @@ export class ExpensesPage implements OnInit {
    * @param groupId
    */
   async getExpenses(groupId: string) {
-    this.expenses = await this.expensesService.getAllExpenses(groupId);
+    this.expensesService.getAllExpenses(groupId).subscribe((res) => {
+      this.expenses = res.map((e) => ({
+        id: e.payload.doc.id,
+        ...e.payload.doc.data() as Expense
+      }));
+    });
   }
 
+  async getSplit(groupId: string){
+    this.splittedExpense = await this.expensesService.getSplitExpenses(groupId);
+  }
 
   /**
    * This function will open and pass group id and type to modal form to create a new expense.
@@ -90,7 +99,9 @@ export class ExpensesPage implements OnInit {
       .present()
       .then(() => console.log('No error with presenting modal'))
       .catch(err => console.log('error modal: ', err));
-    await modal.onDidDismiss();
+    await modal.onDidDismiss().then((res) => {
+      this.segment = res.data;
+    });
   }
 
   /**
@@ -113,7 +124,9 @@ export class ExpensesPage implements OnInit {
     await modal.present()
       .then(() => console.log('No error with presenting modal'))
       .catch(err => console.log('error modal: ', err));
-    await modal.onDidDismiss();
+    await modal.onDidDismiss().then((res) => {
+      this.segment = res.data;
+    });
   }
 
   /**
@@ -182,9 +195,17 @@ export class ExpensesPage implements OnInit {
    * @param groupId
    */
   async getIncoming(groupId: string){
-    this.incoming = await this.incomingService.getAllIncoming(groupId);
+    this.incomingService.getAllIncoming(groupId).subscribe((res) => {
+      this.incoming = res.map((e) => ({
+        id: e.payload.doc.id,
+        ...e.payload.doc.data() as Expense
+      }));
+    });
   }
 
+  async getSplittedIncome(groupId: string){
+    this.splittedIncome = await this.incomingService.getSplitIncoming(groupId);
+  }
   /**
    * This function will open and pass group id and type to modal form to create a new income.
    */
@@ -201,7 +222,9 @@ export class ExpensesPage implements OnInit {
       .present()
       .then(() => console.log('No error with presenting modal'))
       .catch(err => console.log('error modal: ', err));
-    await modal.onDidDismiss();
+    await modal.onDidDismiss().then((res) => {
+      this.segment = res.data;
+    });
   }
 
   /**
@@ -224,7 +247,9 @@ export class ExpensesPage implements OnInit {
     await modal.present()
       .then(() => console.log('No error with presenting modal'))
       .catch(err => console.log('error modal: ', err));
-    await modal.onDidDismiss();
+    await modal.onDidDismiss().then((res) => {
+      this.segment = res.data;
+    });
   }
 
   async showIncomeDetails(income: Expense){
@@ -285,6 +310,9 @@ export class ExpensesPage implements OnInit {
     await this.getIncoming(this.groupId);
   }
 
+  /**
+   * This function will get all unsplitted incoming and split the amount among the group members.
+   */
   async calcShare(){
     this.currentGroup = await this.groupService.getGroupById(this.groupId);
     let userIncoming: Expense[] = [];
