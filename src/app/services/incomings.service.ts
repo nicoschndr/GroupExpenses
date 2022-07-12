@@ -46,7 +46,29 @@ export class IncomingsService {
    *
    * @param groupId
    */
-  async getAllIncoming(groupId: string){
+  getAllIncoming(groupId: string){
+    return this.afs.collection('incoming', ref => ref.where('groupId', '==', groupId)
+      .where('split', '==', false))
+      .snapshotChanges();
+  }
+
+  /**
+   * This function will get all incoming form one user with the given ID where value of split is false.
+   *
+   * @example
+   * Call it with a group ID and a user ID - both as strings
+   * getAllIncomingFromUser('n8hs3ag', 'fn89z25rw')
+   *
+   * @param groupId
+   * @param userId
+   */
+  getAllIncomingFromUser(groupId: string, userId: string){
+    return this.afs.collection('incoming', ref => ref.where('groupId', '==', groupId)
+      .where('userId', '==', userId)
+      .where('split', '==', false))
+      .snapshotChanges();
+  }
+  async getSplitIncoming(groupId: string){
     const incomingRef = firebase.firestore().collection('incoming').where('groupId', '==', groupId);
     const incomingDocs = await getDocs(incomingRef);
     const incoming: Debt[] = [];
@@ -57,7 +79,6 @@ export class IncomingsService {
     });
     return incoming;
   }
-
   /**
    * This function will fetch data with given id from firebase collection.
    *
@@ -103,6 +124,13 @@ export class IncomingsService {
    * This function will decrease the amount by the given data from the creditors field value amount
    * of debitor with the given userId.
    *
+   * @example
+   * Call it with a group ID as a string, a user ID as a string and the amount to share as a number.
+   * addShare('vi2zer83t', 'n8rbs34', 5)
+   *
+   * @param gId
+   * @param uId
+   * @param share
    */
   async addShare(gId: string, uId: string, share: number){
     const decrement = firebase.firestore.FieldValue.increment(-share);

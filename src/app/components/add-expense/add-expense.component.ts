@@ -79,10 +79,16 @@ export class AddExpenseComponent implements OnInit {
     }
   }
 
+  /**
+   * This function will get data from one expense by its ID.
+   */
   async getExpenseData(){
     this.entry = await this.expensesService.getEntryById(this.id);
   }
 
+  /**
+   * This function will set all input values if the user is in edit mode.
+   */
   async setValuesInInputs(){
     this.id = this.entry.id;
     this.name = this.entry.name;
@@ -127,7 +133,8 @@ export class AddExpenseComponent implements OnInit {
       this.userName,
       this.groupId,
       this.type,
-      this.interval
+      this.interval,
+      false,
     );
     if(this.type === 'expense'){
       this.expensesService.addExpense(this.entry).catch((err) => console.log('Error: ', err));
@@ -173,7 +180,7 @@ export class AddExpenseComponent implements OnInit {
           text: 'Ja',
           handler: () => {
             this.expensesService.removeEntry(this.id);
-            this.dismissModal();
+            this.dismissModal(this.type);
             alertSuccess.present();
           }
         },
@@ -214,7 +221,7 @@ export class AddExpenseComponent implements OnInit {
   /**
    * This function will dismiss modal.
    */
-  dismissModal(){
-    this.modalCtrl.dismiss().catch((err) => console.log('Error: ', err));
+  dismissModal(type: string){
+    this.modalCtrl.dismiss({type}).catch((err) => console.log('Error: ', err));
   }
 }
