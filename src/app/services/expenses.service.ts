@@ -51,6 +51,18 @@ export class ExpensesService {
       .snapshotChanges();
   }
 
+  async getAllExpensesArray(id: string){
+    const expRef = firebase.firestore().collection('expenses').where('groupId', '==', id);
+    const expDocs = await getDocs(expRef);
+    const expenses: Debt[] = [];
+    expDocs.forEach(recordDoc => {
+      if (!recordDoc.data().split) {
+        expenses.push(recordDoc.data());
+      }
+    });
+    return expenses;
+  }
+
   /**
    * This function will get all expenses from one group that has been calculated / splitted.
    *

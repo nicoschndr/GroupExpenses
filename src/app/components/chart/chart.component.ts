@@ -25,7 +25,7 @@ export class ChartComponent implements OnInit {
   async doughnutChartMethod() {
     // console.log('groupid: ', this.grpid);
 
-    const allExpenses = await this.expensesService.getAllExpenses(this.grpid);
+    const allExpenses = await this.expensesService.getAllExpensesArray(this.grpid);
     // console.log(allExpenses);
 
     const allIncoming = await this.expensesService.getAllIncoming(this.grpid);
