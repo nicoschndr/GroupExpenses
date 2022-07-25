@@ -44,7 +44,7 @@ export class ExpensesPage implements OnInit {
     this.groupId = this.route.snapshot.paramMap.get('gId');
     this.getCurrentUserData().catch((err) => console.log('Error: ', err));
     await this.getExpenses(this.groupId);
-    this.getIncoming(this.groupId);
+    await this.getIncoming(this.groupId);
   }
   segmentChanged(ev: any){
     console.log('Segment changed to ', ev);
@@ -72,7 +72,6 @@ export class ExpensesPage implements OnInit {
   async getExpenses(groupId: string) {
     this.expenses = await this.expensesService.getAllExpenses(groupId);
   }
-
 
   /**
    * This function will open and pass group id and type to modal form to create a new expense.

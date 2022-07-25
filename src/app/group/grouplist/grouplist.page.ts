@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {getAuth, onAuthStateChanged} from '@angular/fire/auth';
-import {ViewDidEnter} from '@ionic/angular';
+import {ViewDidEnter, ViewWillEnter} from '@ionic/angular';
 import {User} from '../../models/classes/User.model';
 import {UserService} from '../../services/user.service';
 import {AlertsService} from '../../services/alerts.service';
@@ -16,14 +16,13 @@ import {Debt} from '../../models/classes/debt';
   templateUrl: './grouplist.page.html',
   styleUrls: ['./grouplist.page.scss'],
 })
-export class GrouplistPage implements ViewDidEnter{
+export class GrouplistPage implements ViewWillEnter {
 
   public grouplist: Group[] = [];
   public debtInGroup: Map<string, number> = new Map();
   private currentUserId: string;
   private oldReminderCount: number;
   private onboardingShown: boolean;
-  private debts: Debt[] = [];
 
   constructor(
     private router: Router,
@@ -34,29 +33,31 @@ export class GrouplistPage implements ViewDidEnter{
     private alertsService: AlertsService,
     private debtService: DebtsService,
   ) {
-  }
-
-  async ionViewDidEnter() {
     //get value of onboardingShown in localStorage
-    this.onboardingShown = await JSON.parse(localStorage.getItem('onboardingShown'));
+    this.onboardingShown = JSON.parse(localStorage.getItem('onboardingShown'));
     //check if onboarding page was shown before
     if (this.onboardingShown === false) {
       //if not show
-      await this.router.navigate(['onboarding']);
-    } else {
+      this.router.navigate(['onboarding']);
+    }
+  }
+
+  async ionViewWillEnter() {
       const auth = getAuth();
       onAuthStateChanged(auth, async (user) => {
-        //check if a user is logged in and the onboarding page was shown bevore
+        //check if a user is logged in and the onboarding page was shown before
         if (user && this.onboardingShown) {
           //show all groups the user is a member from
-          await this.showGrouplist();
+          this.currentUserId = await this.userService.getCurrentUserId();
+          await this.getOldReminderCount();
+          await this.getAllGroupsFromUser(this.currentUserId);
+          await this.getDebtInGroup();
+          await this.setNewReminderCountStorage();
         } else {
           await this.handleLogout();
         }
       });
     }
-  }
-
 
 
   /**
@@ -72,17 +73,6 @@ export class GrouplistPage implements ViewDidEnter{
    **************************************/
 
   /**
-   * This function will trigger all functions needed for showing the grouplist
-   */
-  async showGrouplist() {
-    this.currentUserId = await this.userService.getCurrentUserId();
-    await this.getOldReminderCount();
-    await this.getAllGroupsFromUser(this.currentUserId);
-    await this.getDebtInGroup();
-    await this.setNewReminderCountStorage();
-  }
-
-  /**
    * This function will get all groups in which the currently logged in user is a member of
    *
    * @example
@@ -92,7 +82,7 @@ export class GrouplistPage implements ViewDidEnter{
    * @param userId
    */
   async getAllGroupsFromUser(userId: string): Promise<void> {
-    await (await (this.groupService.findGroupsFromUser(userId))).subscribe((res) => {
+    await (await (this.groupService.getGroupsFromUser(userId))).subscribe((res) => {
       this.grouplist = res.map((g) => ({
         id: g.payload.doc.id,
         ...g.payload.doc.data() as Group
@@ -100,15 +90,21 @@ export class GrouplistPage implements ViewDidEnter{
     });
   }
 
+  /**
+   * This function will calculate the amount of money the user is owing to the members for every group
+   */
   async getDebtInGroup() {
     for (const group of this.grouplist) {
       let sum = 0;
+      //get all debts of the group
       const debts: Debt[] = await this.debtService.getDebts(group.id);
       for (const debt of debts) {
+        //get all debts which are not payed and from the current user
         if (debt.dId === this.currentUserId && !debt.paid) {
           sum += debt.amount;
         }
       }
+      //set the value in the map
       this.debtInGroup.set(group.id, sum);
     }
   }
@@ -119,7 +115,7 @@ export class GrouplistPage implements ViewDidEnter{
    *****************************************/
 
   /**
-   * This function will get the value of the field reminderCount from the localStorage an saves it
+   * This function will get the value of the field reminderCount from the localStorage and saves it
    */
   getOldReminderCount() {
     this.oldReminderCount = JSON.parse(localStorage.getItem('reminderCount'));
@@ -150,25 +146,29 @@ export class GrouplistPage implements ViewDidEnter{
       //check if the user is now in a new reminderGroup
       if (newReminderCount === 1 || newReminderCount === 2 || newReminderCount === 3) {
         //then show the alert
-        await this.alertsService.showNewShamementGroupAlert(newReminderCount);
+        await this.alertsService.showNewShamementAlert(newReminderCount);
       }
     }
   }
 
   /**
-   * This function collects all groups in which are still debts for the u
+   * This function collects all groups in which are still debts for the user
    */
   async showPaymentReminderAlert() {
     const groupsToPay: string[] = [];
     for (const group of this.grouplist) {
-      this.debts = await this.debtService.getDebts(group.id);
-      for (const debt of this.debts) {
-        if (!debt.paid) {
+      //get all debts from the groups the user is member in
+      const debts: Debt[] = await this.debtService.getDebts(group.id);
+      for (const debt of debts) {
+        //check if there is still a debt open from the current user
+        if (!debt.paid && debt.dId === this.currentUserId) {
+          //if so, then save the groupname and check the other groups
           groupsToPay.push(group.name);
           break;
         }
       }
     }
+    //show the payment reminder alert in the grouplist
     await this.alertsService.showPaymentReminder(groupsToPay);
   }
 

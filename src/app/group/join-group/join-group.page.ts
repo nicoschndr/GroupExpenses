@@ -25,15 +25,29 @@ export class JoinGroupPage implements OnInit {
   ngOnInit() {
   }
 
-  async join(id: string, key: string): Promise<void> {
-    const joinSuccess: boolean = await this.groupService.joinGroup(id, key);
+  /**
+   * This function will handle the join of the current user into a existing group
+   *
+   * @example
+   * Call it with a userId type of string
+   * join('16rblKzkgIr8HiTohxZ', 'bj6so1g')
+   *
+   * @param userId
+   * @param key
+   */
+  async join(userId: string, key: string): Promise<void> {
+    //send request for joining to the service
+    const joinSuccess: boolean = await this.groupService.joinGroup(userId, key);
+    //check if join into the existing group was successfull
     if (joinSuccess) {
+      //if so reset the input-fields
       this.id='';
       this.key='';
-      await this.router.navigate(['group-overview', {gId: id}]);
+      //navigate the user to the group-overview of the group he joined
+      await this.router.navigate(['group-overview', {gId: this.id}]);
     } else  {
+      //if not, show an error
       await this.alertsService.showJoinGroupError();
-      await this.router.navigate(['join-group']);
     }
   }
 }
