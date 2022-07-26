@@ -33,7 +33,7 @@ export class DebtsService {
     await firebase.firestore().collection('group').doc(gId).collection('debts').doc(debt.id).set(data);
   }
 
-  /**
+  /*-*
    * This function divides the expenses of one group and calculates which member owes who what amount
    *
    * @example
