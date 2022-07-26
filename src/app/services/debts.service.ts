@@ -97,7 +97,6 @@ export class DebtsService {
     //sort Maps after value
     const sortedDebtorMap = new Map([...debtorMap.entries()].sort((a, b) => b[1] - a[1]));
     const sortedCreditorMap = new Map([...creditorMap.entries()].sort((a, b) => a[1] - b[1]));
-    console.log('debtorMap', sortedDebtorMap, 'creditorMap', sortedCreditorMap);
 
     //check if there is still something to split
     while (sortedDebtorMap.size > 0 && sortedCreditorMap.size > 0) {
