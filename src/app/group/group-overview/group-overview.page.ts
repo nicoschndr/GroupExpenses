@@ -160,7 +160,6 @@ export class GroupOverviewPage implements ViewWillEnter {
       });
       await alertLeaveGroup.present();
       await alertLeaveGroup.onDidDismiss();
-      await this.alertsService.showConfirmation();
     } else {
       const alertDeleteUser = await this.alertController.create({
         cssClass: 'alert',
@@ -201,13 +200,10 @@ export class GroupOverviewPage implements ViewWillEnter {
     if (deleteAction) {
       //if so, leave the edit mode, update the members and show the confirmation alert for the user
       this.editMode = false;
-      await this.getMembers();
       await this.alertsService.showConfirmation();
-    } else if (deleteAction && this.editMode) { //check if
+      await this.getGroup();
       await this.getMembers();
-      await this.alertsService.showConfirmation();
-    }
-    else {
+    } else {
       await this.router.navigate(['grouplist']);
     }
   }
@@ -351,20 +347,27 @@ export class GroupOverviewPage implements ViewWillEnter {
       this.membersDebt.forEach(async (valueM: number, keyM: string) => {
         if (keyU === keyM) {
           //if so, calculate the difference
-          debt = (valueU - valueM);
+          debt = valueU - valueM;
           if (debt === 0) { //if they are owing the same amount, mark their debts as paid and delete the debts from the maps
             await this.markDebtAsPaid(keyM, this.currentUserId);
             await this.markDebtAsPaid(this.currentUserId, keyM);
             this.userDebts.delete(keyU);
             this.membersDebt.delete(keyU);
           } else if (debt < 0) { //if the difference is negative, the current user is now a creditor
-            this.userDebts.delete(keyU); //delete the current user as debtor to the member
             this.membersDebt.delete(keyU); //change the value of the amount the member is owing to the current user
             this.membersDebt.set(keyU, (debt * (-1)));
+            await this.markDebtAsPaid(keyU, this.currentUserId);
+            const newDebtEntry: Debt = new Debt('', this.currentUserId, keyU, debt, false);
+            await this.debtsService.addDebt(this.groupId, newDebtEntry);
+            this.userDebts.delete(keyU); //delete the current user as debtor to the member
             await this.markDebtAsPaid(this.currentUserId, keyU); //mark the debts of the current user to the member as paid
           } else if (debt > 0) { //if the difference is positive the current user is still owing money to the member, but the amount is now smaller
-            this.membersDebt.delete(keyU); //the member is no debtor anymore, so delete the entry
+            this.userDebts.delete(keyU);
             this.userDebts.set(keyU, debt); //save the new value of money the current user is owing to the member in the map
+            await this.markDebtAsPaid(this.currentUserId, keyU);
+            const newDebtEntry: Debt = new Debt('', keyU, this.currentUserId, debt, false);
+            await this.debtsService.addDebt(this.groupId, newDebtEntry);
+            this.membersDebt.delete(keyU); //the member is no debtor anymore, so delete the entry
             await this.markDebtAsPaid(keyU, this.currentUserId); //mark debts from the member to the current user as paid
           }
         }

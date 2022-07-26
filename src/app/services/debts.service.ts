@@ -27,6 +27,12 @@ export class DebtsService {
     this.groupCollection = this.afs.collection('group');
   }
 
+  async addDebt(gId: string, debt: Debt){
+    debt.id = this.afs.createId();
+    const data = JSON.parse(JSON.stringify(debt));
+    await firebase.firestore().collection('group').doc(gId).collection('debts').doc(debt.id).set(data);
+  }
+
   /**
    * This function divides the expenses of one group and calculates which member owes who what amount
    *
@@ -112,7 +118,7 @@ export class DebtsService {
           false
         );
         //add a new debt into the storage
-        await this.expensesService.addDebt(gId, newDebt);
+        await this.addDebt(gId, newDebt);
         //the amount of money the person gets is now fully assigned to a debtor, so delete the entry
         sortedCreditorMap.delete(sortedCreditorMap.keys().next().value);
       }
@@ -128,7 +134,7 @@ export class DebtsService {
           false
         );
         //add a new debt into the storage
-        await this.expensesService.addDebt(gId, newDebt);
+        await this.addDebt(gId, newDebt);
         //the amount of money the person owes is now fully assigned to a creditor, so delete the entry
         sortedDebtorMap.delete(sortedDebtorMap.keys().next().value);
       }
@@ -142,7 +148,7 @@ export class DebtsService {
           false
         );
         //add a new debt into the storage
-        await this.expensesService.addDebt(gId, newDebt);
+        await this.addDebt(gId, newDebt);
         //the amount of money the person gets is now fully assigned to a debtor, so delete the entry
         sortedCreditorMap.delete(sortedCreditorMap.keys().next().value);
         //the amount of money the person owes is now fully assigned to a creditor, so delete the entry
@@ -237,7 +243,7 @@ export class DebtsService {
           false
         );
         //add a new debt into the storage
-        await this.expensesService.addDebt(gId, newDebt);
+        await this.addDebt(gId, newDebt);
         //the amount of money the person gets is now fully assigned to a debtor, so delete the entry
         sortedDebtorMapI.delete(sortedDebtorMapI.keys().next().value);
       }
@@ -253,7 +259,7 @@ export class DebtsService {
           false
         );
         //add a new debt into the storage
-        await this.expensesService.addDebt(gId, newDebt);
+        await this.addDebt(gId, newDebt);
         //the amount of money the person owes is now fully assigned to a creditor, so delete the entry
         sortedCreditorMapI.delete(sortedCreditorMapI.keys().next().value);
       }
@@ -267,7 +273,7 @@ export class DebtsService {
           false
         );
         //add a new debt into the storage
-        await this.expensesService.addDebt(gId, newDebt);
+        await this.addDebt(gId, newDebt);
         //the amount of money the person gets is now fully assigned to a debtor, so delete the entry
         sortedCreditorMapI.delete(sortedCreditorMapI.keys().next().value);
         //the amount of money the person owes is now fully assigned to a creditor, so delete the entry

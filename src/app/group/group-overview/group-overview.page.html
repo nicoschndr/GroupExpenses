@@ -48,6 +48,12 @@
                 <h6 style="display: inline-block">{{member.firstName}}</h6>
                 <p *ngIf="membersDebt.get(member.id) < 0" style="color: #A62020; font-size: 16px">schuldet mir noch: {{membersDebt.get(member.id)}} €</p>
               </ion-col>
+              <ion-icon *ngIf="editMode"
+                        name="close-circle-outline"
+                        style="color: #A62020; background-color: rgba(140, 184, 230, 0); display: inline-block; transform: translateY(-50%)"
+                        size="large"
+                        (click)="confirmDeleteAction(member.id)"
+              ></ion-icon>
             </ion-row>
           </ion-card-title>
         </ion-card-header>

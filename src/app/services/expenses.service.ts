@@ -48,11 +48,4 @@ export class ExpensesService {
   async removeEntry(id: string){
     await this.expensesCollections.doc(id).delete();
   }
-  async addDebt(gId: string, debt: Debt){
-    console.log(gId);
-    debt.id = this.afs.createId();
-    const data = JSON.parse(JSON.stringify(debt));
-    await this.expensesCollections.doc(debt.id).set(data);
-    await firebase.firestore().collection('group').doc(gId).collection('debts').doc(debt.id).set(data);
-  }
 }
