@@ -344,7 +344,7 @@ export class GroupOverviewPage implements ViewWillEnter {
       // `key` is the key of the entry, `value` is the value
       let debt = 0;
       //check if this member is also owing the current user money
-      this.membersDebt.forEach(async (valueM: number, keyM: string) => {
+      for (const [keyM, valueM] of this.membersDebt) {
         if (keyU === keyM) {
           //if so, calculate the difference
           debt = valueU - valueM;
@@ -357,7 +357,7 @@ export class GroupOverviewPage implements ViewWillEnter {
             this.membersDebt.delete(keyU); //change the value of the amount the member is owing to the current user
             this.membersDebt.set(keyU, (debt * (-1)));
             await this.markDebtAsPaid(keyU, this.currentUserId);
-            const newDebtEntry: Debt = new Debt('', this.currentUserId, keyU, debt, false);
+            const newDebtEntry: Debt = new Debt('', this.currentUserId, keyU, debt * (-1), false);
             await this.debtsService.addDebt(this.groupId, newDebtEntry);
             this.userDebts.delete(keyU); //delete the current user as debtor to the member
             await this.markDebtAsPaid(this.currentUserId, keyU); //mark the debts of the current user to the member as paid
@@ -373,7 +373,7 @@ export class GroupOverviewPage implements ViewWillEnter {
         }
         console.log('memberDebts', this.membersDebt);
         console.log('users Debts', this.userDebts);
-      });
+      }
     }
   }
 
