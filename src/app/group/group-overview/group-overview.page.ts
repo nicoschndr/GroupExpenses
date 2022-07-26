@@ -69,7 +69,6 @@ export class GroupOverviewPage implements ViewWillEnter {
       if (user) {
         //if so, save
         this.currentUserId = await this.userService.getCurrentUserId();
-        console.log(this.currentUserId);
       } else {
         //if not, redirect to grouplis view, where the logout is handled
         await this.router.navigate(['grouplist']);

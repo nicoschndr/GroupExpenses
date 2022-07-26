@@ -1,11 +1,12 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/compat/firestore';
 import {Expense} from '../models/classes/expense';
 import {Observable} from 'rxjs';
-import{AngularFireStorage} from '@angular/fire/compat/storage';
+import {AngularFireStorage} from '@angular/fire/compat/storage';
 import firebase from 'firebase/compat/app';
 import {Debt} from '../models/classes/debt';
 import {getDocs} from '@angular/fire/firestore';
+import {Timestamp} from 'firebase/firestore';
 
 @Injectable({
   providedIn: 'root'
@@ -30,6 +31,7 @@ export class ExpensesService {
    */
   async addExpense(expense: Expense){
     expense.id = this.afs.createId();
+    expense.date = new Date(expense.date);
     const data = JSON.parse(JSON.stringify(expense));
     await this.expensesCollections.doc(expense.id).set(data)
       .catch((err) => console.log('Error: ' + err));
@@ -150,13 +152,9 @@ export class ExpensesService {
   }
   async updateIntervalExpense(expense: Expense){
     const newDate = expense.date.getMonth()+1;
+    console.log('newDate: ', newDate);
+    const newDate2 = Timestamp.fromDate(expense.date).toDate().getMonth()+1;
+    console.log('newDate2: ', newDate2);
     await this.expensesCollections.doc(expense.id).update({date: new Date(newDate), split: false});
-  }
-  async addDebt(gId: string, debt: Debt){
-    console.log(gId);
-    debt.id = this.afs.createId();
-    const data = JSON.parse(JSON.stringify(debt));
-    await this.expensesCollections.doc(debt.id).set(data);
-    await firebase.firestore().collection('group').doc(gId).collection('debts').doc(debt.id).set(data);
   }
 }

@@ -61,7 +61,7 @@ ion-card-content {
   position: absolute;
   top: 35%;
   right: 0;
-  transform: translateX(-30%);
+  transform: translateX(-100%);
   font-size: 15px;
 }
 .amountI {
@@ -79,6 +79,12 @@ ion-segment-button {
 }
 .emptyCard {
   text-align: center;
+}
+.debtCardEntry {
+  height: 50px;
+}
+.debtCardEntryTextCol {
+  margin-top: 5px;
 }
 @media only screen and (max-width: 360px) {
   ion-segment-button {

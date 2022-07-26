@@ -34,9 +34,10 @@ export class ExpensesPage implements OnInit {
   currentUserId: string;
   currentGroup: Group;
   debts: Debt[] = [];
+  membersNameMap: Map<string, string> = new Map<string, string>();
   debtOfUser = 0;
-  public membersDebt: Map<string, number> = new Map();
-  public userDebts: Map<string, number> = new Map();
+  membersDebt: Map<string, number> = new Map();
+  userDebts: Map<string, number> = new Map();
   constructor(private actionSheet: ActionSheetController,
               public expensesService: ExpensesService,
               private modalCtrl: ModalController,
@@ -56,6 +57,8 @@ export class ExpensesPage implements OnInit {
     await this.getIncoming(this.groupId);
     await this.getGroup();
     await this.getExpenseInterval(this.groupId);
+    await this.getMembers();
+    await this.getDebts(this.currentGroup.id);
   }
   segmentChanged(ev: any){
     console.log('Segment changed to ', ev);
@@ -220,7 +223,7 @@ export class ExpensesPage implements OnInit {
   async addNewIntervalEntry(){
     for(const expense of this.expensesInterval){
       if(expense.interval === true && expense.split === true){
-
+        await this.expensesService.updateIntervalExpense(expense);
       }
     }
   }
@@ -360,6 +363,13 @@ export class ExpensesPage implements OnInit {
     await alertSuccess.present();
   }
 
+  backToGroupOverview(groupId: string){
+    this.router.navigate(['group-overview/', {gId: groupId}]).catch((err) => console.log('Error: ', err));
+  }
+
+  /**
+   * This function will
+   */
   async showDebts() {
     await this.debtsService.calculateDebtsForExpenses(this.groupId, this.expenses);
     await this.debtsService.calculateDebtsForIncomes(this.groupId, this.incoming);
@@ -370,10 +380,23 @@ export class ExpensesPage implements OnInit {
     await this.getDebtsOfMembers();
     await this.getDebtsOfCurrentUser();
     await this.calcUsersDebt();
+    await this.getDebts(this.currentGroup.id);
   }
 
   async getGroup(){
     this.currentGroup = await this.groupService.getGroupById(this.groupId);
+  }
+
+  /**
+   * This function gets all members and their information
+   */
+  async getMembers(): Promise<void> {
+    //get all user-data for every userId in the members array from the group
+    for (const userId of this.currentGroup.groupMembers) {
+      //get user data from service
+      const user: User = await this.userService.getUserWithUid(userId);
+      this.membersNameMap.set(userId, user.firstName);
+    }
   }
 
   /*********************************************
