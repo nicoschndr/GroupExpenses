@@ -363,6 +363,7 @@ export class ExpensesPage implements OnInit {
   async showDebts() {
     await this.debtsService.calculateDebtsForExpenses(this.groupId, this.expenses);
     await this.debtsService.calculateDebtsForIncomes(this.groupId, this.incoming);
+    await this.calcUsersDebt();
     await this.getExpenses(this.groupId);
     await this.getIncoming(this.groupId);
     await this.getDebts(this.currentGroup.id);
