@@ -1,11 +1,12 @@
 <ion-header>
-
+  <ion-toolbar>
+    <ion-buttons slot="start" *ngIf="counter!==1" (click)="back()">
+      <ion-icon style="cursor:pointer;" slot="icon-only" name="arrow-back-outline"></ion-icon>
+    </ion-buttons>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-button class="back"  *ngIf="counter!==1" (click)="back()">
-    <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
-  </ion-button>
   <div class="image">
     <img *ngIf="counter===1" src="./assets/billie.svg" width="200" height="200" alt="logo">
     <img *ngIf="counter===2" src="./assets/Onboarding1.svg" width="200" height="150" alt="onboarding2">
