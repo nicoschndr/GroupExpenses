@@ -29,7 +29,6 @@ export class GroupOverviewPage implements ViewWillEnter {
   public group: Group = new Group();
   public members: User[] = [];
   public membersDebt: Map<string, number> = new Map();
-  public userDebts: Map<string, number> = new Map();
   public groupId: string;
   public debtOfUser = 0;
   private currentUserId: string;
@@ -52,17 +51,11 @@ export class GroupOverviewPage implements ViewWillEnter {
   async ionViewWillEnter() {
     await this.getUser();
     await this.getGroup();
-    await this.getDebts(this.groupId);
     await this.getMembers();
     //check if the current user is a member of the group
     if (!this.isInGroup) {
       //if not, redirect to the grouplist
       this.router.navigate(['grouplist']);
-    } else { //if so, trigger functions for showing the group
-      await this.getDebtsOfMembers();
-      await this.getDebtsOfCurrentUser();
-      await this.getBalanceOfUser();
-      await this.calcUsersDebt();
     }
   }
 
@@ -258,145 +251,7 @@ export class GroupOverviewPage implements ViewWillEnter {
 
 
 
-  /*********************************************
-   * Functions for handling debts and payments *
-   *********************************************/
 
-  /**
-   * This function will get all debts from the group
-   *
-   * @example
-   * Call it with a groupId type of string
-   * getDebts('2uGkBIjf5WYoL4UZdObrca9T6mv1')
-   *
-   * @param groupId
-   */
-  async getDebts(groupId: string) {
-    //request all debts from service
-    this.debts = await this.debtsService.getDebts(groupId);
-  }
-
-  /**
-   * This function will calculate the amount of money the current user is owing to his group-members
-   * for every member is a total saved in a Map
-   */
-  getDebtsOfCurrentUser() {
-    //calculate the amount the user is owing for every member of the group
-    for (const user of this.members) {
-      let sum = 0;
-      //check for every debt-entry
-      for (const debt of this.debts) {
-        //if there is one, in which the current user is owing the currently viewed user money
-        if (debt.dId === this.currentUserId && debt.cId === user.id && debt.paid === false) {
-          //if so, then sum it up
-          sum += debt.amount;
-        }
-      }
-      //save the calculated amount in the map, which stores all debts the current user has
-      this.userDebts.set(user.id, sum);
-    }
-  }
-
-  /**
-   * This function will calculate the amount of money the user is owing the members of the showed group in total
-   * this number is automatically shown after opening the group-overview
-   */
-  getBalanceOfUser() {
-    //sum up the amounts for every debt the currently logged in user has in the group
-    this.userDebts.forEach( (value: number) => {
-      this.debtOfUser += value;
-    });
-  }
-
-  /**
-   * This function will calculate the amount of money the groupmembers are owing the current user
-   * for every member there is a seperate amount caluclated
-   */
-  async getDebtsOfMembers() {
-    //calculate for every groupmember
-    for (const user of this.members) {
-      let sum = 0;
-      //check every debt
-      for (const debt of this.debts) {
-        //if there is a debt entry, in which the current user is still a creditor to the currently viewed user
-          if (debt.dId === user.id && debt.cId === this.currentUserId && debt.paid === false) {
-            //if so, sum it up
-            sum += debt.amount;
-          }
-      }
-      //save the amount in the Map, in which all groupmembers are stored with the amount of money
-      // they are still owing to the curren user
-      this.membersDebt.set(user.id, sum);
-    }
-  }
-
-  /**
-   * This function will sum up for every pair of users what they are owing each other
-   *
-   * so if user A owes user B for example 10 € and user B owes user A only 5 €, the function will handle
-   * the difference and will update the Maps, so that user A only needs to pay 5 € to user B
-   */
-  async calcUsersDebt() {
-    console.log('memberDebts', this.membersDebt);
-    console.log('users Debts', this.userDebts);
-    //check for every member the current user is owing money
-    for (const [keyU, valueU] of this.userDebts) {
-      // `key` is the key of the entry, `value` is the value
-      let debt = 0;
-      //check if this member is also owing the current user money
-      for (const [keyM, valueM] of this.membersDebt) {
-        if (keyU === keyM) {
-          //if so, calculate the difference
-          debt = valueU - valueM;
-          if (debt === 0) { //if they are owing the same amount, mark their debts as paid and delete the debts from the maps
-            await this.markDebtAsPaid(keyM, this.currentUserId);
-            await this.markDebtAsPaid(this.currentUserId, keyM);
-            this.userDebts.delete(keyU);
-            this.membersDebt.delete(keyU);
-          } else if (debt < 0) { //if the difference is negative, the current user is now a creditor
-            this.membersDebt.delete(keyU); //change the value of the amount the member is owing to the current user
-            this.membersDebt.set(keyU, (debt * (-1)));
-            await this.markDebtAsPaid(keyU, this.currentUserId);
-            const newDebtEntry: Debt = new Debt('', this.currentUserId, keyU, debt * (-1), false);
-            await this.debtsService.addDebt(this.groupId, newDebtEntry);
-            this.userDebts.delete(keyU); //delete the current user as debtor to the member
-            await this.markDebtAsPaid(this.currentUserId, keyU); //mark the debts of the current user to the member as paid
-          } else if (debt > 0) { //if the difference is positive the current user is still owing money to the member, but the amount is now smaller
-            this.userDebts.delete(keyU);
-            this.userDebts.set(keyU, debt); //save the new value of money the current user is owing to the member in the map
-            await this.markDebtAsPaid(this.currentUserId, keyU);
-            const newDebtEntry: Debt = new Debt('', keyU, this.currentUserId, debt, false);
-            await this.debtsService.addDebt(this.groupId, newDebtEntry);
-            this.membersDebt.delete(keyU); //the member is no debtor anymore, so delete the entry
-            await this.markDebtAsPaid(keyU, this.currentUserId); //mark debts from the member to the current user as paid
-          }
-        }
-        console.log('memberDebts', this.membersDebt);
-        console.log('users Debts', this.userDebts);
-      }
-    }
-  }
-
-  /**
-   * This function will mark all debts from a user for a certain creditor as paid
-   * after clicking on the card of a user and selecting 'Zahlung erhalten'
-   * or from the app itself, when two users are owing each other the same amount of money
-   *
-   * @example
-   * Call it with two userIds type of string, one user is the debtor and the other one is the creditor
-   * markDebtAsPaid('2uGkBIjf5WYoL4UZdObrca9T6mv1', '5si49sjs3kqjb2h2553ddsf')
-   *
-   * @param dId
-   * @param cId
-   */
-  public async markDebtAsPaid(dId: string, cId?: string) {
-    for (const debt of this.debts) {
-      if (debt.dId === dId && debt.cId === cId || debt.dId === dId && debt.cId === this.currentUserId) {
-        await this.debtsService.deletePaidDebtsById(this.groupId, debt.id);
-        await this.userService.unsetReminderCount(dId);
-      }
-    }
-  }
 
   async sendPaymentReminder(debtorId: string) {
     const recipient: User = await this.userService.getUserWithUid(debtorId);
