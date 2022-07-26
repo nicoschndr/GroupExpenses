@@ -21,6 +21,7 @@ export class ExpensesPage implements OnInit {
   segment = 'Aufteilung';
   expense: Expense;
   expenses: Expense[] = [];
+  expensesInterval: Expense[] = [];
   income: Expense;
   incoming: Expense[] = [];
   groupId: string;
@@ -46,6 +47,7 @@ export class ExpensesPage implements OnInit {
     this.getCurrentUserData().catch((err) => console.log('Error: ', err));
     await this.getExpenses(this.groupId);
     await this.getIncoming(this.groupId);
+    await this.getExpenseInterval(this.groupId);
   }
   segmentChanged(ev: any){
     console.log('Segment changed to ', ev);
@@ -181,6 +183,23 @@ export class ExpensesPage implements OnInit {
     await alertConfirm.present();
   }
 
+  async getExpenseInterval(groupId: string){
+    this.expensesService.getAllIntervalExpensesFromGroup(groupId).subscribe((res) => {
+      this.expensesInterval = res.map((e) => ({
+        id: e.payload.doc.id,
+        ...e.payload.doc.data() as Expense
+      }));
+    });
+  }
+
+  async addNewIntervalEntry(){
+    for(const expense of this.expensesInterval){
+      if(expense.interval === true && expense.split === true){
+
+      }
+    }
+  }
+
   /**************************
    * Functions for incoming *
    **************************/
@@ -252,6 +271,15 @@ export class ExpensesPage implements OnInit {
     });
   }
 
+  /**
+   * This function will open a modal to show entry details.
+   *
+   * @example
+   * Call it with an object of type 'Expense'
+   * showIncomeDetails(income: Expense)
+   *
+   * @param income
+   */
   async showIncomeDetails(income: Expense){
     const modal = await this.modalCtrl.create({
       component: DetailsPageComponent,
@@ -294,10 +322,14 @@ export class ExpensesPage implements OnInit {
     });
     await alertConfirm.present();
   }
+
+  /**
+   * This function will open an alert if entry was successfully deleted.
+   */
   async openSuccessAlert(){
     const alertSuccess = await this.alertCtrl.create({
       header: 'Erfolgreich',
-      message: 'Ausgabe wurde gelöscht.',
+      message: 'Eintrag wurde gelöscht.',
       buttons: ['OK']
     });
     await alertSuccess.present();

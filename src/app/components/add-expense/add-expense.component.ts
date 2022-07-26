@@ -20,7 +20,7 @@ export class AddExpenseComponent implements OnInit {
   id: string;
   name: string;
   amount: number;
-  date: any;
+  date: Date;
   receipt: any;
   userId: string;
   userName: string;

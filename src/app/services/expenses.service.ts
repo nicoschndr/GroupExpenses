@@ -52,6 +52,20 @@ export class ExpensesService {
   }
 
   /**
+   * This function will get all expenses from one group by the given ID where the interval is true.
+   *
+   * @example
+   * Call it with a group ID as a string
+   * getAllExpenses('fj94tz3g')
+   *
+   * @param groupId
+   */
+  getAllIntervalExpensesFromGroup(groupId: string){
+    return this.afs.collection('expenses', ref => ref.where('groupId', '==', groupId)
+      .where('interval', '==', true))
+      .snapshotChanges();
+  }
+  /**
    * This function will get all expenses from one group that has been calculated / splitted.
    *
    * @example
@@ -133,6 +147,10 @@ export class ExpensesService {
    */
   async removeEntry(id: string){
     await this.expensesCollections.doc(id).delete();
+  }
+  async updateIntervalExpense(expense: Expense){
+    const newDate = expense.date.getMonth()+1;
+    await this.expensesCollections.doc(expense.id).update({date: new Date(newDate), split: false});
   }
   async addDebt(gId: string, debt: Debt){
     console.log(gId);

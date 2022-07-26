@@ -61,6 +61,7 @@ export class GroupOverviewPage implements ViewDidEnter{
 
   async getGroup() {
     this.groupId = this.route.snapshot.paramMap.get('gId');
+    console.log('gId: ', this.groupId);
     this.group = await this.groupService.getGroupById(this.groupId);
   }
 
