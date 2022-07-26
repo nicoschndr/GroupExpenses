@@ -5,12 +5,12 @@
 export const environment = {
   production: false,
   firebaseConfig: {
-    apiKey: 'AIzaSyCQROSv_qn7ocnUNfh84JWCTsdzWuAozpY',
-    authDomain: 'ema-groupexpenses.firebaseapp.com',
-    projectId: 'ema-groupexpenses',
-    storageBucket: 'ema-groupexpenses.appspot.com',
-    messagingSenderId: '984899551870',
-    appId: '1:984899551870:web:a0c04a8ba3f38cf66b4e2f'
+    apiKey: 'AIzaSyBZngOfRNUrGKAVi6Nmd6fDrNCvOHU4GuM',
+    authDomain: 'group-expenses-673d2.firebaseapp.com',
+    projectId: 'group-expenses-673d2',
+    storageBucket: 'group-expenses-673d2.appspot.com',
+    messagingSenderId: '584485352825',
+    appId: '1:584485352825:web:85e1e67a94d10623a26ba8'
   },
 };
 
