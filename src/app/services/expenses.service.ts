@@ -31,6 +31,7 @@ export class ExpensesService {
     expense.id = this.afs.createId();
     expense.date = new Date(expense.date).getTime();
     await this.expensesCollections.doc(expense.id).set(Object.assign({}, expense))
+      .then(() => console.log('Successfully added new expense to firebase'))
       .catch((err) => console.log('Error: ' + err));
     return this.addExpenseStatus = false;
   }
@@ -50,18 +51,6 @@ export class ExpensesService {
       .where('split', '==', false)
       .where('date', '<=', new Date().getTime()))
       .snapshotChanges();
-  }
-
-  async getAllExpensesArray(id: string){
-    const expRef = firebase.firestore().collection('expenses').where('groupId', '==', id);
-    const expDocs = await getDocs(expRef);
-    const expenses: Debt[] = [];
-    expDocs.forEach(recordDoc => {
-      if (!recordDoc.data().split) {
-        expenses.push(recordDoc.data());
-      }
-    });
-    return expenses;
   }
 
   /**
@@ -106,6 +95,7 @@ export class ExpensesService {
   updateExpense(expense: Expense){
     const data = JSON.parse(JSON.stringify(expense));
     this.expensesCollections.doc(expense.id).update(data)
+      .then(() => console.log('Successfully updated expense in firebase'))
       .catch((err) => console.log('Error: ', err));
   }
 
@@ -119,7 +109,9 @@ export class ExpensesService {
    * @param id
    */
   async removeEntry(id: string){
-    await this.expensesCollections.doc(id).delete();
+    await this.expensesCollections.doc(id).delete()
+      .then(() => console.log('Successfully deleted expense'))
+      .catch((err) => console.log('Error: ', err));
   }
 
   /**
@@ -137,7 +129,9 @@ export class ExpensesService {
     const newMonth = date.getMonth()+1;
     const setNewMonth = date.setMonth(newMonth);
     const newDate = new Date(setNewMonth).getTime();
-    await this.expensesCollections.doc(expense.id).update({date: newDate, split: false});
+    await this.expensesCollections.doc(expense.id).update({date: newDate, split: false})
+      .then(() => console.log('Successfully updated expense for next month'))
+      .catch((err) => console.log('Error: ', err));
   }
 
   async getAllExpensesbyMonth(id: string, from: Date, to: Date) {
@@ -155,5 +149,4 @@ export class ExpensesService {
     });
     return expenses;
   }
-
 }
