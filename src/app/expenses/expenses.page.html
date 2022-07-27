@@ -1,12 +1,9 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button></ion-back-button>
-    </ion-buttons>
-    <ion-buttons slot="end">
-      <ion-button (click)="openAddExpensesModal()">Add Expense</ion-button>
-      <ion-button (click)="openAddIncomeModal()">Add Income</ion-button>
-      <ion-button (click)="calcShare()">Add Share</ion-button>
+      <ion-button (click)="backToGroupOverview(currentGroup.id)">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -39,15 +36,24 @@
       <!-- Segment 'Aufteilung' -->
       <div class="segment-divs" *ngIf="segment === 'Aufteilung'">
         <ion-row class="ion-justify-content-center">
-          <ion-card *ngIf="split.length === 0">
+          <ion-card *ngIf="debts.length === 0">
             <ion-card-content class="emptyCard">
               <p>Es wurden keine Eingaben erfasst.</p>
             </ion-card-content>
           </ion-card>
-          <!--     <ion-card>-->
-          <!--       <ion-card-content>-->
-          <!--       </ion-card-content>-->
-          <!--     </ion-card>-->
+               <ion-card class="debtCardEntry" *ngFor="let debt of debts" id="{{debt.id}}">
+                 <ion-card-content>
+                   <ion-row>
+                     <ion-col class="amountCol" style="margin-top: 5px" size="4">
+                        <h1>{{debt.amount}}€</h1>
+                     </ion-col>
+                     <ion-col class="debtCardEntryTextCol" size="8">
+                       <span></span>
+                       <h2>schuldet {{membersNameMap.get(debt.dId)}} {{membersNameMap.get(debt.cId)}}</h2>
+                     </ion-col>
+                   </ion-row>
+                 </ion-card-content>
+               </ion-card>
         </ion-row>
       </div>
 

@@ -27,12 +27,21 @@ export class DebtsService {
     this.groupCollection = this.afs.collection('group');
   }
 
-  /**
+  async addDebt(gId: string, debt: Debt){
+    debt.id = this.afs.createId();
+    const data = JSON.parse(JSON.stringify(debt));
+    await firebase.firestore().collection('group').doc(gId).collection('debts').doc(debt.id).set(data);
+  }
+
+  /*-*
    * This function divides the expenses of one group and calculates which member owes who what amount
    *
    * @example
-   * Call it with an id of a group - type string
-   * calculateDebts('VHrpRwIDhaRAaBfKmPGd')
+   * Call it with an id of a group - type string and an array of expenses
+   * calculateDebtsForExpenses('VHrpRwIDhaRAaBfKmPGd', Expense[])
+   *
+   * @param gId
+   * @param expenses
    *
    * **/
   async calculateDebtsForExpenses(gId: string, expenses: Expense[]) {
@@ -81,21 +90,20 @@ export class DebtsService {
       //if value is negative, the member gets money
       else if (newValue < 0) {
         //then save member as creditor in Map
-        creditorMap.set(key, newValue);
+        creditorMap.set(key, newValue * (-1));
       }
     });
 
     //sort Maps after value
     const sortedDebtorMap = new Map([...debtorMap.entries()].sort((a, b) => b[1] - a[1]));
     const sortedCreditorMap = new Map([...creditorMap.entries()].sort((a, b) => a[1] - b[1]));
-    console.log(sortedDebtorMap, sortedCreditorMap);
 
     //check if there is still something to split
     while (sortedDebtorMap.size > 0 && sortedCreditorMap.size > 0) {
       //calculate the difference between the smallest amount a member needs to pay and a member needs to get paid
       //both are the first entries of the Maps
       const debt: number = Math.round(
-        ((sortedCreditorMap.values().next().value) + (sortedDebtorMap.values().next().value) + Number.EPSILON) * 100
+        ((sortedCreditorMap.values().next().value) - (sortedDebtorMap.values().next().value) + Number.EPSILON) * 100
       ) / 100;
       //if the debt is positive, there is still something left of the amount the first member in the Map needs to pay
       if (debt > 0) {
@@ -105,31 +113,29 @@ export class DebtsService {
           '',
           sortedCreditorMap.keys().next().value,
           sortedDebtorMap.keys().next().value,
-          sortedCreditorMap.values().next().value, //amount is the value which the creditor
+          sortedDebtorMap.values().next().value, //amount is the value which the creditor
           false
         );
         //add a new debt into the storage
-        await this.expensesService.addDebt(gId, newDebt);
+        await this.addDebt(gId, newDebt);
         //the amount of money the person gets is now fully assigned to a debtor, so delete the entry
         sortedCreditorMap.delete(sortedCreditorMap.keys().next().value);
-        console.log(sortedDebtorMap, sortedCreditorMap);
       }
       //if the debt is positive, there is still something left of the amount the first member in the Map needs to be paid
       else if (debt < 0) {
         //this is the new value the group still owes the member, so set the new value into the Map
-        sortedCreditorMap.set(sortedCreditorMap.keys().next().value, debt);
+        sortedCreditorMap.set(sortedCreditorMap.keys().next().value, (debt * (-1)));
         const newDebt: Debt = new Debt(
           '',
           sortedCreditorMap.keys().next().value,
           sortedDebtorMap.keys().next().value,
-          sortedDebtorMap.values().next().value,
+          sortedCreditorMap.values().next().value,
           false
         );
         //add a new debt into the storage
-        await this.expensesService.addDebt(gId, newDebt);
+        await this.addDebt(gId, newDebt);
         //the amount of money the person owes is now fully assigned to a creditor, so delete the entry
         sortedDebtorMap.delete(sortedDebtorMap.keys().next().value);
-        console.log(sortedDebtorMap, sortedCreditorMap);
       }
       //creditor- and debtor values are the same, so the debtor pays the creditor
       else if (debt === 0) {
@@ -141,15 +147,14 @@ export class DebtsService {
           false
         );
         //add a new debt into the storage
-        await this.expensesService.addDebt(gId, newDebt);
+        await this.addDebt(gId, newDebt);
         //the amount of money the person gets is now fully assigned to a debtor, so delete the entry
         sortedCreditorMap.delete(sortedCreditorMap.keys().next().value);
         //the amount of money the person owes is now fully assigned to a creditor, so delete the entry
         sortedDebtorMap.delete(sortedDebtorMap.keys().next().value);
-        console.log(sortedDebtorMap, sortedCreditorMap);
       }
     }
-    //mark all given expenses as splitted
+    //mark all given expenses as split
     await this.markExpensesAsSplitted(expenses);
   }
 
@@ -157,8 +162,11 @@ export class DebtsService {
    * This function divides the expenses of one group and calculates which member owes who what amount
    *
    * @example
-   * Call it with an id of a group - type string
-   * calculateDebts('VHrpRwIDhaRAaBfKmPGd')
+   * Call it with an id of a group - type string and an incomes array type of Expense
+   * calculateDebts('VHrpRwIDhaRAaBfKmPGd', Expense[])
+   *
+   * @param gId
+   * @param incomes
    *
    * **/
   async calculateDebtsForIncomes(gId: string, incomes: Expense[]) {
@@ -207,21 +215,20 @@ export class DebtsService {
       //if value is negative, the member owes money
       else if (newValue < 0) {
         //then save member as debtor in Map
-        debtorMap.set(key, newValue);
+        debtorMap.set(key, newValue * (-1));
       }
     });
 
     //sort Maps after value
     const sortedDebtorMapI = new Map([...debtorMap.entries()].sort((a, b) => b[1] - a[1]));
     const sortedCreditorMapI = new Map([...creditorMap.entries()].sort((a, b) => a[1] - b[1]));
-    console.log(sortedDebtorMapI, sortedCreditorMapI);
 
     //check if there is still something to split
     while (sortedDebtorMapI.size > 0 && sortedCreditorMapI.size > 0) {
       //calculate the difference between the smallest amount a member needs to pay and a member needs to get paid
       //both are the first entries of the Maps
       const debt: number = Math.round(
-        ((sortedCreditorMapI.values().next().value) + (sortedDebtorMapI.values().next().value) + Number.EPSILON) * 100
+        ((sortedCreditorMapI.values().next().value) - (sortedDebtorMapI.values().next().value) + Number.EPSILON) * 100
       ) / 100;
       //if the debt is positive, there is still something left of the amount the first member in the Map needs to pay
       if (debt > 0) {
@@ -231,31 +238,29 @@ export class DebtsService {
           '',
           sortedCreditorMapI.keys().next().value,
           sortedDebtorMapI.keys().next().value,
-          sortedCreditorMapI.values().next().value, //amount is the value which the creditor
+          sortedDebtorMapI.values().next().value, //amount is the value which the creditor
           false
         );
         //add a new debt into the storage
-        await this.expensesService.addDebt(gId, newDebt);
+        await this.addDebt(gId, newDebt);
         //the amount of money the person gets is now fully assigned to a debtor, so delete the entry
-        sortedCreditorMapI.delete(sortedCreditorMapI.keys().next().value);
-        console.log(sortedDebtorMapI, sortedCreditorMapI);
+        sortedDebtorMapI.delete(sortedDebtorMapI.keys().next().value);
       }
       //if the debt is positive, there is still something left of the amount the first member in the Map needs to be paid
       else if (debt < 0) {
         //this is the new value the group still owes the member, so set the new value into the Map
-        sortedCreditorMapI.set(sortedCreditorMapI.keys().next().value, debt);
+        sortedDebtorMapI.set(sortedDebtorMapI.keys().next().value, (debt * (-1)));
         const newDebt: Debt = new Debt(
           '',
           sortedCreditorMapI.keys().next().value,
           sortedDebtorMapI.keys().next().value,
-          sortedDebtorMapI.values().next().value,
+          sortedCreditorMapI.values().next().value,
           false
         );
         //add a new debt into the storage
-        await this.expensesService.addDebt(gId, newDebt);
+        await this.addDebt(gId, newDebt);
         //the amount of money the person owes is now fully assigned to a creditor, so delete the entry
-        sortedDebtorMapI.delete(sortedDebtorMapI.keys().next().value);
-        console.log(sortedDebtorMapI, sortedCreditorMapI);
+        sortedCreditorMapI.delete(sortedCreditorMapI.keys().next().value);
       }
       //creditor- and debtor values are the same, so the debtor pays the creditor
       else if (debt === 0) {
@@ -267,19 +272,28 @@ export class DebtsService {
           false
         );
         //add a new debt into the storage
-        await this.expensesService.addDebt(gId, newDebt);
+        await this.addDebt(gId, newDebt);
         //the amount of money the person gets is now fully assigned to a debtor, so delete the entry
         sortedCreditorMapI.delete(sortedCreditorMapI.keys().next().value);
         //the amount of money the person owes is now fully assigned to a creditor, so delete the entry
         sortedDebtorMapI.delete(sortedDebtorMapI.keys().next().value);
-        console.log(sortedDebtorMapI, sortedCreditorMapI);
       }
     }
-    //mark all given expenses as splitted
+    //mark all given expenses as split
     await this.markIncomesAsSplitted(incomes);
   }
 
+  /**
+   * This function will return all debt entries from one group out of the firestore
+   *
+   * @example
+   * Call it with a groupId type of string
+   * getDebts('2uGkBIjf5WYoL4UZdObrca9T6mv1')
+   *
+   * @param groupId
+   */
   async getDebts(groupId: string): Promise<Debt[]> {
+    //access the subcollection 'debts' of the group
     const debtsRef = firebase.firestore().collection('group').doc(groupId).collection('debts');
     const debtDocs = await getDocs(debtsRef);
     const debts: Debt[] = [];
@@ -289,7 +303,17 @@ export class DebtsService {
     return debts;
   }
 
-  async markDebtAsPaid(groupId: string, debtId: string) {
+  /**
+   * This function will delete a debt-document of the subcollection 'debts' of the collection 'group' by a given debtid
+   *
+   * @example
+   * Call it with a groupId and debtId both type of string
+   * deletePaidDebtsById('s93ske3l3493492ssdf', '2uGkBIjf5WYoL4UZdObrca9T6mv1')
+   *
+   * @param groupId
+   * @param debtId
+   */
+  async deletePaidDebtsById(groupId: string, debtId: string) {
     await firebase.firestore().collection('group').doc(groupId).collection('debts').doc(debtId).delete();
   }
 

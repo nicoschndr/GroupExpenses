@@ -1,11 +1,12 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/compat/firestore';
 import {Expense} from '../models/classes/expense';
 import {Observable} from 'rxjs';
-import{AngularFireStorage} from '@angular/fire/compat/storage';
+import {AngularFireStorage} from '@angular/fire/compat/storage';
 import firebase from 'firebase/compat/app';
 import {Debt} from '../models/classes/debt';
 import {getDocs} from '@angular/fire/firestore';
+import {Timestamp} from 'firebase/firestore';
 
 @Injectable({
   providedIn: 'root'
@@ -30,6 +31,7 @@ export class ExpensesService {
    */
   async addExpense(expense: Expense){
     expense.id = this.afs.createId();
+    expense.date = new Date(expense.date);
     const data = JSON.parse(JSON.stringify(expense));
     data.timestamp = firebase.firestore.Timestamp.fromDate(new Date(expense.date));
     await this.expensesCollections.doc(expense.id).set(data)
@@ -64,6 +66,20 @@ export class ExpensesService {
     return expenses;
   }
 
+  /**
+   * This function will get all expenses from one group by the given ID where the interval is true.
+   *
+   * @example
+   * Call it with a group ID as a string
+   * getAllExpenses('fj94tz3g')
+   *
+   * @param groupId
+   */
+  getAllIntervalExpensesFromGroup(groupId: string){
+    return this.afs.collection('expenses', ref => ref.where('groupId', '==', groupId)
+      .where('interval', '==', true))
+      .snapshotChanges();
+  }
   /**
    * This function will get all expenses from one group that has been calculated / splitted.
    *
@@ -147,12 +163,12 @@ export class ExpensesService {
   async removeEntry(id: string){
     await this.expensesCollections.doc(id).delete();
   }
-  async addDebt(gId: string, debt: Debt){
-    console.log(gId);
-    debt.id = this.afs.createId();
-    const data = JSON.parse(JSON.stringify(debt));
-    await this.expensesCollections.doc(debt.id).set(data);
-    await firebase.firestore().collection('group').doc(gId).collection('debts').doc(debt.id).set(data);
+  async updateIntervalExpense(expense: Expense){
+    const newDate = expense.date.getMonth()+1;
+    console.log('newDate: ', newDate);
+    const newDate2 = Timestamp.fromDate(expense.date).toDate().getMonth()+1;
+    console.log('newDate2: ', newDate2);
+    await this.expensesCollections.doc(expense.id).update({date: new Date(newDate), split: false});
   }
 
   async getAllExpensesbyMonth(id: string, from: Date, to: Date) {

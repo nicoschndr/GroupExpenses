@@ -20,7 +20,7 @@ export class AddExpenseComponent implements OnInit {
   id: string;
   name: string;
   amount: number;
-  date: any;
+  date: Date;
   receipt: any;
   userId: string;
   userName: string;
@@ -199,7 +199,7 @@ export class AddExpenseComponent implements OnInit {
   }
 
   /**
-   * This function will by triggered by an event and will pass data to function to add this to the firebase
+   * This function will be triggered by an event and will pass data to function to add this to the firebase
    * collection.
    *
    * @param event

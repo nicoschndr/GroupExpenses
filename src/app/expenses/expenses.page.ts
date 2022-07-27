@@ -11,6 +11,8 @@ import {DebtsService} from '../services/debts.service';
 import {Group} from '../models/classes/Group.model';
 import {DetailsPageComponent} from '../components/details-page/details-page.component';
 import {GroupService} from '../services/group.service';
+import {Debt} from '../models/classes/debt';
+import {getAuth, onAuthStateChanged} from '@angular/fire/auth';
 
 @Component({
   selector: 'app-expenses',
@@ -21,6 +23,7 @@ export class ExpensesPage implements OnInit {
   segment = 'Aufteilung';
   expense: Expense;
   expenses: Expense[] = [];
+  expensesInterval: Expense[] = [];
   income: Expense;
   incoming: Expense[] = [];
   groupId: string;
@@ -30,6 +33,11 @@ export class ExpensesPage implements OnInit {
   splittedIncome: Expense[] = [];
   currentUserId: string;
   currentGroup: Group;
+  debts: Debt[] = [];
+  membersNameMap: Map<string, string> = new Map<string, string>();
+  debtOfUser = 0;
+  membersDebt: Map<string, number> = new Map();
+  userDebts: Map<string, number> = new Map();
   constructor(private actionSheet: ActionSheetController,
               public expensesService: ExpensesService,
               private modalCtrl: ModalController,
@@ -42,13 +50,36 @@ export class ExpensesPage implements OnInit {
               private groupService: GroupService
               ) {}
   async ngOnInit() {
+    this.segment = 'Aufteilung';
+    await this.getUser();
     this.groupId = this.route.snapshot.paramMap.get('gId');
     this.getCurrentUserData().catch((err) => console.log('Error: ', err));
     await this.getExpenses(this.groupId);
     await this.getIncoming(this.groupId);
+    await this.getGroup();
+    await this.getExpenseInterval(this.groupId);
+    await this.getMembers();
+    await this.getDebts(this.currentGroup.id);
   }
   segmentChanged(ev: any){
     console.log('Segment changed to ', ev);
+  }
+
+  /**
+   * This function get the currently logged-in user
+   */
+  async getUser() {
+    const auth = getAuth();
+    onAuthStateChanged(auth, async (user) => {
+      //check if there is a user logged in
+      if (user) {
+        //if so, save
+        this.currentUserId = await this.userService.getCurrentUserId();
+      } else {
+        //if not, redirect to grouplis view, where the logout is handled
+        await this.router.navigate(['grouplist']);
+      }
+    });
   }
 
   /**
@@ -81,27 +112,6 @@ export class ExpensesPage implements OnInit {
 
   async getSplit(groupId: string){
     this.splittedExpense = await this.expensesService.getSplitExpenses(groupId);
-  }
-
-  /**
-   * This function will open and pass group id and type to modal form to create a new expense.
-   */
-  async openAddExpensesModal(){
-    const modal = await this.modalCtrl.create({
-      component: AddExpenseComponent,
-      componentProps: {
-        groupId: this.groupId,
-        id: '',
-        type: 'expense',
-      }
-    });
-    await modal
-      .present()
-      .then(() => console.log('No error with presenting modal'))
-      .catch(err => console.log('error modal: ', err));
-    await modal.onDidDismiss().then((res) => {
-      this.segment = res.data;
-    });
   }
 
   /**
@@ -181,6 +191,23 @@ export class ExpensesPage implements OnInit {
     await alertConfirm.present();
   }
 
+  async getExpenseInterval(groupId: string){
+    this.expensesService.getAllIntervalExpensesFromGroup(groupId).subscribe((res) => {
+      this.expensesInterval = res.map((e) => ({
+        id: e.payload.doc.id,
+        ...e.payload.doc.data() as Expense
+      }));
+    });
+  }
+
+  async addNewIntervalEntry(){
+    for(const expense of this.expensesInterval){
+      if(expense.interval === true && expense.split === true){
+        await this.expensesService.updateIntervalExpense(expense);
+      }
+    }
+  }
+
   /**************************
    * Functions for incoming *
    **************************/
@@ -205,26 +232,6 @@ export class ExpensesPage implements OnInit {
 
   async getSplittedIncome(groupId: string){
     this.splittedIncome = await this.incomingService.getSplitIncoming(groupId);
-  }
-  /**
-   * This function will open and pass group id and type to modal form to create a new income.
-   */
-  async openAddIncomeModal(){
-    const modal = await this.modalCtrl.create({
-      component: AddExpenseComponent,
-      componentProps: {
-        groupId: this.groupId,
-        id: '',
-        type: 'income',
-      }
-    });
-    await modal
-      .present()
-      .then(() => console.log('No error with presenting modal'))
-      .catch(err => console.log('error modal: ', err));
-    await modal.onDidDismiss().then((res) => {
-      this.segment = res.data;
-    });
   }
 
   /**
@@ -252,6 +259,15 @@ export class ExpensesPage implements OnInit {
     });
   }
 
+  /**
+   * This function will open a modal to show entry details.
+   *
+   * @example
+   * Call it with an object of type 'Expense'
+   * showIncomeDetails(income: Expense)
+   *
+   * @param income
+   */
   async showIncomeDetails(income: Expense){
     const modal = await this.modalCtrl.create({
       component: DetailsPageComponent,
@@ -294,37 +310,175 @@ export class ExpensesPage implements OnInit {
     });
     await alertConfirm.present();
   }
+
+  /**
+   * This function will open an alert if entry was successfully deleted.
+   */
   async openSuccessAlert(){
     const alertSuccess = await this.alertCtrl.create({
       header: 'Erfolgreich',
-      message: 'Ausgabe wurde gelöscht.',
+      message: 'Eintrag wurde gelöscht.',
       buttons: ['OK']
     });
     await alertSuccess.present();
   }
 
-  async showDebts() {
-    await this.debtsService.calculateDebtsForExpenses(this.groupId, this.expenses);
-    await this.debtsService.calculateDebtsForIncomes(this.groupId, this.incoming);
-    await this.getExpenses(this.groupId);
-    await this.getIncoming(this.groupId);
+  backToGroupOverview(groupId: string){
+    this.router.navigate(['group-overview/', {gId: groupId}]).catch((err) => console.log('Error: ', err));
   }
 
   /**
-   * This function will get all unsplitted incoming and split the amount among the group members.
+   * This function will
    */
-  async calcShare(){
+  async showDebts() {
+    await this.debtsService.calculateDebtsForExpenses(this.groupId, this.expenses);
+    await this.debtsService.calculateDebtsForIncomes(this.groupId, this.incoming);
+    await this.getDebts(this.currentGroup.id);
+    await this.getDebtsOfMembers();
+    await this.getDebtsOfCurrentUser();
+    await this.calcUsersDebt();
+    await this.getExpenses(this.groupId);
+    await this.getIncoming(this.groupId);
+    await this.getDebts(this.currentGroup.id);
+  }
+
+  async getGroup(){
     this.currentGroup = await this.groupService.getGroupById(this.groupId);
-    let userIncoming: Expense[] = [];
-    for(const uId of this.currentGroup.groupMembers){
-      userIncoming = this.incoming.filter((obj) => obj.userId === uId);
-      let userSum = 0;
-      let share = 0;
-      for(const income of userIncoming){
-        userSum += income.amount;
+  }
+
+  /**
+   * This function gets all members and their information
+   */
+  async getMembers(): Promise<void> {
+    //get all user-data for every userId in the members array from the group
+    for (const userId of this.currentGroup.groupMembers) {
+      //get user data from service
+      const user: User = await this.userService.getUserWithUid(userId);
+      this.membersNameMap.set(userId, user.firstName);
+    }
+  }
+
+  /*********************************************
+   * Functions for handling debts and payments *
+   *********************************************/
+
+  /**
+   * This function will get all debts from the group
+   *
+   * @example
+   * Call it with a groupId type of string
+   * getDebts('2uGkBIjf5WYoL4UZdObrca9T6mv1')
+   *
+   * @param groupId
+   */
+  async getDebts(groupId: string) {
+    //request all debts from service
+    this.debts = await this.debtsService.getDebts(groupId);
+  }
+
+  /**
+   * This function will calculate the amount of money the current user is owing to his group-members
+   * for every member is a total saved in a Map
+   */
+  getDebtsOfCurrentUser() {
+    //calculate the amount the user is owing for every member of the group
+    for (const user of this.currentGroup.groupMembers) {
+      let sum = 0;
+      //check for every debt-entry
+      for (const debt of this.debts) {
+        //if there is one, in which the current user is owing the currently viewed user money
+        if (debt.dId === this.currentUserId && debt.cId === user && debt.paid === false) {
+          //if so, then sum it up
+          sum += debt.amount;
+        }
       }
-      share = userSum / this.currentGroup.groupMembers.length;
-      await this.incomingService.addShare(this.groupId, uId, share);
+      //save the calculated amount in the map, which stores all debts the current user has
+      this.userDebts.set(user, sum);
+    }
+  }
+
+  /**
+   * This function will calculate the amount of money the groupmembers are owing the current user
+   * for every member there is a seperate amount caluclated
+   */
+  async getDebtsOfMembers() {
+    //calculate for every groupmember
+    for (const user of this.currentGroup.groupMembers) {
+      let sum = 0;
+      //check every debt
+      for (const debt of this.debts) {
+        //if there is a debt entry, in which the current user is still a creditor to the currently viewed user
+        if (debt.dId === user && debt.cId === this.currentUserId && debt.paid === false) {
+          //if so, sum it up
+          sum += debt.amount;
+        }
+      }
+      //save the amount in the Map, in which all groupmembers are stored with the amount of money
+      // they are still owing to the curren user
+      this.membersDebt.set(user, sum);
+    }
+  }
+
+  /**
+   * This function will sum up for every pair of users what they are owing each other
+   *
+   * so if user A owes user B for example 10 € and user B owes user A only 5 €, the function will handle
+   * the difference and will update the Maps, so that user A only needs to pay 5 € to user B
+   */
+  async calcUsersDebt() {
+    //check for every member the current user is owing money
+    for (const [keyU, valueU] of this.userDebts) {
+      // `key` is the key of the entry, `value` is the value
+      let debt = 0;
+      //check if this member is also owing the current user money
+      for (const [keyM, valueM] of this.membersDebt) {
+        if (keyU === keyM) {
+          //if so, calculate the difference
+          debt = valueU - valueM;
+          if (debt === 0) { //if they are owing the same amount, mark their debts as paid and delete the debts from the maps
+            await this.markDebtAsPaid(keyM, this.currentUserId); //delete debt from firebase
+            await this.markDebtAsPaid(this.currentUserId, keyM); //delete debt from firebase
+            this.userDebts.delete(keyU); //delete entry from user map
+            this.membersDebt.delete(keyU); //delete entry from members map
+          } else if (debt < 0) { //if the difference is negative, the current user is now a creditor
+            this.membersDebt.set(keyU, (debt * (-1))); //update map entry
+            await this.markDebtAsPaid(keyU, this.currentUserId); //delete debt from firebase
+            const newDebtEntry: Debt = new Debt('', this.currentUserId, keyU, debt * (-1), false); //create new debt entry with new amount
+            await this.debtsService.addDebt(this.groupId, newDebtEntry); //add new debt to firebase
+            this.userDebts.delete(keyU); //delete the current user as debtor to the member
+            await this.markDebtAsPaid(this.currentUserId, keyU); //mark the debts of the current user to the member as paid
+            // eslint-disable-next-line max-len
+          } else if (debt > 0) { //if the difference is positive the current user is still owing money to the member, but the amount is now smaller
+            this.userDebts.set(keyU, debt); //save the new value of money the current user is owing to the member in the map
+            await this.markDebtAsPaid(this.currentUserId, keyU); //delete debt from firebase
+            const newDebtEntry: Debt = new Debt('', keyU, this.currentUserId, debt, false); //create new debt entry with new amount
+            await this.debtsService.addDebt(this.groupId, newDebtEntry); //add new debt to firebase
+            this.membersDebt.delete(keyU); //the member is no debtor anymore, so delete the entry
+            await this.markDebtAsPaid(keyU, this.currentUserId); //mark debts from the member to the current user as paid
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * This function will mark all debts from a user for a certain creditor as paid
+   * after clicking on the card of a user and selecting 'Zahlung erhalten'
+   * or from the app itself, when two users are owing each other the same amount of money
+   *
+   * @example
+   * Call it with two userIds type of string, one user is the debtor and the other one is the creditor
+   * markDebtAsPaid('2uGkBIjf5WYoL4UZdObrca9T6mv1', '5si49sjs3kqjb2h2553ddsf')
+   *
+   * @param dId
+   * @param cId
+   */
+  public async markDebtAsPaid(dId: string, cId?: string) {
+    for (const debt of this.debts) {
+      if (debt.dId === dId && debt.cId === cId || debt.dId === dId && debt.cId === this.currentUserId) {
+        await this.debtsService.deletePaidDebtsById(this.groupId, debt.id);
+        await this.userService.unsetReminderCount(dId);
+      }
     }
   }
 }
