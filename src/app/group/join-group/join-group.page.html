@@ -1,51 +1,45 @@
 <ion-header>
   <ion-toolbar>
-    <ion-icon (click)="navCtrl.pop()" name="chevron-back-outline" size="large"></ion-icon>
+    <ion-buttons slot="start">
+      <ion-back-button class="backButton" defaultHref="create-group"></ion-back-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
-
 <ion-content>
   <ion-list>
     <img alt="threePeople" src="/assets/illustrations/grouplist_threePeople.png" class="image">
   </ion-list>
-
     <ion-label class="ion-text-center">
       <h1>Nehme an einer Gruppe teil</h1>
     </ion-label>
-    <ion-grid>
-    <ion-row>
-      <ion-col class="center">
-        <div>
-          <ion-item lines="none">
-            <ion-input type="text" placeholder="  Gruppen-ID" [(ngModel)]="id"></ion-input>
-         </ion-item>
-          <div>
-            <p class="center"
-             style="color:var(--ion-color-danger)"
-             *ngIf="alertsService.errors.get('groupId')">
-            {{alertsService.errors.get('groupId')}}
-           </p>
-         </div>
-        </div>
-      </ion-col>
-    </ion-row>
-
-    <ion-row>
-      <ion-col class="center">
-        <div>
-         <ion-item lines="none">
-            <ion-input type="text" class="key"  placeholder="  Key" [(ngModel)]="key"></ion-input>
-          </ion-item>
-          <div>
-           <p class="center"
-             style="color:var(--ion-color-danger)"
-             *ngIf="alertsService.errors.get('key')">
-            {{alertsService.errors.get('key')}}
-           </p>
-          </div>
-        </div>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-  <ion-button color="button" expand="block" shape="round" (click)="join(this.id, this.key)">los geht's</ion-button>
+  <br>
+    <ion-list lines="none">
+      <ion-input type="text"
+                 placeholder="Gruppen-ID"
+                 [(ngModel)]="id">
+      </ion-input>
+    </ion-list>
+    <div>
+      <p class="center"
+         style="color:var(--ion-color-danger)"
+         *ngIf="alertsService.errors.get('groupId')">
+        {{alertsService.errors.get('groupId')}}
+      </p>
+    </div>
+    <ion-list lines="none">
+      <ion-input type="text" class="key"
+                 placeholder="Key"
+                 [(ngModel)]="key">
+      </ion-input>
+    </ion-list>
+      <div>
+        <p class="center"
+           style="color:var(--ion-color-danger)"
+           *ngIf="alertsService.errors.get('key')">
+          {{alertsService.errors.get('key')}}
+        </p>
+      </div>
+    <ion-list>
+      <ion-button color="button" expand="block" shape="round" (click)="join(this.id, this.key)">los geht's</ion-button>
+    </ion-list>
 </ion-content>

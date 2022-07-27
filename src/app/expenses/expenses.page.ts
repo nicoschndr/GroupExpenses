@@ -477,7 +477,6 @@ export class ExpensesPage implements OnInit {
     for (const debt of this.debts) {
       if (debt.dId === dId && debt.cId === cId || debt.dId === dId && debt.cId === this.currentUserId) {
         await this.debtsService.deletePaidDebtsById(this.groupId, debt.id);
-        await this.userService.unsetReminderCount(dId);
       }
     }
   }

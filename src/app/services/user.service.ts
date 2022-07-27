@@ -178,6 +178,7 @@ import {Payment} from '../models/classes/payment.model';
       this.alertsService.errors.set('logout', 'Logout erfolgreich!');
       await this.router.navigate(['login']);
       await localStorage.setItem('onboardingShown', JSON.stringify(true));
+      await localStorage.setItem('reminderCount', JSON.stringify(0));
       window.location.reload();
     }
 
@@ -307,7 +308,9 @@ import {Payment} from '../models/classes/payment.model';
      */
     async setReminderCount(uid: string) {
       const userData: User = await this.getUserWithUid(uid);
+      console.log(userData);
       ++userData.reminderCount;
+      console.log(userData);
       await this.setUser(uid, userData);
     }
 
@@ -321,7 +324,12 @@ import {Payment} from '../models/classes/payment.model';
      */
     async unsetReminderCount(uId: string) {
       const userData: User = await this.getUserWithUid(uId);
-      --userData.reminderCount;
+      //check if the counter is bigger than zero, to avoid a negative number
+      if (userData.reminderCount > 0) {
+        //then decrement it
+        --userData.reminderCount;
+      }
+      //save the new values into firebase
       await this.setUser(uId, userData);
     }
   }
