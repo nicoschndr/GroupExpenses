@@ -1,8 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { NavParams } from '@ionic/angular';
 
 import { Chart, registerables } from 'chart.js'; Chart.register(...registerables);
 import { ExpensesService } from '../../services/expenses.service';
+import { IncomingsService } from '../../services/incomings.service';
 
 
 @Component({
@@ -16,20 +16,58 @@ export class ChartComponent implements OnInit {
 
   doughnutChart: any;
 
+  dateStart: Date;
+  dateEnd: Date;
+
+  dateStartISO = '';
+  dateEndISO = '';
+
 
   constructor(
-    private expensesService: ExpensesService
+    private expensesService: ExpensesService,
+    private incomingsService: IncomingsService,
   ) {
+    this.dateEnd = new Date(Date.now());
+    this.dateEnd.setHours(23);
+    this.dateEnd.setMinutes(59);
+
+    this.dateStart = this.addDays(this.dateEnd, -30);
+    this.dateStart.setHours(0);
+    this.dateStart.setMinutes(0);
+
+    this.dateEndISO = this.dateEnd.toISOString();
+    this.dateStartISO = this.dateStart.toISOString();
+  }
+
+  addDays(date, days) {
+    return new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate() + days,
+      date.getHours(),
+      date.getMinutes(),
+      date.getSeconds(),
+      date.getMilliseconds()
+    );
+  }
+
+  readDateISO() {
+    this.dateEnd = new Date(this.dateEndISO);
+    this.dateEnd.setHours(23);
+    this.dateEnd.setMinutes(59);
+
+    this.dateStart = new Date(this.dateStartISO);
+    this.dateStart.setHours(0);
+    this.dateStart.setMinutes(0);
   }
 
   async doughnutChartMethod() {
-    // console.log('groupid: ', this.grpid);
+    this.readDateISO();
+    const allExpenses = await this.incomingsService.getAllIncomingbyMonth(this.grpid, new Date(this.dateStart), new Date(this.dateEnd));
+    // console.log(allIncomingbyMonth);
 
-    const allExpenses = await this.expensesService.getAllExpensesArray(this.grpid);
-    // console.log(allExpenses);
-
-    const allIncoming = await this.expensesService.getAllIncoming(this.grpid);
-    // console.log(allIncoming);
+    const allIncoming = await this.expensesService.getAllExpensesbyMonth(this.grpid, new Date(this.dateStart), new Date(this.dateEnd));
+    // console.log(allExpensesbyMonth);
 
     let expensesSum = 0;
     for (const expense of allExpenses) {
@@ -40,6 +78,12 @@ export class ChartComponent implements OnInit {
     for (const incoming of allIncoming) {
       incomingSum += incoming.amount;
     }
+
+    const canvasdiv = document.getElementById('canvasdiv');
+    canvasdiv.textContent = '';
+    const canvas = document.createElement('canvas');
+    canvas.id = 'canvas1';
+    canvasdiv.append(canvas);
 
     this.doughnutChart = new Chart('canvas1', {
       type: 'doughnut',
@@ -52,8 +96,8 @@ export class ChartComponent implements OnInit {
             '#8698E3',
           ],
           hoverBackgroundColor: [
-            '#86E3CB',
-            '#8698E3',
+            '#A3FADD',
+            '#ADC0FF',
           ]
         }]
       }
