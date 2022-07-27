@@ -2,11 +2,6 @@ import {Injectable} from '@angular/core';
 import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/compat/firestore';
 import {Expense} from '../models/classes/expense';
 import {Observable} from 'rxjs';
-import {AngularFireStorage} from '@angular/fire/compat/storage';
-import firebase from 'firebase/compat/app';
-import {Debt} from '../models/classes/debt';
-import {getDocs} from '@angular/fire/firestore';
-import {Timestamp} from 'firebase/firestore';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +11,7 @@ export class ExpensesService {
   addExpenseStatus = false;
   private expensesCollections: AngularFirestoreCollection<Expense>;
   private expenses: Observable<Expense[]>;
-  constructor(private afs: AngularFirestore, private afsStorage: AngularFireStorage) {
+  constructor(private afs: AngularFirestore) {
     this.expensesCollections = this.afs.collection('expenses');
   }
 
@@ -31,15 +26,15 @@ export class ExpensesService {
    */
   async addExpense(expense: Expense){
     expense.id = this.afs.createId();
-    expense.date = new Date(expense.date);
-    const data = JSON.parse(JSON.stringify(expense));
-    await this.expensesCollections.doc(expense.id).set(data)
+    expense.date = new Date(expense.date).getTime();
+    await this.expensesCollections.doc(expense.id).set(Object.assign({}, expense))
       .catch((err) => console.log('Error: ' + err));
     return this.addExpenseStatus = false;
   }
 
   /**
-   * This function will get all expenses from one group by the given ID where split value is false.
+   * This function will get all expenses from one group by the given ID where split value is false and only documents
+   * until current date.
    *
    * @example
    * Call it with a group ID as a string
@@ -49,7 +44,8 @@ export class ExpensesService {
    */
   getAllExpenses(groupId: string){
     return this.afs.collection('expenses', ref => ref.where('groupId', '==', groupId)
-      .where('split', '==', false))
+      .where('split', '==', false)
+      .where('date', '<=', new Date().getTime()))
       .snapshotChanges();
   }
 
@@ -62,51 +58,11 @@ export class ExpensesService {
    *
    * @param groupId
    */
-  getAllIntervalExpensesFromGroup(groupId: string){
+  getAllSplitIntervalExpensesFromGroup(groupId: string){
     return this.afs.collection('expenses', ref => ref.where('groupId', '==', groupId)
-      .where('interval', '==', true))
-      .snapshotChanges();
-  }
-  /**
-   * This function will get all expenses from one group that has been calculated / splitted.
-   *
-   * @example
-   * Call it with a group ID as a string
-   * getAllSplittedExpenses('gi9w4zt823w')
-   *
-   * @param groupId
-   */
-  getAllSplittedExpenses(groupId: string){
-    return this.afs.collection('expenses', ref => ref.where('groupId', '==', groupId)
+      .where('interval', '==', true)
       .where('split', '==', true))
       .snapshotChanges();
-  }
-  /**
-   * This function will get all expenses by one user where the split value is false.
-   *
-   * @example
-   * Call it with a group ID and a user ID - both as strings
-   * getAllExpensesFromUser('hf84tz5hqr', 'ef94zho2s')
-   *
-   * @param groupId
-   * @param userId
-   */
-  getALlExpensesFromUser(groupId: string, userId: string){
-    return this.afs.collection('expenses', ref => ref.where('groupId', '==', groupId)
-      .where('userId', '==', userId)
-      .where('split', '==', false))
-      .snapshotChanges();
-  }
-  async getSplitExpenses(id: string){
-    const expRef = firebase.firestore().collection('expenses').where('groupId', '==', id);
-    const expDocs = await getDocs(expRef);
-    const expenses: Debt[] = [];
-    expDocs.forEach(recordDoc => {
-      if (!recordDoc.data().split) {
-        expenses.push(recordDoc.data());
-      }
-    });
-    return expenses;
   }
 
   /**
@@ -150,11 +106,22 @@ export class ExpensesService {
   async removeEntry(id: string){
     await this.expensesCollections.doc(id).delete();
   }
+
+  /**
+   * This function will update the date of an expense that was already split to return every month as long as
+   * interval is set as true.
+   *
+   * @example
+   * Call it with an object of type 'Expense'
+   * updateIntervalExpense(expense: Expense)
+   *
+   * @param expense
+   */
   async updateIntervalExpense(expense: Expense){
-    const newDate = expense.date.getMonth()+1;
-    console.log('newDate: ', newDate);
-    const newDate2 = Timestamp.fromDate(expense.date).toDate().getMonth()+1;
-    console.log('newDate2: ', newDate2);
-    await this.expensesCollections.doc(expense.id).update({date: new Date(newDate), split: false});
+    const date = new Date(expense.date);
+    const newMonth = date.getMonth()+1;
+    const setNewMonth = date.setMonth(newMonth);
+    const newDate = new Date(setNewMonth).getTime();
+    await this.expensesCollections.doc(expense.id).update({date: newDate, split: false});
   }
 }
