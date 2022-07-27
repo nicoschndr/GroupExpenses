@@ -10,7 +10,7 @@
         <ion-icon (click)="this.navToAddGroup()" class="icon" name="add-circle" size="large"></ion-icon>
       </ion-tab-button>
       <ion-tab-button *ngIf="inGroupView">
-        <ion-icon (click)="showAddActions()" class="icon" name="add-circle" size="large"></ion-icon>
+        <ion-icon (click)="getGroup(); showAddActions()" class="icon" name="add-circle" size="large"></ion-icon>
       </ion-tab-button>
 
       <ion-tab-button>

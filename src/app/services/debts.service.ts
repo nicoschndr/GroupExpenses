@@ -154,7 +154,7 @@ export class DebtsService {
         sortedDebtorMap.delete(sortedDebtorMap.keys().next().value);
       }
     }
-    //mark all given expenses as splitted
+    //mark all given expenses as split
     await this.markExpensesAsSplitted(expenses);
   }
 
@@ -279,7 +279,7 @@ export class DebtsService {
         sortedDebtorMapI.delete(sortedDebtorMapI.keys().next().value);
       }
     }
-    //mark all given expenses as splitted
+    //mark all given expenses as split
     await this.markIncomesAsSplitted(incomes);
   }
 
@@ -316,8 +316,6 @@ export class DebtsService {
   async deletePaidDebtsById(groupId: string, debtId: string) {
     await firebase.firestore().collection('group').doc(groupId).collection('debts').doc(debtId).delete();
   }
-
-//USE UPDATE INCOME / UPDATE EXPENSE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   async markExpensesAsSplitted(expenses: Expense[]) {
     for (const expense of expenses) {

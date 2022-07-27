@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {ActionSheetController, ModalController, ViewDidEnter} from '@ionic/angular';
+import {ActionSheetController, ModalController} from '@ionic/angular';
 import {AddExpenseComponent} from './components/add-expense/add-expense.component';
 import {TrackNavService} from './services/track-nav.service';
 
@@ -9,7 +9,7 @@ import {TrackNavService} from './services/track-nav.service';
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
 })
-export class AppComponent implements OnInit, ViewDidEnter {
+export class AppComponent implements OnInit {
 
   public inGroupView: boolean;
   public groupId: string;
@@ -34,12 +34,9 @@ export class AppComponent implements OnInit, ViewDidEnter {
     await localStorage.setItem('reminderCount', JSON.stringify(0));
   }
 
-  async ionViewDidEnter() {
-    await this.getGroup();
-  }
-
-  async getGroup(){
-    this.groupId = this.route.snapshot.paramMap.get('gId');
+  async getGroup() {
+    const gId = localStorage.getItem('gId');
+    this.groupId = JSON.parse(gId);
   }
 
   async navToGrouplist() {
@@ -55,9 +52,6 @@ export class AppComponent implements OnInit, ViewDidEnter {
   }
 
   async openModalExpense(){
-    console.log('gId: ', this.groupId);
-    this.groupId = this.route.snapshot.paramMap.get('gId');
-    console.log('gId: ', this.groupId);
     const modal = await this.modalCtrl.create({
       component: AddExpenseComponent,
       componentProps: {
@@ -94,23 +88,19 @@ export class AppComponent implements OnInit, ViewDidEnter {
       buttons: [
         {
           text: 'Ausgabe hinzufügen',
-          handler: () => {
-            console.log('Ausgabe hinzufügen');
-            this.openModalExpense();
+          handler: async () => {
+            await this.openModalExpense();
           }
         },
         {
           text: 'Einnahme hinzufügen',
-          handler: () => {
-            console.log('Einnahme hinzufügen');
+          handler: async () => {
+            await this.openModalIncome();
           }
         },
         {
           text: 'Abbrechen',
           role: 'cancel',
-          handler: () => {
-            console.log('Vorgang abgebrochen');
-          }
         },
       ],
     });

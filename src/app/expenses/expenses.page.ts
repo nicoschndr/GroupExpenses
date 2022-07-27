@@ -115,27 +115,6 @@ export class ExpensesPage implements OnInit {
   }
 
   /**
-   * This function will open and pass group id and type to modal form to create a new expense.
-   */
-  async openAddExpensesModal(){
-    const modal = await this.modalCtrl.create({
-      component: AddExpenseComponent,
-      componentProps: {
-        groupId: this.groupId,
-        id: '',
-        type: 'expense',
-      }
-    });
-    await modal
-      .present()
-      .then(() => console.log('No error with presenting modal'))
-      .catch(err => console.log('error modal: ', err));
-    await modal.onDidDismiss().then((res) => {
-      this.segment = res.data;
-    });
-  }
-
-  /**
    * This function will open and pass expense id and type to modal form for user to update expense data.
    *
    * @example
@@ -253,26 +232,6 @@ export class ExpensesPage implements OnInit {
 
   async getSplittedIncome(groupId: string){
     this.splittedIncome = await this.incomingService.getSplitIncoming(groupId);
-  }
-  /**
-   * This function will open and pass group id and type to modal form to create a new income.
-   */
-  async openAddIncomeModal(){
-    const modal = await this.modalCtrl.create({
-      component: AddExpenseComponent,
-      componentProps: {
-        groupId: this.groupId,
-        id: '',
-        type: 'income',
-      }
-    });
-    await modal
-      .present()
-      .then(() => console.log('No error with presenting modal'))
-      .catch(err => console.log('error modal: ', err));
-    await modal.onDidDismiss().then((res) => {
-      this.segment = res.data;
-    });
   }
 
   /**

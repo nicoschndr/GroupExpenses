@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {NavigationStart, Router} from '@angular/router';
+import {ActivatedRoute, NavigationStart, Router} from '@angular/router';
 import {Observable} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 

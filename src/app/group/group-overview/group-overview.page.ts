@@ -84,9 +84,8 @@ export class GroupOverviewPage implements ViewWillEnter {
     this.groupId = this.route.snapshot.paramMap.get('gId');
     //get all group-data from service
     this.group = await this.groupService.getGroupById(this.groupId);
+    localStorage.setItem('gId', JSON.stringify(this.groupId));
   }
-
-
 
   /**************************************
    * Functions for handling the members *
@@ -248,10 +247,6 @@ export class GroupOverviewPage implements ViewWillEnter {
     await alert.onDidDismiss();
   }
 
-
-
-
-
   async sendPaymentReminder(debtorId: string) {
     const recipient: User = await this.userService.getUserWithUid(debtorId);
     const sender: User = await this.userService.getUserWithUid(this.currentUserId);
@@ -312,8 +307,6 @@ export class GroupOverviewPage implements ViewWillEnter {
       break;
     }
   }
-
-
 
   /**************************************************************************
    * Functions for handling navigation, actionsheets, conditional rendering *
