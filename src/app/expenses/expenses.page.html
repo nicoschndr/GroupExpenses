@@ -149,18 +149,11 @@
 
       <!-- Segment 'Statistik' -->
       <div class="segment-divs" *ngIf="segment === 'Statistik'">
-        <ion-row class="ion-justify-content-center" id="statistic-month">
-
-        </ion-row>
-        <ion-row class="ion-justify-content-center" id="statistic-model">
-
-        </ion-row>
-        <ion-row class="ion-justify-content-center" id="statistic-key">
-
-        </ion-row>
+        <app-chart [grpid]="groupId"></app-chart>
       </div>
     </div>
   </ion-grid>
+  
 </ion-content>
 <footer>
   <ion-button color="button" (click)="showDebts()" expand="block" shape="round">Ausgaben & Einnahmen aufteilen</ion-button>

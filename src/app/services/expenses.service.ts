@@ -2,6 +2,9 @@ import {Injectable} from '@angular/core';
 import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/compat/firestore';
 import {Expense} from '../models/classes/expense';
 import {Observable} from 'rxjs';
+import firebase from 'firebase/compat/app';
+import {Debt} from '../models/classes/debt';
+import {getDocs} from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root'
@@ -47,6 +50,18 @@ export class ExpensesService {
       .where('split', '==', false)
       .where('date', '<=', new Date().getTime()))
       .snapshotChanges();
+  }
+
+  async getAllExpensesArray(id: string){
+    const expRef = firebase.firestore().collection('expenses').where('groupId', '==', id);
+    const expDocs = await getDocs(expRef);
+    const expenses: Debt[] = [];
+    expDocs.forEach(recordDoc => {
+      if (!recordDoc.data().split) {
+        expenses.push(recordDoc.data());
+      }
+    });
+    return expenses;
   }
 
   /**
@@ -124,4 +139,21 @@ export class ExpensesService {
     const newDate = new Date(setNewMonth).getTime();
     await this.expensesCollections.doc(expense.id).update({date: newDate, split: false});
   }
+
+  async getAllExpensesbyMonth(id: string, from: Date, to: Date) {
+    const incRef = firebase.firestore().collection('expenses')
+    .where('groupId', '==', id)
+    .where('timestamp', '>=', from)
+    .where('timestamp', '<=', to);
+
+    const incDocs = await getDocs(incRef);
+    const expenses: Debt[] = [];
+    incDocs.forEach(recordDoc => {
+      if (!recordDoc.data().split) {
+        expenses.push(recordDoc.data());
+      }
+    });
+    return expenses;
+  }
+
 }

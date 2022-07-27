@@ -8,6 +8,7 @@ import { ExpensesPageRoutingModule } from './expenses-routing.module';
 
 import { ExpensesPage } from './expenses.page';
 import { AddExpenseComponent } from '../components/add-expense/add-expense.component';
+import { ChartComponent } from '../components/chart/chart.component';
 
 @NgModule({
     imports: [
@@ -19,7 +20,7 @@ import { AddExpenseComponent } from '../components/add-expense/add-expense.compo
     exports: [
         AddExpenseComponent,
     ],
-    declarations: [ExpensesPage, AddExpenseComponent],
+    declarations: [ExpensesPage, AddExpenseComponent, ChartComponent],
     entryComponents: [AddExpenseComponent],
 })
 export class ExpensesPageModule {}
