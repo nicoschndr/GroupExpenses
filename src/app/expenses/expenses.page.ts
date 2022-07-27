@@ -50,6 +50,7 @@ export class ExpensesPage implements OnInit {
               private groupService: GroupService
               ) {}
   async ngOnInit() {
+    this.segment = 'Aufteilung';
     await this.getUser();
     this.groupId = this.route.snapshot.paramMap.get('gId');
     this.getCurrentUserData().catch((err) => console.log('Error: ', err));
@@ -65,7 +66,7 @@ export class ExpensesPage implements OnInit {
   }
 
   /**
-   * This function get the currently logged in user
+   * This function get the currently logged-in user
    */
   async getUser() {
     const auth = getAuth();
@@ -373,13 +374,12 @@ export class ExpensesPage implements OnInit {
   async showDebts() {
     await this.debtsService.calculateDebtsForExpenses(this.groupId, this.expenses);
     await this.debtsService.calculateDebtsForIncomes(this.groupId, this.incoming);
-    await this.calcUsersDebt();
-    await this.getExpenses(this.groupId);
-    await this.getIncoming(this.groupId);
     await this.getDebts(this.currentGroup.id);
     await this.getDebtsOfMembers();
     await this.getDebtsOfCurrentUser();
     await this.calcUsersDebt();
+    await this.getExpenses(this.groupId);
+    await this.getIncoming(this.groupId);
     await this.getDebts(this.currentGroup.id);
   }
 

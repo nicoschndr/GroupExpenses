@@ -110,7 +110,6 @@ export class AppComponent implements OnInit, ViewDidEnter {
           role: 'cancel',
           handler: () => {
             console.log('Vorgang abgebrochen');
-            this.openModalIncome();
           }
         },
       ],
