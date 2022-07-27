@@ -1,39 +1,49 @@
-<ion-item>
-  <ion-label>Von: </ion-label>
-  <ion-input
-    value="{{ dateStartISO | date: 'dd.MM.yyyy' }}"
-    id="dateStartISO"
-    class="ion-text-end"
-  ></ion-input>
-  <ion-popover trigger="dateStartISO" size="cover">
-    <ng-template>
-      <ion-datetime
-        presentation="date"
-        [(ngModel)]="dateStartISO"
-        locale="de-DE"
-        (ionChange)="doughnutChartMethod()"
-      ></ion-datetime>
-    </ng-template>
-  </ion-popover>
-</ion-item>
+<ion-row>
+  <ion-col>
+    <div style="position: relative; height:20vh; width:100%" id="canvasdiv"></div>
+  </ion-col>  
+</ion-row>
+<ion-row>
+  <ion-col class="position">
+    <ion-item>
+      <ion-label>von: </ion-label>
+      <ion-input
+        value="{{ dateStartISO | date: 'dd.MM.yyyy' }}"
+        id="dateStartISO"
+        class="ion-text-end"
+      ></ion-input>
+      <ion-popover trigger="dateStartISO" size="cover">
+        <ng-template>
+          <ion-datetime 
+            class="datepicker"
+            presentation="date"
+            [(ngModel)]="dateStartISO"
+            locale="de-DE"
+            (ionChange)="doughnutChartMethod()"
+          ></ion-datetime>
+        </ng-template>
+      </ion-popover>
+    </ion-item>
+    
+    <ion-item>
+      <ion-label>bis: </ion-label>
+      <ion-input
+        value="{{ dateEndISO | date: 'dd.MM.yyyy' }}"
+        id="dateEndISO"
+        class="ion-text-end"
+      ></ion-input>
+      <ion-popover trigger="dateEndISO" size="cover">
+        <ng-template>
+          <ion-datetime
+            presentation="date"
+            [(ngModel)]="dateEndISO"
+            locale="de-DE"
+            (ionChange)="doughnutChartMethod()"
+          ></ion-datetime>
+        </ng-template>
+      </ion-popover>
+    </ion-item>
 
-<ion-item>
-  <ion-label>Bis: </ion-label>
-  <ion-input
-    value="{{ dateEndISO | date: 'dd.MM.yyyy' }}"
-    id="dateEndISO"
-    class="ion-text-end"
-  ></ion-input>
-  <ion-popover trigger="dateEndISO" size="cover">
-    <ng-template>
-      <ion-datetime
-        presentation="date"
-        [(ngModel)]="dateEndISO"
-        locale="de-DE"
-        (ionChange)="doughnutChartMethod()"
-      ></ion-datetime>
-    </ng-template>
-  </ion-popover>
-</ion-item>
 
-<div style="position: relative; height:20vh; width:100%" id="canvasdiv"></div>
+  </ion-col>
+</ion-row>
