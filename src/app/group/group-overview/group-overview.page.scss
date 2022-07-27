@@ -6,17 +6,19 @@ h1 {
 
 h4 {
   color: #47517B;
+  padding: 0;
 }
 
 h6{
-  padding-top: 10px;
+  padding-bottom: 0;
+  margin: 0px;
 }
 
 p {
   font-size: 60px;
   color: #47517B;
-  padding-bottom: 20px;
-  padding-top: 20px;
+  margin: 0;
+  vertical-align: center;
 }
 
 .showDetails {
@@ -28,13 +30,8 @@ ion-card {
   background-color: rgba(140, 184, 237, .3);
   color: #47517B;
   border-radius: 15px;
-  margin-right: 30px;
-  margin-left: 30px;
-  width: 100%;
-}
-
-ion-card-header {
-  padding: 5px;
+  margin: 10px;
+  width: 90%;
 }
 
 ion-card-title {
@@ -43,18 +40,23 @@ ion-card-title {
   color: #47517B;
 }
 
+ion-col {
+  padding: 10px;
+}
+
+ion-card-content {
+  padding: 10px;
+}
+
 ion-icon {
   color: #47517B;
   background-color: #ffffff;
-  padding-right: 30px;
+}
+
+ion-card-header {
+  padding: 0px;
 }
 
 ion-col.cols {
   flex: 0 0 0;
-  padding-top: 41px;
-}
-
-.listCreateGroup {
-  margin-right: 30px;
-  margin-left: 30px;
 }

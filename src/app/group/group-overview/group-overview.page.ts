@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {
   ActionSheetController,
@@ -56,6 +56,10 @@ export class GroupOverviewPage implements ViewWillEnter {
     if (!this.isInGroup) {
       //if not, redirect to the grouplist
       this.router.navigate(['grouplist']);
+    } else {
+      await this.getDebtsOfCurrentGroup();
+      await this.getDebtOfCurrentUser();
+      await this.getDebtsOfMembers();
     }
   }
 
@@ -252,7 +256,7 @@ export class GroupOverviewPage implements ViewWillEnter {
     const sender: User = await this.userService.getUserWithUid(this.currentUserId);
 
     // eslint-disable-next-line max-len
-    const msg: string = 'Hallo ' + recipient.firstName + ', leider habe ich eine Zahlung von dir noch nicht erhalten. Bitte schau doch noch einmal in die Gruppe in der Billie-App und sende mit den Betrag zeinah. Viele Grüße' + sender.firstName;
+    const msg: string = 'Hallo ' + recipient.firstName + ', leider habe ich eine Zahlung von dir noch nicht erhalten. Bitte schau doch noch einmal in die Gruppe in der Billie-App und sende mir den Betrag zeinah. Viele Grüße' + sender.firstName;
 
     Share.canShare().then(canShare => {
       if (canShare.value) {
@@ -288,12 +292,13 @@ export class GroupOverviewPage implements ViewWillEnter {
           header: 'Möchtest du eine Zahlungserinnerung senden?',
           buttons: [{
             text: 'Ja',
-            handler: () => {
+            handler: async () => {
               //increment the reminder counter by one to show the alert to the owing user the next time he opens the app
-              this.userService.setReminderCount(debtorId);
-              this.sendPaymentReminder(debtorId);
-              //reload the members array
-              this.getMembers();
+              await this.userService.setReminderCount(debtorId);
+              await this.getMembers();
+              await this.getDebtsOfCurrentGroup();
+              await this.getDebtsOfMembers();
+              await this.sendPaymentReminder(debtorId);
             }
           }, {
             text: 'Nein',
@@ -362,6 +367,68 @@ export class GroupOverviewPage implements ViewWillEnter {
    */
   showExpensesOverview(groupId: string){
     this.router.navigate(['expenses/', {gId: groupId}]).catch((err) => console.log('Error: ', err));
+  }
+
+  async getDebtsOfCurrentGroup() {
+    this.debts = await this.debtsService.getDebts(this.groupId);
+  }
+
+  async getDebtOfCurrentUser() {
+    let sum = 0;
+    for (const debt of this.debts) {
+      if (debt.dId === this.currentUserId && !debt.paid) {
+        sum += debt.amount;
+      }
+    }
+    this.debtOfUser = sum;
+  }
+
+  /**
+   * This function will calculate the amount of money the groupmembers are owing the current user
+   * for every member there is a seperate amount caluclated
+   */
+  async getDebtsOfMembers() {
+    //calculate for every groupmember
+    for (const user of this.members) {
+      let sum = 0;
+      //check every debt
+      for (const debt of this.debts) {
+        //if there is a debt entry, in which the current user is still a creditor to the currently viewed user
+        if (debt.dId === user.id && debt.cId === this.currentUserId && debt.paid === false) {
+          //if so, sum it up
+          sum += debt.amount;
+        }
+      }
+      //save the amount in the Map, in which all groupmembers are stored with the amount of money
+      // they are still owing to the curren user
+      this.membersDebt.set(user.id, sum);
+    }
+  }
+
+  /**
+   * This function will mark all debts from a user to the current user
+   * after clicking on the card of a user and selecting 'Zahlung erhalten'
+   *
+   * @example
+   * Call it with a userIds type of string
+   * markDebtAsPaid('2uGkBIjf5WYoL4UZdObrca9T6mv1')
+   *
+   * @param dId
+   */
+  public async markDebtAsPaid(dId: string) {
+    //check for every debt
+    for (const debt of this.debts) {
+      //if the debitor and creditor are matching the given ids
+      if (debt.dId === dId && debt.cId === this.currentUserId && !debt.paid) {
+        //then delete them
+        await this.debtsService.deletePaidDebtsById(this.groupId, debt.id);
+        //set back the reminder count, because the payment is now made
+        await this.userService.unsetReminderCount(dId);
+        //reload the data
+        await this.getDebtOfCurrentUser();
+        await this.getDebtsOfMembers();
+      }
+    }
   }
 }
 
