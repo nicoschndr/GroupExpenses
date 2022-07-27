@@ -33,6 +33,7 @@ export class IncomingsService {
   async addIncome(income: Expense) {
     income.id = this.afs.createId();
     const data = JSON.parse(JSON.stringify(income));
+    data.timestamp = firebase.firestore.Timestamp.fromDate(new Date(income.date));
     await this.incomingCollections.doc(income.id).set(data)
       .catch((err) => console.log('Error: ' + err));
   }
@@ -140,5 +141,42 @@ export class IncomingsService {
           user.ref.update({amount: decrement});
         }
       });
+  }
+
+  /**
+   * This function will get all Incomigs by the given ID.
+   *
+   * @example
+   * Call it with an ID as a string
+   * getAllIncoming('')
+   *
+   * @param id
+   */
+   async getAllIncomingArray(id: string) {
+    const incRef = firebase.firestore().collection('incoming').where('groupId', '==', id);
+    const incDocs = await getDocs(incRef);
+    const incoming: Debt[] = [];
+    incDocs.forEach(recordDoc => {
+      if (!recordDoc.data().split) {
+        incoming.push(recordDoc.data());
+      }
+    });
+    return incoming;
+  }
+
+  async getAllIncomingbyMonth(id: string, from: Date, to: Date) {
+    const incRef = firebase.firestore().collection('incoming')
+    .where('groupId', '==', id)
+    .where('timestamp', '>=', from)
+    .where('timestamp', '<=', to);
+
+    const incDocs = await getDocs(incRef);
+    const incoming: Debt[] = [];
+    incDocs.forEach(recordDoc => {
+      if (!recordDoc.data().split) {
+        incoming.push(recordDoc.data());
+      }
+    });
+    return incoming;
   }
 }

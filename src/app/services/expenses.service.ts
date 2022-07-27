@@ -31,6 +31,7 @@ export class ExpensesService {
   async addExpense(expense: Expense){
     expense.id = this.afs.createId();
     const data = JSON.parse(JSON.stringify(expense));
+    data.timestamp = firebase.firestore.Timestamp.fromDate(new Date(expense.date));
     await this.expensesCollections.doc(expense.id).set(data)
       .catch((err) => console.log('Error: ' + err));
     return this.addExpenseStatus = false;
@@ -153,15 +154,21 @@ export class ExpensesService {
     await this.expensesCollections.doc(debt.id).set(data);
     await firebase.firestore().collection('group').doc(gId).collection('debts').doc(debt.id).set(data);
   }
-  async getAllIncoming(id: string){
-    const incRef = firebase.firestore().collection('incoming').where('groupId', '==', id);
+
+  async getAllExpensesbyMonth(id: string, from: Date, to: Date) {
+    const incRef = firebase.firestore().collection('expenses')
+    .where('groupId', '==', id)
+    .where('timestamp', '>=', from)
+    .where('timestamp', '<=', to);
+
     const incDocs = await getDocs(incRef);
-    const incoming: Debt[] = []; // TODO: add class for incoming?
+    const expenses: Debt[] = [];
     incDocs.forEach(recordDoc => {
       if (!recordDoc.data().split) {
-        incoming.push(recordDoc.data());
+        expenses.push(recordDoc.data());
       }
     });
-    return incoming;
+    return expenses;
   }
+
 }
