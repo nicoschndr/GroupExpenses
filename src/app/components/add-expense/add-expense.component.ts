@@ -20,7 +20,7 @@ export class AddExpenseComponent implements OnInit {
   id: string;
   name: string;
   amount: number;
-  date: Date;
+  date: any;
   receipt: any;
   userId: string;
   userName: string;
@@ -32,6 +32,7 @@ export class AddExpenseComponent implements OnInit {
   errors: Map<string, string> = new Map<string, string>();
   fileName: string;
   uploadStatus = false;
+  today: any;
   constructor(private expensesService: ExpensesService,
               private incomingService: IncomingsService,
               private modalCtrl: ModalController,
@@ -45,6 +46,7 @@ export class AddExpenseComponent implements OnInit {
     this.id = this.navParams.get('id');
     this.type = this.navParams.get('type');
     this.groupId = this.navParams.get('groupId');
+    this.today = new Date().toISOString();
     if(this.entry){
       this.editMode = true;
       this.setValuesInInputs().catch((err) => console.log('Error: ', err));

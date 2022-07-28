@@ -40,7 +40,7 @@
         <ion-input id="open" placeholder="Datum" value="{{date | date: 'dd.MM.yyyy'}}" required="true"></ion-input>
         <ion-popover trigger="open">
           <ng-template>
-            <ion-datetime presentation="date" [(ngModel)]="date"></ion-datetime>
+            <ion-datetime presentation="date" [(ngModel)]="date" max="{{today | date: 'yyyy-MM-dd'}}"></ion-datetime>
           </ng-template>
         </ion-popover>
         <p class="ion-text-end ion-padding-end" style="color:var(--ion-color-danger)"
