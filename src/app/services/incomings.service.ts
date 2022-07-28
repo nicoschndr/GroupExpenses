@@ -31,7 +31,6 @@ export class IncomingsService {
    */
   async addIncome(income: Expense) {
     income.id = this.afs.createId();
-    income.date = new Date(income.date).getTime();
     await this.incomingCollections.doc(income.id).set(Object.assign({},income))
       .then(() => console.log('Successfully added new income to firebase'))
       .catch((err) => console.log('Error: ' + err));

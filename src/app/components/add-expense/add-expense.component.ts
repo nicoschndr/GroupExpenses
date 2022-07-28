@@ -125,7 +125,7 @@ export class AddExpenseComponent implements OnInit {
       '',
       this.name,
       this.amount,
-      this.date,
+      this.date = new Date(this.date).getTime(),
       this.receipt,
       this.userId,
       this.userName,
