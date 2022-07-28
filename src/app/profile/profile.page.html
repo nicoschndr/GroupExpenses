@@ -135,6 +135,13 @@
         </ion-item>
       </ion-col>
     </ion-row>
+    <ion-row *ngIf="password">
+      <ion-col>
+        <ion-button (click)="changePassword()">
+          <p>Speichern</p>
+        </ion-button>
+      </ion-col>
+    </ion-row>
 
     <p class="center"
        style="color:var(--ion-color-danger)"

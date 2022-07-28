@@ -108,6 +108,7 @@ import {deleteUser, getAuth, updatePassword} from '@angular/fire/auth';
      */
     async changePassword(password) {
       const currentUser = this.getCurrentUser();
+      await updatePassword(currentUser, password);
       const user: User = await this.getUserWithUid(currentUser.uid);
       const userData = new User(user.id, user.email, user.firstName, user.lastName, password, user.gruppen, user.reminderCount);
       await this.setUser(currentUser.uid, userData);
