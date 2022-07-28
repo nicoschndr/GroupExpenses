@@ -20,10 +20,10 @@ export class RegistrationPage implements OnInit {
    * This function calls the signUp method of the user Service with the data from the input fields and then navigates
    * the user to the grouplist page.
    */
-  signUp(): void {
-      this.userService.signUp(this.user.firstName, this.user.lastName, this.user.email, this.user.password);
+  async signUp(): Promise<void> {
+      await this.userService.signUp(this.user.firstName, this.user.lastName, this.user.email, this.user.password);
       this.user = {};
-      this.router.navigate(['grouplist']);
+      await this.router.navigate(['grouplist']);
   }
 
   /**

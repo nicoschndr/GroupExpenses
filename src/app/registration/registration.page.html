@@ -15,7 +15,7 @@
 <ion-grid>
 
   <ion-row>
-    <ion-col class="center">
+    <ion-col>
       <div>
         <ion-item>
           <ion-input placeholder="Vorname" type="text" required="true" [(ngModel)]="user.firstName"></ion-input>
@@ -33,7 +33,7 @@
 
 
   <ion-row>
-    <ion-col class="center">
+    <ion-col>
       <div>
         <ion-item>
           <ion-input placeholder="Name" type="text" required="true" [(ngModel)]="user.lastName"></ion-input>
@@ -51,7 +51,7 @@
 
 
   <ion-row>
-    <ion-col class="center">
+    <ion-col>
       <div>
         <ion-item>
           <ion-input placeholder="Email" type="email" required="true" [(ngModel)]="user.email"></ion-input>
@@ -69,7 +69,7 @@
 
 
   <ion-row>
-    <ion-col class="center">
+    <ion-col>
       <div>
         <ion-item>
           <ion-input placeholder="Passwort" type="password" required="true" [(ngModel)]="user.password"></ion-input>
@@ -87,9 +87,9 @@
 
 
 
-  <ion-row class="margin">
-    <ion-col class="center">
-      <ion-button type="submit" (click)="signUp()">registrieren</ion-button>
+  <ion-row>
+    <ion-col>
+          <ion-button type="submit" (click)="signUp()">registrieren</ion-button>
     </ion-col>
   </ion-row>
 

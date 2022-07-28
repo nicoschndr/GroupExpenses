@@ -34,7 +34,7 @@
     </p>
 
     <ion-row>
-      <ion-col class="center">
+      <ion-col>
         <ion-item class="border">
           <ion-input #firstName placeholder="Vorname" [readonly]="!editMode" [(ngModel)]="user.firstName"></ion-input>
         </ion-item>
@@ -42,7 +42,7 @@
     </ion-row>
 
     <ion-row>
-      <ion-col class="center">
+      <ion-col>
         <ion-item class="border">
           <ion-input placeholder="Nachname" [readonly]="!editMode" [(ngModel)]="user.lastName"></ion-input>
         </ion-item>
@@ -50,7 +50,7 @@
     </ion-row>
 
     <ion-row>
-      <ion-col class="center">
+      <ion-col>
           <ion-item class="border">
            <ion-input placeholder="E-Mail" [readonly]="!editMode" [(ngModel)]="user.email"></ion-input>
           </ion-item>
@@ -61,31 +61,31 @@
        *ngIf="alertsService.errors.get('success')">
       {{alertsService.errors.get('success')}}
     </p>
-    <div class="center">
-      <ion-row style="width: 300px">
+    <div>
+      <ion-row style="margin-left: 20px">
         <ion-col class="left">
           <p class="text2"><a style="cursor: pointer; color:#47517B" (click)="password=true">Passwort ändern</a></p>
         </ion-col>
       </ion-row>
     </div>
-    <div class="center">
-      <ion-row style="width: 300px">
+    <div>
+      <ion-row style="margin-left: 20px">
         <ion-col class="left">
           <p class="text2"><a style="cursor: pointer; color:#47517B" (click)="deleteUser()">Profil löschen</a></p>
         </ion-col>
       </ion-row>
     </div>
 
-    <div class="center">
-      <ion-row style="width: 300px">
+    <div>
+      <ion-row style="margin-left: 20px">
         <ion-col class="left">
           <p class="text2"><a style="cursor: pointer; color:#47517B">Hilfe</a></p>
         </ion-col>
       </ion-row>
     </div>
 
-    <div class="center">
-      <ion-row style="width: 300px">
+    <div>
+      <ion-row style="margin-left: 20px">
         <ion-col class="left">
           <p class="text2"><a style="cursor: pointer; color:var(--ion-color-danger)" (click)="logout(); user.firstName='';user.lastName='';user.email=''" >Ausloggen <ion-icon name="log-out-outline"></ion-icon></a></p>
         </ion-col>
@@ -97,7 +97,7 @@
   <ion-grid *ngIf="password">
 
     <ion-row>
-      <ion-col class="center">
+      <ion-col>
         <ion-item class="border">
           <ion-input type="password" placeholder="altes Passwort" [(ngModel)]="altespw"></ion-input>
         </ion-item>
@@ -105,7 +105,7 @@
     </ion-row>
 
     <ion-row>
-      <ion-col class="center">
+      <ion-col>
         <ion-item class="border">
           <ion-input type="password" placeholder="neues Passwort" [(ngModel)]="pw"></ion-input>
         </ion-item>
@@ -115,7 +115,7 @@
 
 
     <ion-row>
-      <ion-col class="center">
+      <ion-col>
         <ion-item class="border">
           <ion-input type="password" placeholder="neues Passwort bestätigen" [(ngModel)]="pw2"></ion-input>
         </ion-item>
