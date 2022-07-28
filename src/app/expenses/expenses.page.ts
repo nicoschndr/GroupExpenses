@@ -24,6 +24,8 @@ export class ExpensesPage implements ViewWillEnter {
   expense: Expense;
   expenses: Expense[] = [];
   expensesInterval: Expense[] = [];
+  notSplitExpense: Expense[] = [];
+  notSplitIncome: Expense[] = [];
   income: Expense;
   incoming: Expense[] = [];
   groupId: string;
@@ -55,10 +57,10 @@ export class ExpensesPage implements ViewWillEnter {
     await this.getExpenses(this.groupId);
     await this.getIncoming(this.groupId);
     await this.getGroup();
-    await this.getExpenseInterval(this.groupId);
     await this.getMembers();
     await this.getDebts(this.currentGroup.id);
-    await this.addNewIntervalEntry();
+    await this.getAllNotSplitExpense(this.groupId);
+    await this.getAllNotSplitIncome(this.groupId);
   }
 
   /**
@@ -104,6 +106,7 @@ export class ExpensesPage implements ViewWillEnter {
         ...e.payload.doc.data() as Expense
       }));
     });
+    console.log('All expenses: ', this.expenses);
   }
 
   /**
@@ -198,13 +201,19 @@ export class ExpensesPage implements ViewWillEnter {
    * to add that is supposed to be called every month.
    */
   async addNewIntervalEntry(){
+    await this.getExpenseInterval(this.groupId);
+    console.log('interval2: ', this.expensesInterval);
     for(const expense of this.expensesInterval){
-      expense.split = false;
-      const date = new Date(expense.date);
-      const newMonth = date.getMonth()+1;
-      const setNewMonth = date.setMonth(newMonth);
-      expense.date = new Date(setNewMonth).getTime();
-      await this.expensesService.addExpense(expense);
+      console.log('interval expense: ', expense);
+      if(expense.split === true) {
+        expense.split = false;
+        const date = new Date(expense.date);
+        const newMonth = date.getMonth()+1;
+        const setNewMonth = date.setMonth(newMonth);
+        expense.date = new Date(setNewMonth).getTime();
+        console.log('new expense: ', expense);
+        await this.expensesService.addExpense(expense);
+      }
     }
   }
 
@@ -331,12 +340,39 @@ export class ExpensesPage implements ViewWillEnter {
   }
 
   /**
+   * This function will get all not split expenses of current group
+   *
+   * @param groupId
+   */
+  async getAllNotSplitExpense(groupId: string){
+    this.expensesService.getAllNotSplitExpense(groupId).subscribe((res) => {
+      this.notSplitExpense = res.map((e) => ({
+        id: e.payload.doc.id,
+        ...e.payload.doc.data() as Expense
+      }));
+    });
+  }
+
+  /**
+   * This function will get all not split incoming of current group
+   *
+   * @param groupId
+   */
+  async getAllNotSplitIncome(groupId: string){
+    this.incomingService.getAllNotSplitIncome(groupId).subscribe((res) => {
+      this.notSplitIncome = res.map((e) => ({
+        id: e.payload.doc.id,
+        ...e.payload.doc.data() as Expense
+      }));
+    });
+  }
+  /**
    * This function will call all needed methods to calculate and split the expenses & incoming of the current group.
    */
   async showDebts() {
     //The two methods from debt service to calculate the new expenses & incoming that has not been split yet.
-    await this.debtsService.calculateDebtsForExpenses(this.groupId, this.expenses);
-    await this.debtsService.calculateDebtsForIncomes(this.groupId, this.incoming);
+    await this.debtsService.calculateDebtsForExpenses(this.groupId, this.notSplitExpense);
+    await this.debtsService.calculateDebtsForIncomes(this.groupId, this.notSplitIncome);
     //This function will get all debts of current group
     await this.getDebts(this.currentGroup.id);
     //This function will calculate the debts of the other group members
@@ -347,8 +383,12 @@ export class ExpensesPage implements ViewWillEnter {
     await this.calcUsersDebt();
     //This function will get the list of all expenses
     await this.getExpenses(this.groupId);
+    console.log('showDebts expenses: ', this.expenses);
     //This function will get the list of all incoming
     await this.getIncoming(this.groupId);
+    //This function will get all expenses of current group with interval that was split
+    //await this.getExpenseInterval(this.groupId);
+    console.log('showDebts Interval: ', this.expensesInterval);
     //This function will get all debts of current group
     await this.getDebts(this.currentGroup.id);
     //This function will update all expenses with an interval for the coming month

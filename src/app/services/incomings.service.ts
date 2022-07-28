@@ -11,8 +11,6 @@ import firebase from 'firebase/compat/app';
 export class IncomingsService {
   entry: Expense;
   amount = 0;
-  toUserId = '';
-  fromUserId = '';
   date: Date;
   private incomingCollections: AngularFirestoreCollection<Expense>;
   private incoming: Observable<Expense>;
@@ -47,11 +45,16 @@ export class IncomingsService {
    */
   getAllIncoming(groupId: string){
     return this.afs.collection('incoming', ref => ref.where('groupId', '==', groupId)
-      .where('split', '==', false)
       .where('date', '<=', new Date().getTime()))
       .snapshotChanges();
   }
 
+  getAllNotSplitIncome(groupId: string){
+    return this.afs.collection('expenses', ref => ref.where('groupId', '==', groupId)
+      .where('split', '==', false)
+      .where('date', '<=', new Date().getTime()))
+      .snapshotChanges();
+  }
   /**
    * This function will fetch data with given id from firebase collection.
    *
@@ -103,9 +106,7 @@ export class IncomingsService {
     const incDocs = await getDocs(incRef);
     const incoming: Expense[] = [];
     incDocs.forEach(recordDoc => {
-      if (!recordDoc.data().split) {
-        incoming.push(recordDoc.data());
-      }
+      incoming.push(recordDoc.data());
     });
     return incoming;
   }

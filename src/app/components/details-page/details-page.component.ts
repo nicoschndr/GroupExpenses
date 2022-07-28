@@ -12,6 +12,7 @@ export class DetailsPageComponent implements OnInit {
   pageTitle: string;
   type: string;
   interval: string;
+  split: string;
   constructor(private navParams: NavParams, private modalCtrl: ModalController) {
     this.entry = this.navParams.get('data');
     if(this.entry.type === 'expense'){
@@ -25,6 +26,13 @@ export class DetailsPageComponent implements OnInit {
       this.interval = 'Nein';
     } else {
       this.interval = '';
+    }
+    if(this.entry.split === true) {
+      this.split = 'Ja';
+    } else if(this.entry.split === false) {
+      this.split = 'Nein';
+    } else {
+      this.split = '';
     }
   }
 

@@ -46,11 +46,16 @@ export class ExpensesService {
    */
   getAllExpenses(groupId: string){
     return this.afs.collection('expenses', ref => ref.where('groupId', '==', groupId)
-      .where('split', '==', false)
       .where('date', '<=', new Date().getTime()))
       .snapshotChanges();
   }
 
+  getAllNotSplitExpense(groupId: string){
+    return this.afs.collection('expenses', ref => ref.where('groupId', '==', groupId)
+      .where('split', '==', false)
+      .where('date', '<=', new Date().getTime()))
+      .snapshotChanges();
+  }
   /**
    * This function will get all expenses from one group by the given ID where the interval is true.
    *
@@ -62,8 +67,8 @@ export class ExpensesService {
    */
   getAllSplitIntervalExpensesFromGroup(groupId: string){
     return this.afs.collection('expenses', ref => ref.where('groupId', '==', groupId)
-      .where('interval', '==', true)
-      .where('split', '==', true))
+      .where('split', '==', true)
+      .where('interval', '==', true))
       .snapshotChanges();
   }
 
@@ -121,9 +126,7 @@ export class ExpensesService {
     const incDocs = await getDocs(incRef);
     const expenses: Expense[] = [];
     incDocs.forEach(recordDoc => {
-      if (!recordDoc.data().split) {
-        expenses.push(recordDoc.data());
-      }
+      expenses.push(recordDoc.data());
     });
     return expenses;
   }

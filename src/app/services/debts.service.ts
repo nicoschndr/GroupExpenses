@@ -320,7 +320,7 @@ export class DebtsService {
   }
 
   /**
-   * This function will mark all given expenses as splitted
+   * This function will mark all given expenses as split
    *
    * @example
    * Call it with an array of Expenses
@@ -336,7 +336,7 @@ export class DebtsService {
   }
 
   /**
-   * This function will mark all given incomes as splitted
+   * This function will mark all given incomes as split
    *
    * @example
    * Call it with an array of Expenses

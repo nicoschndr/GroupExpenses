@@ -39,7 +39,7 @@
       </ion-col>
     </ion-row>
     <!-- interval of entry -->
-    <ion-row class="ion-justify-content-center" *ngIf="interval !== ''">
+    <ion-row class="ion-justify-content-center" *ngIf="entry.type === 'expense'">
       <ion-col class="ion-text-start" size="6" style="padding: 10px">
         <p>
           Monatlich wiederkehrend?
@@ -47,6 +47,15 @@
       </ion-col>
       <ion-col size="6" style="padding: 10px">
         <p>{{interval}}</p>
+      </ion-col>
+    </ion-row>
+    <!-- split of entry -->
+    <ion-row class="ion-justify-content-center">
+      <ion-col class="ion-text-start" size="6">
+        <p>Aufgeteilt</p>
+      </ion-col>
+      <ion-col size="6">
+        <p>{{split}}</p>
       </ion-col>
     </ion-row>
     <!-- username of entry -->
