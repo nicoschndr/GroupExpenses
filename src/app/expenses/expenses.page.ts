@@ -125,9 +125,7 @@ export class ExpensesPage implements OnInit {
     await modal.present()
       .then(() => console.log('No error with presenting modal'))
       .catch(err => console.log('error modal: ', err));
-    await modal.onDidDismiss().then((res) => {
-      this.segment = res.data;
-    });
+    await modal.onDidDismiss().then(() => this.segment = 'Ausgaben');
   }
 
   /**
@@ -149,9 +147,7 @@ export class ExpensesPage implements OnInit {
     await modal.present()
       .then(() => console.log('No error with presenting modal'))
       .catch(err => console.log('error modal: ', err));
-    await modal.onDidDismiss().then((res) => {
-      this.segment = res.data;
-    });
+    await modal.onDidDismiss().then(() => this.segment = 'Ausgaben');
   }
 
   /**
@@ -248,9 +244,7 @@ export class ExpensesPage implements OnInit {
     await modal.present()
       .then(() => console.log('No error with presenting modal'))
       .catch(err => console.log('error modal: ', err));
-    await modal.onDidDismiss().then((res) => {
-      this.segment = res.data;
-    });
+    await modal.onDidDismiss().then(() => this.segment = 'Einnahmen');
   }
 
   /**
@@ -272,9 +266,7 @@ export class ExpensesPage implements OnInit {
     await modal.present()
       .then(() => console.log('No error with presenting modal'))
       .catch(err => console.log('error modal: ', err));
-    await modal.onDidDismiss().then((res) => {
-      this.segment = res.data;
-    });
+    await modal.onDidDismiss().then(() => this.segment = 'Einnahmen');
   }
 
   /**

@@ -31,13 +31,13 @@ export class DetailsPageComponent implements OnInit {
   ngOnInit() {}
 
   openPhoto(receiptUrl: string){
-    window.open();
+    window.open(receiptUrl);
   }
 
   /**
    * This function will dismiss modal.
    */
-  dismissModal(){
-    this.modalCtrl.dismiss().catch((err) => console.log('Error: ', err));
+  dismissModal(type: string){
+    this.modalCtrl.dismiss(type).catch((err) => console.log('Error: ', err));
   }
 }

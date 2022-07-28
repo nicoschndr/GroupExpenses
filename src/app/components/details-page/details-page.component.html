@@ -2,7 +2,7 @@
   <ion-toolbar>
     <ion-title>{{pageTitle}} "{{entry.name}}"</ion-title>
     <ion-buttons slot="start">
-      <ion-button (click)="dismissModal()">
+      <ion-button (click)="dismissModal(entry.type)">
         <ion-icon name="close-circle-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -62,7 +62,8 @@
     <ion-row class="ion-justify-content-center">
       <ion-img *ngIf="entry.receipt !== undefined"
                src="{{entry.receipt}}"
-               alt="receipt-image">
+               alt="receipt-image"
+               (click)="openPhoto(entry.receipt)">
       </ion-img>
     </ion-row>
   </ion-col>
