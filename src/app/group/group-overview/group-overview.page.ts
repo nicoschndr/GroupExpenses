@@ -150,8 +150,8 @@ export class GroupOverviewPage implements ViewWillEnter {
         buttons: [{
           text: 'Ja',
           handler: () => {
-            //trigger the function which is removing the user from the group
-            this.deleteUserFromGroup(uId);
+            //trigger the function which checks if the delete actions is allowed
+            this.checkDeleteAction(uId);
           }
         }, {
           text: 'Nein',
@@ -168,9 +168,9 @@ export class GroupOverviewPage implements ViewWillEnter {
           text: 'Ja',
           handler: () => {
             //trigger the function which is removing the user from the group
-            this.deleteUserFromGroup(uId);
-            //reload the page and show the remaining members
-            this.router.navigate(['group-overview', {gId: this.groupId}]);
+            this.checkDeleteAction(uId);
+            //show the remaining members
+            this.getMembers();
           }
         }, {
           text: 'Nein',
@@ -179,6 +179,44 @@ export class GroupOverviewPage implements ViewWillEnter {
       });
       await alertDeleteUser.present();
       await alertDeleteUser.onDidDismiss();
+    }
+  }
+
+  /**
+   * This function checks if its allowed to remove the selected user from the group
+   * to avoid, that somebody doesnt receive or pays their money
+   *
+   * @example
+   * Call it with a userId type of string
+   * checkDeleteAction('2uGkBIjf5WYoL4UZdObrca9T6mv1')
+   *
+   * @param uId
+   */
+  async checkDeleteAction(uId: string) {
+    //check if the current user wants to leave the group
+    if (uId === this.currentUserId) {
+      //if so, check if he has still money to pay
+      if (this.debtOfUser > 0) {
+        //if so avoid delete action and leave edit mode
+        await this.alertsService.showError('Du musst deine Schulden begleichen, bevor du die Gruppe verlässt.');
+        this.editMode = false;
+      } else {
+        //if not, delete current user from group
+        await this.deleteUserFromGroup(uId);
+      }
+    } else { //if the current user wants to remove a member from the group
+      //check every debt, if the member, which should be removed gets still money or is still  owing money
+      for (const debt of this.debts) {
+        if (debt.dId === uId && debt.paid === false || debt.cId === uId && debt.paid === false) {
+          //if so, avoid the delete action and leave the edit mode
+          await this.alertsService.showError('Du kannst das Mitglied erst entfernen, wenn es alle Zahlungen erhalten und beglichen hat!');
+          this.editMode = false;
+          break;
+        } else {
+          //delete member from group
+          await this.deleteUserFromGroup(uId);
+        }
+      }
     }
   }
 
@@ -281,8 +319,8 @@ export class GroupOverviewPage implements ViewWillEnter {
         //set back the reminder count, because the payment is now made
         await this.userService.unsetReminderCount(dId);
         //reload the data
-        await this.getMembers();
-        await this.getDebtsOfCurrentGroup();
+        await this.getMembers(); //to renew the shown shamements
+        await this.getDebtsOfCurrentGroup(); //to renew the shown debts
         await this.getDebtOfCurrentUser();
         await this.getDebtsOfMembers();
       }
@@ -454,7 +492,7 @@ export class GroupOverviewPage implements ViewWillEnter {
       }, {
         text: 'Gruppe verlassen',
         handler: () => {
-          this.deleteUserFromGroup(this.currentUserId);
+          this.checkDeleteAction(this.currentUserId);
         }
       }, {
         text: 'Gruppeneinladung versenden',

@@ -96,7 +96,7 @@ export class AlertsService {
       message: msg,
       buttons: [{
         //dismiss the alert, so the user is able to correct the data of the input fields and tries again
-        text: 'Nochmal versuchen',
+        text: 'okay',
         role: 'cancel',
       }]
     });
