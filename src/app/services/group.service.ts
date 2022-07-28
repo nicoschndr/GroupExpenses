@@ -28,7 +28,7 @@ export class GroupService {
    *
    * @example
    * Call it with a group object of type Group
-   * addGroup(group: Group)
+   * addGroup(Group)
    *
    * @param group
    */

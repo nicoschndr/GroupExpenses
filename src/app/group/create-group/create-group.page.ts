@@ -54,13 +54,18 @@ export class CreateGroupPage implements OnInit, ViewWillLeave {
 
   /**
    * This function will handle the process of creating a new group
+   *
+   * @example
+   * Call it with a groupName type of string
+   * createGroup('WG Bahnhofstraße')
+   *
+   * @param groupName
    */
   async createGroup(groupName: string) {
-    console.log(groupName);
-      //check if the given groupname is not empty
+    //check if the given groupname is not empty
     if (groupName === undefined) {
       await this.alertService.showError('Du musst einen Gruppennnamen eingeben!');
-    } else if (groupName.trim() !== '') {
+    } else if (groupName.trim() !== '') { //check if after trimming the input its still not empty
         //if not, generate a random group-key
         const key: string = Math.random().toString(36);
         //bundle data for creating a new group for the service
@@ -71,7 +76,7 @@ export class CreateGroupPage implements OnInit, ViewWillLeave {
         await this.router.navigate(['group-overview/', {gId: id}]);
         //reset the inputfield for the groupname
         this.groupName = '';
-      } else {
+      } else { //if the groupName was empty after trimming
         await this.alertService.showError('Du musst einen Gruppennnamen eingeben!');
     }
   }
