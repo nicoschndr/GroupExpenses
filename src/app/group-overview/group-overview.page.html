@@ -1,0 +1,85 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button class="backButton" defaultHref="grouplist"></ion-back-button>
+    </ion-buttons>
+    <ion-buttons slot="end" style="padding-right: 8px">
+      <ion-icon *ngIf="!editMode" button (click)="showActions()" name="ellipsis-horizontal-outline" size="large"></ion-icon>
+      <ion-icon *ngIf="editMode" button (click)="leaveEditMode()" name="save-outline" size="large"></ion-icon>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-list class="imgCentered" lines="none">
+    <img class="imageGroup" alt="fourPeople" src="assets/illustrations/groupOverview_fourPeople.png" class="image">
+  </ion-list>
+  <ion-list class="ion-text-center" lines="none">
+    <ion-label class="ion-text-center">
+      <h1>{{group.name}}</h1>
+      <br>
+      <h4 *ngIf="debtOfUser > 0">Ich schulde noch</h4>
+      <h4 *ngIf="debtOfUser === 0">Ich habe keine Zahlungen offen.</h4>
+      <br>
+      <p *ngIf="debtOfUser > 0" style="color: #A62020; padding-bottom: 25px">- {{debtOfUser}} €</p>
+      <h4 style="cursor: pointer" class="showDetails"
+          (click)="showExpensesOverview(groupId)">zur Übersicht ></h4>
+    </ion-label>
+    <ion-item *ngFor="let member of members" id="{{member.id}}">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>
+            <ion-grid>
+            <ion-row>
+              <ion-col *ngIf="editMode || membersDebt.get(member.id) === 0" style="display: flex; align-content: center; align-items: center">
+                <h6>{{member.firstName}}</h6>
+              </ion-col>
+              <ion-col *ngIf="!editMode && membersDebt.get(member.id) > 0">
+                <h6 style="display: inline-block">{{member.firstName}}</h6>
+                <p *ngIf="membersDebt.get(member.id) > 0 && !editMode"
+                   style="color: #A62020; font-size: 14px; padding-top: 10px">
+                  schuldet mir noch: {{membersDebt.get(member.id)}} €
+                </p>
+              </ion-col>
+              <ion-col class="ion-justify-content-end cols" size="2">
+                <ion-icon *ngIf="member.reminderCount === 2 && !editMode"
+                          name="hourglass-outline"
+                          style="color: #F2BF46; background-color: rgba(140, 184, 230, 0); display: flex; align-content: center; align-items: center; font-size: 30px"
+                ></ion-icon>
+                <ion-icon *ngIf="member.reminderCount === 3 && !editMode"
+                          name="hourglass-outline"
+                          style="color: #F58814; background-color: rgba(140, 184, 230, 0); display: flex; align-content: center; align-items: center; font-size: 30px"
+                ></ion-icon>
+                <ion-icon *ngIf="member.reminderCount > 3 && !editMode"
+                          name="hourglass-outline"
+                          style="color: #F54235; background-color: rgba(140, 184, 230, 0); display: flex; align-content: center; align-items: center; font-size: 30px"
+                ></ion-icon>
+                <ion-icon *ngIf="editMode"
+                          name="close-circle-outline"
+                          style="color: #A62020; background-color: rgba(140, 184, 230, 0); display: inline-block; font-size: 30px"
+                          (click)="confirmDeleteAction(member.id)"
+                ></ion-icon>
+              </ion-col>
+            </ion-row>
+            </ion-grid>
+          </ion-card-title>
+        </ion-card-header>
+      </ion-card>
+      <ion-popover *ngIf="membersDebt.get(member.id) > 0" side="top" trigger="{{member.id}}" [dismissOnSelect]="true">
+        <ng-template>
+          <ion-content>
+            <ion-list>
+              <ion-item [button]="true"
+                        [detail]="false"
+                        (click)="confirmSendReminder(member.id)"
+              >Zahlungserinnerung senden</ion-item>
+              <ion-item [button]="true"
+                        [detail]="false"
+                        (click)="markDebtAsPaid(member.id)"
+              >Zahlung erhalten</ion-item>
+            </ion-list>
+          </ion-content>
+        </ng-template>
+      </ion-popover>
+    </ion-item>
+  </ion-list>
+</ion-content>

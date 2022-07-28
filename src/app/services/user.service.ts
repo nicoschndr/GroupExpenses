@@ -3,11 +3,10 @@ import {AngularFireAuth} from '@angular/fire/compat/auth';
 import {AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument} from '@angular/fire/compat/firestore';
 import firebase from 'firebase/compat/app';
 import {User} from '../models/classes/User.model';
-import {Group} from '../models/classes/group.model';
+import {Group} from '../models/classes/Group.model';
 import {AlertsService} from './alerts.service';
 import {Router} from '@angular/router';
 import {deleteUser, getAuth, updatePassword} from '@angular/fire/auth';
-import {Payment} from '../models/classes/payment.model';
 
 
   @Injectable({
@@ -19,12 +18,10 @@ import {Payment} from '../models/classes/payment.model';
     currentUser: any[] = [];
     private userCollection: AngularFirestoreCollection<User>;
     private groupCollection: AngularFirestoreCollection<Group>;
-    private paymentCollection: AngularFirestoreCollection<Payment>;
 
     constructor(private afa: AngularFireAuth, private afs: AngularFirestore, public alertsService: AlertsService, private router: Router) {
       this.userCollection = afs.collection<User>('user');
       this.groupCollection = afs.collection<Group>('group');
-      this.paymentCollection = afs.collection<Payment>('payment');
     }
 
     /**

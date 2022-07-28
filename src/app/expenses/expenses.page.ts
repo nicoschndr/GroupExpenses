@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {Expense} from '../models/classes/expense';
+import {Expense} from '../models/classes/Expense';
 import {ActionSheetController, AlertController, ModalController, ViewWillEnter} from '@ionic/angular';
 import {ExpensesService} from '../services/expenses.service';
 import {AddExpenseComponent} from '../components/add-expense/add-expense.component';
@@ -11,7 +11,7 @@ import {DebtsService} from '../services/debts.service';
 import {Group} from '../models/classes/Group.model';
 import {DetailsPageComponent} from '../components/details-page/details-page.component';
 import {GroupService} from '../services/group.service';
-import {Debt} from '../models/classes/debt';
+import {Debt} from '../models/classes/Debt';
 import {getAuth, onAuthStateChanged} from '@angular/fire/auth';
 
 @Component({

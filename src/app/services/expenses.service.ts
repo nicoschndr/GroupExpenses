@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/compat/firestore';
-import {Expense} from '../models/classes/expense';
+import {Expense} from '../models/classes/Expense';
 import {Observable} from 'rxjs';
 import {getDocs} from '@angular/fire/firestore';
 import firebase from 'firebase/compat/app';

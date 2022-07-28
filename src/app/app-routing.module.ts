@@ -17,7 +17,7 @@ const routes: Routes = [
   },
   {
     path: 'join-group',
-    loadChildren: () => import('./group/join-group/join-group.module').then( m => m.JoinGroupPageModule)
+    loadChildren: () => import('./join-group/join-group.module').then(m => m.JoinGroupPageModule)
   },
   {
     path: 'signup',
@@ -41,15 +41,15 @@ const routes: Routes = [
   },
   {
     path: 'grouplist',
-    loadChildren: () => import('./group/grouplist/grouplist.module').then( m => m.GrouplistPageModule)
+    loadChildren: () => import('./grouplist/grouplist.module').then(m => m.GrouplistPageModule)
   },
   {
     path: 'create-group',
-    loadChildren: () => import('./group/create-group/create-group.module').then( m => m.CreateGroupPageModule)
+    loadChildren: () => import('./create-group/create-group.module').then(m => m.CreateGroupPageModule)
   },
   {
     path: 'group-overview',
-    loadChildren: () => import('./group/group-overview/group-overview.module').then( m => m.GroupOverviewPageModule)
+    loadChildren: () => import('./group-overview/group-overview.module').then(m => m.GroupOverviewPageModule)
   },
   {
     path: 'login',
@@ -69,7 +69,7 @@ const routes: Routes = [
   },
   {
     path: 'home',
-    loadChildren: () => import('./group/group-overview/group-overview.module').then( m => m.GroupOverviewPageModule)
+    loadChildren: () => import('./group-overview/group-overview.module').then(m => m.GroupOverviewPageModule)
   },
 ];
 

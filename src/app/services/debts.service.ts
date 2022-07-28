@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import {Group} from '../models/classes/group.model';
-import {Expense} from '../models/classes/expense';
-import {Debt} from '../models/classes/debt';
+import {Group} from '../models/classes/Group.model';
+import {Expense} from '../models/classes/Expense';
+import {Debt} from '../models/classes/Debt';
 import {GroupService} from './group.service';
 import {ExpensesService} from './expenses.service';
 import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/compat/firestore';

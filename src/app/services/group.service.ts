@@ -6,7 +6,7 @@ import {
   AngularFirestoreDocument} from '@angular/fire/compat/firestore';
 import {User} from '../models/classes/User.model';
 import {UserService} from './user.service';
-import {Group} from '../models/classes/group.model';
+import {Group} from '../models/classes/Group.model';
 
 @Injectable({
   providedIn: 'root'

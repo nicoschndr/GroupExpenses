@@ -1,0 +1,28 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="grouplist"></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-list class="imgCentered" lines="none">
+    <img class="imageGroup" alt="threePeople" src="/src/assets/illustrations/grouplist_threePeople.png" class="image">
+  </ion-list>
+  <ion-label class="ion-text-center">
+    <h1>Erstelle eine neue Gruppe</h1>
+  </ion-label>
+  <br>
+  <ion-list>
+    <ion-input #groupnameInput [(ngModel)]="groupName" placeholder="Gruppenname"></ion-input>
+      <br>
+    <ion-button color="button" (click)="createGroup(this.groupName)" expand="block" shape="round">erstellen</ion-button>
+  </ion-list>
+  <ion-list>
+    <h5>oder:</h5>
+    <ion-button color="button" expand="block" shape="round" (click)="navToJoinGroup()">
+      Mit Gruppen-ID teilnehmen
+    </ion-button>
+  </ion-list>
+</ion-content>
+

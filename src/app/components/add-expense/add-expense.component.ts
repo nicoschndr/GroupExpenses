@@ -1,5 +1,5 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {Expense} from '../../models/classes/expense';
+import {Expense} from '../../models/classes/Expense';
 import {ExpensesService} from '../../services/expenses.service';
 import {
   AlertController,
@@ -233,7 +233,8 @@ export class AddExpenseComponent implements OnInit, ViewDidEnter {
       (error: any) => {
         this.uploadStatus = false;
         console.log('Error: ', error);
-      });
+      })
+      .catch((err) => console.log('Error: ', err));
   }
 
   /**
