@@ -193,12 +193,17 @@ export class ExpensesPage implements OnInit {
   }
 
   /**
-   * This function will call a method from expense service to update an already split expense
-   * that is supposed to be called every month.
+   * This function will change the date of the expense and set split to false and call a method from expense service
+   * to add that is supposed to be called every month.
    */
   async addNewIntervalEntry(){
     for(const expense of this.expensesInterval){
-      await this.expensesService.updateIntervalExpense(expense);
+      expense.split = false;
+      const date = new Date(expense.date);
+      const newMonth = date.getMonth()+1;
+      const setNewMonth = date.setMonth(newMonth);
+      expense.date = new Date(setNewMonth).getTime();
+      await this.expensesService.addExpense(expense);
     }
   }
 

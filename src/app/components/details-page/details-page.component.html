@@ -60,7 +60,7 @@
     </ion-row>
     <!-- receipt of entry -->
     <ion-row class="ion-justify-content-center">
-      <ion-img *ngIf="entry.receipt !== undefined"
+      <ion-img *ngIf="entry.receipt !== ''"
                src="{{entry.receipt}}"
                alt="receipt-image"
                (click)="openPhoto(entry.receipt)">

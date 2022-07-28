@@ -28,7 +28,6 @@ export class ExpensesService {
    */
   async addExpense(expense: Expense){
     expense.id = this.afs.createId();
-    expense.date = new Date(expense.date).getTime();
     await this.expensesCollections.doc(expense.id).set(Object.assign({}, expense))
       .then(() => console.log('Successfully added new expense to firebase'))
       .catch((err) => console.log('Error: ' + err));
@@ -110,26 +109,6 @@ export class ExpensesService {
   async removeEntry(id: string){
     await this.expensesCollections.doc(id).delete()
       .then(() => console.log('Successfully deleted expense'))
-      .catch((err) => console.log('Error: ', err));
-  }
-
-  /**
-   * This function will update the date of an expense that was already split to return every month as long as
-   * interval is set as true.
-   *
-   * @example
-   * Call it with an object of type 'Expense'
-   * updateIntervalExpense(expense: Expense)
-   *
-   * @param expense
-   */
-  async updateIntervalExpense(expense: Expense){
-    const date = new Date(expense.date);
-    const newMonth = date.getMonth()+1;
-    const setNewMonth = date.setMonth(newMonth);
-    const newDate = new Date(setNewMonth).getTime();
-    await this.expensesCollections.doc(expense.id).update({date: newDate, split: false})
-      .then(() => console.log('Successfully updated expense for next month'))
       .catch((err) => console.log('Error: ', err));
   }
 

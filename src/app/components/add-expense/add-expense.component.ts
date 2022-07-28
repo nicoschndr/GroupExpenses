@@ -88,7 +88,7 @@ export class AddExpenseComponent implements OnInit {
     this.id = this.entry.id;
     this.name = this.entry.name;
     this.amount = this.entry.amount;
-    this.date = this.entry.date;
+    this.date = new Date(this.entry.date).toISOString();
     this.receipt = this.entry.receipt;
     this.type = this.entry.type;
     this.interval = this.entry.interval;
@@ -151,7 +151,7 @@ export class AddExpenseComponent implements OnInit {
       this.id,
       this.name,
       this.amount,
-      this.date,
+      this.date = new Date(this.date).getTime(),
       this.receipt,
       this.userId,
       this.userName,
