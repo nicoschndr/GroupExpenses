@@ -26,7 +26,7 @@ import {Debt} from '../../models/classes/debt';
 })
 export class GroupOverviewPage implements ViewWillEnter {
   public editMode = false;
-  public group: Group = new Group();
+  public group: Group = new Group('', '', [], '');
   public members: User[] = [];
   public membersDebt: Map<string, number> = new Map();
   public groupId: string;
@@ -55,7 +55,7 @@ export class GroupOverviewPage implements ViewWillEnter {
     //check if the current user is a member of the group
     if (!this.isInGroup) {
       //if not, redirect to the grouplist
-      this.router.navigate(['grouplist']);
+      await this.router.navigate(['grouplist']);
     } else {
       await this.getDebtsOfCurrentGroup();
       await this.getDebtOfCurrentUser();
@@ -189,10 +189,11 @@ export class GroupOverviewPage implements ViewWillEnter {
    * @param uId
    */
   async deleteUserFromGroup(uId: string) {
+    console.log(this.editMode);
     //delete user from group by using the service
     const deleteAction: boolean = await this.groupService.deleteUserFromGroup(uId, this.group.id);
-    //check if the delete function was successfull
-    if (deleteAction) {
+    //check if the delete function was successfully
+    if (deleteAction && this.editMode && uId !== this.currentUserId) {
       //if so, leave the edit mode, update the members and show the confirmation alert for the user
       this.editMode = false;
       await this.alertsService.showConfirmation();
@@ -215,7 +216,13 @@ export class GroupOverviewPage implements ViewWillEnter {
   sendInvitation() {
     //define the message, which is showed when sharing the group
     // eslint-disable-next-line max-len
-    const msg: string = 'Nehme an meiner Gruppe ' + this.group.name + ' teil, um unsere Ausgaben über die App Billie zu teilen! Lade die Billie-App aus dem App-Store und lege ein Konto an. Gebe anschließend folgende Daten im Bereich -Gruppe erstellen / Mit Gruppen-id teilnehmen- ein. Gruppen-Id: ' + this.group.id + ', Key:' + this.group.key;
+    const msg: string = 'Hallo! Nehme an meiner Gruppe ' +
+      // eslint-disable-next-line max-len
+      this.group.name + ' teil, um unsere Ausgaben über die App Billie zu teilen! Lade die Billie-App aus dem App-Store und lege ein Konto an. Gebe anschließend folgende Daten im Bereich -Gruppe erstellen / Mit Gruppen-id teilnehmen- ein. Gruppen-Id: ' +
+      this.group.id +
+      ', Key:' +
+      this.group.key +
+      '. Viele Grüße';
 
     Share.canShare().then(canShare => {
       if (canShare.value) {
@@ -235,7 +242,7 @@ export class GroupOverviewPage implements ViewWillEnter {
    */
   async sendInvitationAlert() {
     const alert = await this.alertController.create({
-      cssClass: 'alertText',
+      cssClass: 'alert',
       header: 'Sende eine Gruppeneinladung!',
       message: 'Gruppen-ID: ' + this.group.id + '<br>' +
         'Key: ' + this.group.key,
@@ -251,12 +258,17 @@ export class GroupOverviewPage implements ViewWillEnter {
     await alert.onDidDismiss();
   }
 
-  async sendPaymentReminder(debtorId: string) {
+  async sendPaymentReminder(groupName: string, debtorId: string) {
+    console.log(groupName);
     const recipient: User = await this.userService.getUserWithUid(debtorId);
     const sender: User = await this.userService.getUserWithUid(this.currentUserId);
 
-    // eslint-disable-next-line max-len
-    const msg: string = 'Hallo ' + recipient.firstName + ', leider habe ich eine Zahlung von dir noch nicht erhalten. Bitte schau doch noch einmal in die Gruppe in der Billie-App und sende mir den Betrag zeinah. Viele Grüße' + sender.firstName;
+    const msg: string = 'Hallo ' +
+      recipient.firstName +
+      ', leider habe ich eine Zahlung von dir noch nicht erhalten. Bitte schau doch noch einmal in die Gruppe ' +
+      groupName +
+      ' in der Billie-App und sende mir den Betrag zeitnah. Viele Grüße ' +
+      sender.firstName;
 
     Share.canShare().then(canShare => {
       if (canShare.value) {
@@ -286,6 +298,7 @@ export class GroupOverviewPage implements ViewWillEnter {
     for (const debt of this.debts) {
       //if there is a entry in which the given debtor is still owing the current user money
       if (debt.dId === debtorId && debt.cId === this.currentUserId && debt.paid === false) {
+        console.log('if');
         //then open the dialog in which the current user can send a reminder
         const alertSendReminder = await this.alertController.create({
           cssClass: 'alert',
@@ -298,7 +311,8 @@ export class GroupOverviewPage implements ViewWillEnter {
               await this.getMembers();
               await this.getDebtsOfCurrentGroup();
               await this.getDebtsOfMembers();
-              await this.sendPaymentReminder(debtorId);
+              console.log(this.group.name);
+              await this.sendPaymentReminder(this.group.name, debtorId);
             }
           }, {
             text: 'Nein',
@@ -307,9 +321,9 @@ export class GroupOverviewPage implements ViewWillEnter {
         });
         await alertSendReminder.present();
         await alertSendReminder.onDidDismiss();
+        //stop checking the entries, because there has been an entry found which is not paid yet
+        break;
       }
-      //stop checking the entries, because there has been an entry found which is not paid yet
-      break;
     }
   }
 
@@ -425,6 +439,8 @@ export class GroupOverviewPage implements ViewWillEnter {
         //set back the reminder count, because the payment is now made
         await this.userService.unsetReminderCount(dId);
         //reload the data
+        await this.getMembers();
+        await this.getDebtsOfCurrentGroup();
         await this.getDebtOfCurrentUser();
         await this.getDebtsOfMembers();
       }

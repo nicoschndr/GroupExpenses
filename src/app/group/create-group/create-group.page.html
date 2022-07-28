@@ -14,9 +14,9 @@
   </ion-label>
   <br>
   <ion-list>
-    <ion-input [(ngModel)]="groupname" placeholder="Gruppenname"></ion-input>
+    <ion-input [(ngModel)]="groupName" placeholder="Gruppenname"></ion-input>
       <br>
-    <ion-button color="button" (click)="createGroup()" expand="block" shape="round">erstellen</ion-button>
+    <ion-button color="button" (click)="createGroup(this.groupName)" expand="block" shape="round">erstellen</ion-button>
   </ion-list>
   <ion-list>
     <h5>oder:</h5>

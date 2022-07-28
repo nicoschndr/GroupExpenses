@@ -46,6 +46,7 @@ export class ExpensesPage implements OnInit {
               public debtsService: DebtsService,
               private groupService: GroupService
               ) {}
+
   async ngOnInit() {
     this.segment = 'Aufteilung';
     await this.getUser();

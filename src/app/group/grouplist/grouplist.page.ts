@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {getAuth, onAuthStateChanged} from '@angular/fire/auth';
-import {ViewWillEnter} from '@ionic/angular';
+import {ViewWillEnter, ViewWillLeave} from '@ionic/angular';
 import {User} from '../../models/classes/User.model';
 import {UserService} from '../../services/user.service';
 import {AlertsService} from '../../services/alerts.service';

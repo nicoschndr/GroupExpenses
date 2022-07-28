@@ -15,28 +15,7 @@ export class AlertsService {
   // @ts-ignore
   constructor(
     private alertController: AlertController,
-    private router: Router,
   ) { }
-
-  /**
-   * This function will display an alert, which shows the user, that he is logged out
-   */
-  async showLoggedOutAlert() {
-    const alertLogin = await this.alertController.create({
-      cssClass: 'alertDanger',
-      header: 'Ups...',
-      message: 'Du bist nicht mehr eingelogt.',
-      buttons: [{
-        text: 'jetzt anmelden',
-        handler: () => {
-          //navigate the user to the login-page after click
-          this.router.navigate(['login']);
-        }
-      }]
-    });
-    await alertLogin.present();
-    await alertLogin.onDidDismiss();
-  }
 
   /**
    * This function will display an alert, which shows the user, that an action has been successfull
@@ -109,11 +88,11 @@ export class AlertsService {
   /**
    * This function will display an alert, which shows the user, that the join into the group was not successfull
    */
-  async showJoinGroupError() {
+  async showError (msg: string) {
     const alertShamementGroupThree = await this.alertController.create({
       cssClass: 'alertDanger',
       header: 'Ups..',
-      message: 'Die Gruppen-Id oder der Key ist nicht korrekt.',
+      message: msg,
       buttons: [{
         //dismiss the alert, so the user is able to correct the data of the input fields and tries again
         text: 'Nochmal versuchen',
