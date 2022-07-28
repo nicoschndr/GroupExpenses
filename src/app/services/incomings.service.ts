@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/compat/firestore';
 import {Observable} from 'rxjs';
 import {getDocs} from '@angular/fire/firestore';
-import {Debt} from '../models/classes/debt';
 import {Expense} from '../models/classes/expense';
 import firebase from 'firebase/compat/app';
 
@@ -32,9 +31,8 @@ export class IncomingsService {
    */
   async addIncome(income: Expense) {
     income.id = this.afs.createId();
-    const data = JSON.parse(JSON.stringify(income));
-    data.timestamp = firebase.firestore.Timestamp.fromDate(new Date(income.date));
-    await this.incomingCollections.doc(income.id).set(data)
+    income.date = new Date(income.date).getTime();
+    await this.incomingCollections.doc(income.id).set(Object.assign({},income))
       .then(() => console.log('Successfully added new income to firebase'))
       .catch((err) => console.log('Error: ' + err));
   }
@@ -50,7 +48,8 @@ export class IncomingsService {
    */
   getAllIncoming(groupId: string){
     return this.afs.collection('incoming', ref => ref.where('groupId', '==', groupId)
-      .where('split', '==', false))
+      .where('split', '==', false)
+      .where('date', '<=', new Date().getTime()))
       .snapshotChanges();
   }
 
@@ -99,11 +98,11 @@ export class IncomingsService {
   async getAllIncomingbyMonth(id: string, from: Date, to: Date) {
     const incRef = firebase.firestore().collection('incoming')
     .where('groupId', '==', id)
-    .where('timestamp', '>=', from)
-    .where('timestamp', '<=', to);
+    .where('date', '>=', from.getTime())
+    .where('date', '<=', to.getTime());
 
     const incDocs = await getDocs(incRef);
-    const incoming: Debt[] = [];
+    const incoming: Expense[] = [];
     incDocs.forEach(recordDoc => {
       if (!recordDoc.data().split) {
         incoming.push(recordDoc.data());

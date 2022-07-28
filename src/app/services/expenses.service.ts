@@ -3,7 +3,6 @@ import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/compat
 import {Expense} from '../models/classes/expense';
 import {Observable} from 'rxjs';
 import firebase from 'firebase/compat/app';
-import {Debt} from '../models/classes/debt';
 import {getDocs} from '@angular/fire/firestore';
 
 @Injectable({
@@ -137,11 +136,11 @@ export class ExpensesService {
   async getAllExpensesbyMonth(id: string, from: Date, to: Date) {
     const incRef = firebase.firestore().collection('expenses')
     .where('groupId', '==', id)
-    .where('timestamp', '>=', from)
-    .where('timestamp', '<=', to);
+    .where('date', '>=', from.getTime())
+    .where('date', '<=', to.getTime());
 
     const incDocs = await getDocs(incRef);
-    const expenses: Debt[] = [];
+    const expenses: Expense[] = [];
     incDocs.forEach(recordDoc => {
       if (!recordDoc.data().split) {
         expenses.push(recordDoc.data());

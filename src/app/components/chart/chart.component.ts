@@ -63,10 +63,10 @@ export class ChartComponent implements OnInit {
 
   async doughnutChartMethod() {
     this.readDateISO();
-    const allExpenses = await this.incomingsService.getAllIncomingbyMonth(this.grpid, new Date(this.dateStart), new Date(this.dateEnd));
+    const allExpenses = await this.expensesService.getAllExpensesbyMonth(this.grpid, new Date(this.dateStart), new Date(this.dateEnd));
     // console.log(allIncomingbyMonth);
 
-    const allIncoming = await this.expensesService.getAllExpensesbyMonth(this.grpid, new Date(this.dateStart), new Date(this.dateEnd));
+    const allIncoming = await this.incomingsService.getAllIncomingbyMonth(this.grpid, new Date(this.dateStart), new Date(this.dateEnd));
     // console.log(allExpensesbyMonth);
 
     let expensesSum = 0;
