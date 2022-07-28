@@ -40,6 +40,7 @@ export class GrouplistPage implements ViewWillEnter {
     this.onboardingShown = JSON.parse(localStorage.getItem('onboardingShown'));
       const auth = getAuth();
       onAuthStateChanged(auth, async (user) => {
+        //check if the onboarding page has been already shown
         if (this.onboardingShown === false) {
           //if not show
           await this.router.navigate(['onboarding']);
@@ -88,7 +89,13 @@ export class GrouplistPage implements ViewWillEnter {
   }
 
   /**
-   * This function will calculate the amount of money the user is owing to the members for every group
+   * This function will calculate the amount of money the current user is owing to the members for every group
+   *
+   * @example
+   * Call it with a groupId type of string
+   * getDebtInGroup('2uGkBIjf5WYoL4UZdObrca9T6mv1')
+   *
+   * @param gId
    */
   async getDebtInGroup(gId: string) {
       let sum = 0;

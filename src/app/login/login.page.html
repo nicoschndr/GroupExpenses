@@ -12,7 +12,7 @@
     </ion-row>
 
     <ion-row>
-      <ion-col class="center">
+      <ion-col>
         <div>
         <ion-item>
           <ion-input type="text" placeholder="E-Mail" [(ngModel)]="email"></ion-input>
@@ -29,7 +29,7 @@
     </ion-row>
 
     <ion-row>
-      <ion-col class="center">
+      <ion-col>
         <div>
         <ion-item>
           <ion-input type="password" placeholder="Passwort" [(ngModel)]="password"></ion-input>
@@ -51,14 +51,14 @@
     </ion-row>
 
 
-    <ion-row>
-      <ion-col class="center">
+    <ion-row style="margin-left: 20px">
+      <ion-col >
         <p class="text1">Passwort vergessen? <a (click)="forgotPW()" style="cursor: pointer">Hier zurücksetzen</a></p>
       </ion-col>
     </ion-row>
 
     <ion-row>
-      <ion-col class="center">
+      <ion-col >
         <ion-button *ngIf="!userService.isLoggedIn" class="anmelden" (click)="dologin()">
           <p>einloggen</p>
         </ion-button>
@@ -66,21 +66,21 @@
     </ion-row>
 
     <ion-row>
-      <ion-col class="center">
+      <ion-col>
         <ion-button  *ngIf="!userService.isLoggedIn" class="anmelden" (click)="loginWithGoogle()">
           <p>LoginWithGoogle</p>
         </ion-button>
       </ion-col>
     </ion-row>
 
-    <ion-row>
-      <ion-col class="center">
+    <ion-row style="margin-left: 20px">
+      <ion-col>
         <p class="text2">Noch nicht registriert? <a (click)="navigateSignUp()" style="cursor: pointer">Jetzt anmelden</a></p>
       </ion-col>
     </ion-row>
 
     <ion-row>
-      <ion-col class="center">
+      <ion-col>
         <ion-button *ngIf="this.userService.isLoggedIn" (click)="userService.logout()">
           <p>logout</p>
         </ion-button>

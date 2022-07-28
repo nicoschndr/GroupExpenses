@@ -15,7 +15,8 @@ ion-item{
     --padding-start: 10%;
     --padding-end: 10%;
     height: 55px;
-    width: 300px;
+    margin-left: 20px;
+  margin-right: 20px;
     margin-bottom: 1em;
 }
 ion-input{
@@ -26,8 +27,8 @@ ion-button{
     color: white;
     --background: #47517B;
     --border-radius: 25px;
-    width: 300px;
     height: 55px;
+  display: flex;
 }
 .back{
   width: 50px;
@@ -40,4 +41,9 @@ ion-button{
 .c{
   display: flex;
   justify-content: center;
+}
+
+ion-col{
+  margin-left: 20px;
+  margin-right: 20px;
 }
