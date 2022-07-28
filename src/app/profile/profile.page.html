@@ -52,8 +52,22 @@
     <ion-row>
       <ion-col>
           <ion-item class="border">
-           <ion-input placeholder="E-Mail" [readonly]="!editMode" [(ngModel)]="user.email"></ion-input>
+           <ion-input placeholder="E-Mail" type="email" [readonly]="!editMode" [(ngModel)]="user.email"></ion-input>
           </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row *ngIf="!editMode&&!password">
+      <ion-col>
+        <ion-button (click)="this.changeMode()">
+          <p>Profil Bearbeiten</p>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+    <ion-row *ngIf="editMode&&!password">
+      <ion-col>
+        <ion-button (click)="this.changeMode(); this.updateUser()">
+          <p>Speichern</p>
+        </ion-button>
       </ion-col>
     </ion-row>
     <p class="center"

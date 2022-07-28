@@ -1,10 +1,5 @@
 <ion-row>
   <ion-col>
-    <div style="position: relative; height:20vh; width:100%" id="canvasdiv"></div>
-  </ion-col>  
-</ion-row>
-<ion-row>
-  <ion-col class="position">
     <ion-item>
       <ion-label>von: </ion-label>
       <ion-input
@@ -15,7 +10,6 @@
       <ion-popover trigger="dateStartISO" size="cover">
         <ng-template>
           <ion-datetime 
-            class="datepicker"
             presentation="date"
             [(ngModel)]="dateStartISO"
             locale="de-DE"
@@ -46,4 +40,9 @@
 
 
   </ion-col>
+</ion-row>
+<ion-row>
+  <ion-col>
+    <div style="position: relative; height:20vh; width:100%" id="canvasdiv"></div>
+  </ion-col>  
 </ion-row>

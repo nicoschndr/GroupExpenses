@@ -3,7 +3,7 @@ import {UserService} from '../services/user.service';
 import {User } from '../models/classes/User.model';
 import {getAuth, onAuthStateChanged} from '@angular/fire/auth';
 import {AlertsService} from '../services/alerts.service';
-import {IonInput, ViewDidLeave} from '@ionic/angular';
+import {AlertController, IonInput, ViewDidLeave} from '@ionic/angular';
 import {Router} from '@angular/router';
 
 @Component({
@@ -22,7 +22,10 @@ export class ProfilePage implements OnInit, ViewDidLeave {
   pw2='';
   altespw='';
 
-  constructor(private userService: UserService, public alertsService: AlertsService, private router: Router) {
+  constructor(private userService: UserService,
+              public alertsService: AlertsService,
+              private router: Router,
+              private alrtCtrl: AlertController) {
     /**
      * If the Page is called while the boolean "google" is on true it throws an alert. That is the case when a new User
      * that is not in the database yet signs in with the Google provider.
@@ -125,9 +128,25 @@ export class ProfilePage implements OnInit, ViewDidLeave {
    * with the getCurrentUser() method of the user Service.
    */
   async deleteUser() {
-    const currentUser = this.userService.getCurrentUser();
-    await this.userService.deleteUser(currentUser.uid);
-    this.logout();
+    await this.alrtCtrl.create({
+      header: 'Profil löschen',
+      message:'Möchtest du dein Profil wirklich unwiderruflich löschen?',
+      buttons: [
+        {
+          text: 'ja',
+          handler: async ()=>{
+            const currentUser = this.userService.getCurrentUser();
+            await this.userService.deleteUser(currentUser.uid);
+            this.logout();
+          }
+        },{
+        text:'abbrechen',
+          handler: () => {
+          this.alrtCtrl.dismiss();
+          }
+        }
+      ]
+    }).then(res=>res.present());
   }
 
 
