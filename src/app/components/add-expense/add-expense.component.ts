@@ -134,10 +134,11 @@ export class AddExpenseComponent implements OnInit {
     );
     if(this.type === 'expense'){
       this.expensesService.addExpense(this.entry).catch((err) => console.log('Error: ', err));
+      this.modalCtrl.dismiss('Ausgaben').catch((err) => console.log('Error: ', err));
     } else if(this.type === 'income'){
       this.incomingService.addIncome(this.entry).catch((err) => console.log('Error: ', err));
+      this.modalCtrl.dismiss('Einnahmen').catch((err) => console.log('Error: ', err));
     }
-    this.modalCtrl.dismiss().catch((err) => console.log('Error: ', err));
   }
 
   /**
@@ -219,6 +220,6 @@ export class AddExpenseComponent implements OnInit {
    * This function will dismiss modal.
    */
   dismissModal(type: string){
-    this.modalCtrl.dismiss({type}).catch((err) => console.log('Error: ', err));
+    this.modalCtrl.dismiss(type).catch((err) => console.log('Error: ', err));
   }
 }

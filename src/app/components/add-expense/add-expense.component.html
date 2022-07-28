@@ -69,24 +69,10 @@
       </ion-row>
 
       <ion-row class="ion-justify-content-center" *ngIf="!uploadStatus">
-        <ion-img *ngIf="receipt !== undefined" src="{{receipt}}" alt="receipt-img">
+        <ion-img *ngIf="receipt" src="{{receipt}}" alt="receipt-img">
         </ion-img>
       </ion-row>
 
-<!--      <ion-row class="ion-justify-content-center" *ngIf="!editMode">-->
-<!--        <ion-buttons>-->
-<!--          <ion-button class="formBtn" (click)="save()">-->
-<!--            hinzufügen-->
-<!--          </ion-button>-->
-<!--        </ion-buttons>-->
-<!--      </ion-row>-->
-<!--      <ion-row class="ion-justify-content-center" *ngIf="editMode">-->
-<!--        <ion-buttons>-->
-<!--          <ion-button class="formBtn" (click)="save()">-->
-<!--            speichern-->
-<!--          </ion-button>-->
-<!--        </ion-buttons>-->
-<!--      </ion-row>-->
     </ion-col>
   </ion-list>
 </ion-grid>
