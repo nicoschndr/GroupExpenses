@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {getAuth, onAuthStateChanged} from '@angular/fire/auth';
-import {ViewDidEnter, ViewWillEnter} from '@ionic/angular';
+import {ViewWillEnter, ViewWillLeave} from '@ionic/angular';
 import {User} from '../../models/classes/User.model';
 import {UserService} from '../../services/user.service';
 import {AlertsService} from '../../services/alerts.service';
@@ -33,25 +33,21 @@ export class GrouplistPage implements ViewWillEnter {
     private alertsService: AlertsService,
     private debtService: DebtsService,
   ) {
-    //get value of onboardingShown in localStorage
-    this.onboardingShown = JSON.parse(localStorage.getItem('onboardingShown'));
-    //check if onboarding page was shown before
-    if (this.onboardingShown === false) {
-      //if not show
-      this.router.navigate(['onboarding']);
-    }
   }
 
   async ionViewWillEnter() {
+    //get value of onboardingShown saved in localStorage
+    this.onboardingShown = JSON.parse(localStorage.getItem('onboardingShown'));
       const auth = getAuth();
       onAuthStateChanged(auth, async (user) => {
-        //check if a user is logged in and the onboarding page was shown before
-        if (user && this.onboardingShown) {
+        if (this.onboardingShown === false) {
+          //if not show
+          await this.router.navigate(['onboarding']);
+        } else if (user && this.onboardingShown) { //check if a user is logged in and the onboarding page was shown before
           //show all groups the user is a member from
           this.currentUserId = await this.userService.getCurrentUserId();
           await this.getOldReminderCount();
           await this.getAllGroupsFromUser(this.currentUserId);
-          await this.getDebtInGroup();
           await this.setNewReminderCountStorage();
         } else {
           await this.handleLogout();
@@ -82,10 +78,11 @@ export class GrouplistPage implements ViewWillEnter {
    * @param userId
    */
   async getAllGroupsFromUser(userId: string): Promise<void> {
-    await (await (this.groupService.getGroupsFromUser(userId))).subscribe((res) => {
+    (await this.groupService.getGroupsFromUser(userId)).subscribe((res) => {
       this.grouplist = res.map((g) => ({
         id: g.payload.doc.id,
-        ...g.payload.doc.data() as Group
+        ...g.payload.doc.data() as Group,
+        do: this.getDebtInGroup(g.payload.doc.id),
       }));
     });
   }
@@ -93,20 +90,18 @@ export class GrouplistPage implements ViewWillEnter {
   /**
    * This function will calculate the amount of money the user is owing to the members for every group
    */
-  async getDebtInGroup() {
-    for (const group of this.grouplist) {
+  async getDebtInGroup(gId: string) {
       let sum = 0;
       //get all debts of the group
-      const debts: Debt[] = await this.debtService.getDebts(group.id);
+      const debts: Debt[] = await this.debtService.getDebts(gId);
       for (const debt of debts) {
-        //get all debts which are not payed and from the current user
+        //get all debts which are not paid and from the current user
         if (debt.dId === this.currentUserId && !debt.paid) {
           sum += debt.amount;
         }
       }
       //set the value in the map
-      this.debtInGroup.set(group.id, sum);
-    }
+      this.debtInGroup.set(gId, sum);
   }
 
 
@@ -127,8 +122,9 @@ export class GrouplistPage implements ViewWillEnter {
   async setNewReminderCountStorage() {
     //get user with its values from the service
     const userFromService: User = await this.userService.getUserWithUid(this.currentUserId);
+    const reminderCount: string = userFromService.reminderCount.toString();
     //save the value of reminderCount in the localStorage
-    await localStorage.setItem('reminderCount', JSON.stringify(userFromService.reminderCount));
+    await localStorage.setItem('reminderCount', JSON.stringify(reminderCount));
     //check if there is a difference between the old and new value
     await this.handleReminderAlertsOnOpen();
   }
@@ -138,15 +134,16 @@ export class GrouplistPage implements ViewWillEnter {
    */
   async handleReminderAlertsOnOpen() {
     //get the value current value of the counter from localStorage
-    const newReminderCount: number = await JSON.parse(localStorage.getItem('reminderCount'));
+    const newReminderCount = Number(await JSON.parse(localStorage.getItem('reminderCount')));
     //check if the new value of the counter is bigger than the old one
     if (this.oldReminderCount < newReminderCount) {
-      //then there has sent somebody a paymentreminder - so show it
-      await this.showPaymentReminderAlert();
       //check if the user is now in a new reminderGroup
-      if (newReminderCount === 1 || newReminderCount === 2 || newReminderCount === 3) {
+      if (newReminderCount === 2 || newReminderCount === 3 || newReminderCount === 4) {
         //then show the alert
         await this.alertsService.showNewShamementAlert(newReminderCount);
+      } else {
+        //then there has sent somebody a paymentreminder - so show it
+        await this.showPaymentReminderAlert();
       }
     }
   }

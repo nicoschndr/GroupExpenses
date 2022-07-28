@@ -26,10 +26,7 @@ export class OnboardingPage implements OnInit {
     this.counter = this.counter-1;
   }
 
-  /**
-   * This function sets an item in the local storage that says that the onboarding was shown, so that it will not be
-   * shown next time.
-   */
+
   async getStarted(){
     localStorage.setItem('onboardingShown', JSON.stringify('true'));
     await this.router.navigate(['login']);

@@ -3,8 +3,10 @@
     <ion-buttons slot="start">
       <ion-back-button class="backButton" defaultHref="grouplist"></ion-back-button>
     </ion-buttons>
-    <ion-icon *ngIf="!editMode" button (click)="showActions()" name="ellipsis-horizontal-outline" slot="end" size="large"></ion-icon>
-    <ion-icon *ngIf="editMode" button (click)="leaveEditMode()" name="save-outline" slot="end" size="large"></ion-icon>
+    <ion-buttons slot="end" style="padding-right: 8px">
+      <ion-icon *ngIf="!editMode" button (click)="showActions()" name="ellipsis-horizontal-outline" size="large"></ion-icon>
+      <ion-icon *ngIf="editMode" button (click)="leaveEditMode()" name="save-outline" size="large"></ion-icon>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -15,50 +17,54 @@
     <ion-label class="ion-text-center">
       <h1>{{group.name}}</h1>
       <br>
-      <h4>meine Bilanz</h4>
+      <h4 *ngIf="debtOfUser > 0">Ich schulde noch</h4>
+      <h4 *ngIf="debtOfUser === 0">Ich habe keine Zahlungen offen.</h4>
       <br>
-      <p *ngIf="debtOfUser >= 0">{{debtOfUser}} €</p>
-      <p *ngIf="debtOfUser < 0" style="color: #A62020;">{{debtOfUser}} €</p>
-      <br>
-      <h4 class="showDetails" (click)="showExpensesOverview(groupId)">Details anzeigen > </h4>
+      <p *ngIf="debtOfUser > 0" style="color: #A62020; padding-bottom: 25px">- {{debtOfUser}} €</p>
+      <h4 class="showDetails"
+          (click)="showExpensesOverview(groupId)">zur Übersicht ></h4>
     </ion-label>
     <ion-item *ngFor="let member of members" id="{{member.id}}">
       <ion-card>
         <ion-card-header>
           <ion-card-title>
+            <ion-grid>
             <ion-row>
-              <ion-col class="ion-justify-content-start cols">
-                <ion-icon *ngIf="member.reminderCount === 1"
-                          name="hourglass-outline"
-                          style="color: #F2BF46; background-color: rgba(140, 184, 230, 0); display: inline-block; transform: translateY(-50%)"
-                          size="large"
-                ></ion-icon>
-                <ion-icon *ngIf="member.reminderCount === 2"
-                          name="hourglass-outline"
-                          style="color: #F58814; background-color: rgba(140, 184, 230, 0); display: inline-block; transform: translateY(-50%)"
-                          size="large"
-                ></ion-icon>
-                <ion-icon *ngIf="member.reminderCount > 2"
-                          name="hourglass-outline"
-                          style="color: #F54235; background-color: rgba(140, 184, 230, 0); display: inline-block; transform: translateY(-50%)"
-                          size="large"
-                ></ion-icon>
+              <ion-col *ngIf="editMode || membersDebt.get(member.id) === 0" style="display: flex; align-content: center; align-items: center">
+                <h6>{{member.firstName}}</h6>
               </ion-col>
-              <ion-col>
+              <ion-col *ngIf="!editMode && membersDebt.get(member.id) > 0">
                 <h6 style="display: inline-block">{{member.firstName}}</h6>
-                <p *ngIf="membersDebt.get(member.id) < 0" style="color: #A62020; font-size: 16px">schuldet mir noch: {{membersDebt.get(member.id)}} €</p>
+                <p *ngIf="membersDebt.get(member.id) > 0 && !editMode"
+                   style="color: #A62020; font-size: 14px; padding-top: 10px">
+                  schuldet mir noch: {{membersDebt.get(member.id)}} €
+                </p>
               </ion-col>
-              <ion-icon *ngIf="editMode"
-                        name="close-circle-outline"
-                        style="color: #A62020; background-color: rgba(140, 184, 230, 0); display: inline-block; transform: translateY(-50%)"
-                        size="large"
-                        (click)="confirmDeleteAction(member.id)"
-              ></ion-icon>
+              <ion-col class="ion-justify-content-end cols" size="2">
+                <ion-icon *ngIf="member.reminderCount === 2 && !editMode"
+                          name="hourglass-outline"
+                          style="color: #F2BF46; background-color: rgba(140, 184, 230, 0); display: flex; align-content: center; align-items: center; font-size: 30px"
+                ></ion-icon>
+                <ion-icon *ngIf="member.reminderCount === 3 && !editMode"
+                          name="hourglass-outline"
+                          style="color: #F58814; background-color: rgba(140, 184, 230, 0); display: flex; align-content: center; align-items: center; font-size: 30px"
+                ></ion-icon>
+                <ion-icon *ngIf="member.reminderCount > 3 && !editMode"
+                          name="hourglass-outline"
+                          style="color: #F54235; background-color: rgba(140, 184, 230, 0); display: flex; align-content: center; align-items: center; font-size: 30px"
+                ></ion-icon>
+                <ion-icon *ngIf="editMode"
+                          name="close-circle-outline"
+                          style="color: #A62020; background-color: rgba(140, 184, 230, 0); display: inline-block; font-size: 30px"
+                          (click)="confirmDeleteAction(member.id)"
+                ></ion-icon>
+              </ion-col>
             </ion-row>
+            </ion-grid>
           </ion-card-title>
         </ion-card-header>
       </ion-card>
-      <ion-popover *ngIf="membersDebt.get(member.id) < 0" side="top" trigger="{{member.id}}" [dismissOnSelect]="true">
+      <ion-popover *ngIf="membersDebt.get(member.id) > 0" side="top" trigger="{{member.id}}" [dismissOnSelect]="true">
         <ng-template>
           <ion-content>
             <ion-list>

@@ -29,13 +29,10 @@ export class ExpensesPage implements OnInit {
   groupId: string;
   users: User[];
   split = [];
-  splittedExpense: Expense[] = [];
-  splittedIncome: Expense[] = [];
   currentUserId: string;
   currentGroup: Group;
   debts: Debt[] = [];
   membersNameMap: Map<string, string> = new Map<string, string>();
-  debtOfUser = 0;
   membersDebt: Map<string, number> = new Map();
   userDebts: Map<string, number> = new Map();
   constructor(private actionSheet: ActionSheetController,
@@ -49,6 +46,7 @@ export class ExpensesPage implements OnInit {
               public debtsService: DebtsService,
               private groupService: GroupService
               ) {}
+
   async ngOnInit() {
     this.segment = 'Aufteilung';
     await this.getUser();
@@ -60,9 +58,7 @@ export class ExpensesPage implements OnInit {
     await this.getExpenseInterval(this.groupId);
     await this.getMembers();
     await this.getDebts(this.currentGroup.id);
-  }
-  segmentChanged(ev: any){
-    console.log('Segment changed to ', ev);
+    await this.addNewIntervalEntry();
   }
 
   /**
@@ -108,10 +104,6 @@ export class ExpensesPage implements OnInit {
         ...e.payload.doc.data() as Expense
       }));
     });
-  }
-
-  async getSplit(groupId: string){
-    this.splittedExpense = await this.expensesService.getSplitExpenses(groupId);
   }
 
   /**
@@ -191,8 +183,11 @@ export class ExpensesPage implements OnInit {
     await alertConfirm.present();
   }
 
+  /**
+   * This function will get all expenses that should return every month that was already split.
+   */
   async getExpenseInterval(groupId: string){
-    this.expensesService.getAllIntervalExpensesFromGroup(groupId).subscribe((res) => {
+    this.expensesService.getAllSplitIntervalExpensesFromGroup(groupId).subscribe((res) => {
       this.expensesInterval = res.map((e) => ({
         id: e.payload.doc.id,
         ...e.payload.doc.data() as Expense
@@ -200,11 +195,13 @@ export class ExpensesPage implements OnInit {
     });
   }
 
+  /**
+   * This function will call a method from expense service to update an already split expense
+   * that is supposed to be called every month.
+   */
   async addNewIntervalEntry(){
     for(const expense of this.expensesInterval){
-      if(expense.interval === true && expense.split === true){
-        await this.expensesService.updateIntervalExpense(expense);
-      }
+      await this.expensesService.updateIntervalExpense(expense);
     }
   }
 
@@ -228,10 +225,6 @@ export class ExpensesPage implements OnInit {
         ...e.payload.doc.data() as Expense
       }));
     });
-  }
-
-  async getSplittedIncome(groupId: string){
-    this.splittedIncome = await this.incomingService.getSplitIncoming(groupId);
   }
 
   /**
@@ -323,25 +316,47 @@ export class ExpensesPage implements OnInit {
     await alertSuccess.present();
   }
 
+  /**
+   * This function will navigate back to the group overview with the given group ID.
+   *
+   * @example
+   * Call it with a group ID as a string
+   * backToGroupOverview('8tru2se')
+   *
+   * @param groupId
+   */
   backToGroupOverview(groupId: string){
     this.router.navigate(['group-overview/', {gId: groupId}]).catch((err) => console.log('Error: ', err));
   }
 
   /**
-   * This function will
+   * This function will call all needed methods to calculate and split the expenses & incoming of the current group.
    */
   async showDebts() {
+    //The two methods from debt service to calculate the new expenses & incoming that has not been split yet.
     await this.debtsService.calculateDebtsForExpenses(this.groupId, this.expenses);
     await this.debtsService.calculateDebtsForIncomes(this.groupId, this.incoming);
+    //This function will get all debts of current group
     await this.getDebts(this.currentGroup.id);
+    //This function will calculate the debts of the other group members
     await this.getDebtsOfMembers();
+    //This function will calculate the debts of the current user
     await this.getDebtsOfCurrentUser();
+    //This function will calculate the debts between each user
     await this.calcUsersDebt();
+    //This function will get the list of all expenses
     await this.getExpenses(this.groupId);
+    //This function will get the list of all incoming
     await this.getIncoming(this.groupId);
+    //This function will get all debts of current group
     await this.getDebts(this.currentGroup.id);
+    //This function will update all expenses with an interval for the coming month
+    await this.addNewIntervalEntry();
   }
 
+  /**
+   * This function will get all data from current group
+   */
   async getGroup(){
     this.currentGroup = await this.groupService.getGroupById(this.groupId);
   }
@@ -477,7 +492,6 @@ export class ExpensesPage implements OnInit {
     for (const debt of this.debts) {
       if (debt.dId === dId && debt.cId === cId || debt.dId === dId && debt.cId === this.currentUserId) {
         await this.debtsService.deletePaidDebtsById(this.groupId, debt.id);
-        await this.userService.unsetReminderCount(dId);
       }
     }
   }

@@ -2,7 +2,7 @@ export class Expense {
   id?: string;
   name?: string;
   amount?: number;
-  date?: Date;
+  date?: any;
   receipt?: any;
   userId?: string;
   userName?: string;
@@ -13,7 +13,7 @@ export class Expense {
   constructor(id?: string,
               name?: string,
               amount?: number,
-              date?: Date,
+              date?: any,
               receipt?: any,
               userId?: string,
               userName?: string,

@@ -26,12 +26,12 @@ export class AppComponent implements OnInit {
 
   async ngOnInit() {
     const onboardingShownFromStorage: boolean = await JSON.parse(localStorage.getItem('onboardingShown'));
-    if (onboardingShownFromStorage) {
-      await localStorage.setItem('onboardingShown', JSON.stringify(true));
-    } else {
+    console.log('onboardingoninit', onboardingShownFromStorage);
+    if (onboardingShownFromStorage === null) {
       await localStorage.setItem('onboardingShown', JSON.stringify(false));
+    } else {
+      await localStorage.setItem('onboardingShown', JSON.stringify(true));
     }
-    await localStorage.setItem('reminderCount', JSON.stringify(0));
   }
 
   async getGroup() {

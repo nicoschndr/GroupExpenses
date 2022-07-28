@@ -15,28 +15,7 @@ export class AlertsService {
   // @ts-ignore
   constructor(
     private alertController: AlertController,
-    private router: Router,
   ) { }
-
-  /**
-   * This function will display an alert, which shows the user, that he is logged out
-   */
-  async showLoggedOutAlert() {
-    const alertLogin = await this.alertController.create({
-      cssClass: 'alertDanger',
-      header: 'Ups...',
-      message: 'Du bist nicht mehr eingelogt.',
-      buttons: [{
-        text: 'jetzt anmelden',
-        handler: () => {
-          //navigate the user to the login-page after click
-          this.router.navigate(['login']);
-        }
-      }]
-    });
-    await alertLogin.present();
-    await alertLogin.onDidDismiss();
-  }
 
   /**
    * This function will display an alert, which shows the user, that an action has been successfull
@@ -67,37 +46,37 @@ export class AlertsService {
    */
   async showNewShamementAlert(reminderCount: number) {
     //check reminderCount
-    if (reminderCount === 1) {
+    if (reminderCount === 2) {
       const alertShamementGroupOne = await this.alertController.create({
         cssClass: 'alertShamement',
-        header: 'Ein Gruppenmitglied wartet auf eine Zahlung...',
-        message: '<img alt="confirmation" style="color: #47517B;" src="/assets/icon/hourglass-outline.svg">',
+        header: 'Schon zwei Gruppenmitglieder warten auf deine Zahlungen...',
+        message: 'Du hast eine neue Shamement-Stufe erreicht. Dies ist nun in allen Gruppen sichtbar!',
         buttons: [{
-          text: 'Ja',
+          text: 'Verstanden',
           role: 'cancel',
         }]
       });
       await alertShamementGroupOne.present();
       await alertShamementGroupOne.onDidDismiss();
-    } else if (reminderCount === 2) { //check reminderCount
+    } else if (reminderCount === 3) { //check reminderCount
       const alertShamementGroupTwo = await this.alertController.create({
         cssClass: 'alertShamement',
-        header: 'Schon zwei Gruppenmitglieder warten auf deine Zahlungen...',
-        message: '<img alt="confirmation" style="color: #47517B;" src="/assets/icon/hourglass-outline.svg">',
+        header: 'Schon drei Gruppenmitglieder warten auf deine Zahlungen...',
+        message: 'Du hast eine neue Shamement-Stufe erreicht. Dies ist nun in allen Gruppen sichtbar!',
         buttons: [{
-          text: 'Ja',
+          text: 'Verstanden',
           role: 'cancel',
         }]
       });
       await alertShamementGroupTwo.present();
       await alertShamementGroupTwo.onDidDismiss();
-    } else if (reminderCount === 3) { //check reminderCount
+    } else if (reminderCount > 3) { //check reminderCount
       const alertShamementGroupThree = await this.alertController.create({
         cssClass: 'alertShamement',
-        header: 'Schon mehr als 2 Gruppenmitglieder warten auf deine Zahlungen...',
-        message: '<img alt="confirmation" style="color: #47517B;" src="/assets/icon/hourglass-outline.svg">',
+        header: 'Schon mehr als 3 Gruppenmitglieder warten auf deine Zahlungen...',
+        message: 'Du hast eine neue Shamement-Stufe erreicht. Dies ist nun in allen Gruppen sichtbar!',
         buttons: [{
-          text: 'Ja',
+          text: 'Verstanden',
           role: 'cancel',
         }]
       });
@@ -109,11 +88,11 @@ export class AlertsService {
   /**
    * This function will display an alert, which shows the user, that the join into the group was not successfull
    */
-  async showJoinGroupError() {
+  async showError (msg: string) {
     const alertShamementGroupThree = await this.alertController.create({
       cssClass: 'alertDanger',
       header: 'Ups..',
-      message: 'Die Gruppen-Id oder der Key ist nicht korrekt.',
+      message: msg,
       buttons: [{
         //dismiss the alert, so the user is able to correct the data of the input fields and tries again
         text: 'Nochmal versuchen',

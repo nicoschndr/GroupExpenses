@@ -9,10 +9,8 @@
     <ion-card button *ngFor="let group of grouplist" (click)="navToGroupoverview(group.id)">
       <ion-card-header>
         <ion-card-title>{{group.name}}</ion-card-title>
+        <p *ngIf="debtInGroup.get(group.id) > 0" style="color: #A62020; font-size: 16px">schulde ich: {{debtInGroup.get(group.id)}} €</p>
       </ion-card-header>
-      <ion-card-content>
-        <p *ngIf="debtInGroup.get(group.id) < 0" style="color: #A62020; font-size: 16px">schulde ich: {{debtInGroup.get(group.id)}} €</p>
-      </ion-card-content>
     </ion-card>
   </ion-list>
   <ion-list *ngIf="grouplist.length === 0">
@@ -24,5 +22,5 @@
   </ion-list>
 </ion-content>
 <footer>
-  <ion-button color="button" (click)="navToCreateGroup()" expand="block" shape="round">Neue Gruppe erstellen</ion-button>
+  <ion-button color="button" (click)="navToCreateGroup()" expand="block" shape="round">Neue Gruppe</ion-button>
 </footer>

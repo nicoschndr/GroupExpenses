@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
-import {NavController} from '@ionic/angular';
+import {IonInput, NavController, ViewWillLeave} from '@ionic/angular';
 import {getAuth, onAuthStateChanged} from '@angular/fire/auth';
 import {AlertsService} from '../../services/alerts.service';
 import {UserService} from '../../services/user.service';
@@ -12,11 +12,20 @@ import {Group} from '../../models/classes/group.model';
   templateUrl: './create-group.page.html',
   styleUrls: ['./create-group.page.scss'],
 })
-export class CreateGroupPage implements OnInit {
+export class CreateGroupPage implements OnInit, ViewWillLeave {
 
-  public groupname: string;
+  public groupName: string;
+  #input: IonInput;
   private founder: string;
 
+  set input(ip: IonInput) {
+    if(ip) {
+      ip.setFocus();
+      this.#input = ip;
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/member-ordering
   constructor(
     private groupService: GroupService,
     private userService: UserService,
@@ -24,6 +33,10 @@ export class CreateGroupPage implements OnInit {
     private router: Router,
     public navCtrl: NavController,
   ) { }
+
+  ionViewWillLeave() {
+    this.groupName = '';
+  }
 
   async ngOnInit() {
     const auth = getAuth();
@@ -42,23 +55,24 @@ export class CreateGroupPage implements OnInit {
   /**
    * This function will handle the process of creating a new group
    */
-  async createGroup(): Promise<void> {
-    try {
+  async createGroup(groupName: string) {
+    console.log(groupName);
       //check if the given groupname is not empty
-      if (this.groupname !== '') {
+    if (groupName === undefined) {
+      await this.alertService.showError('Du musst einen Gruppennnamen eingeben!');
+    } else if (groupName.trim() !== '') {
         //if not, generate a random group-key
         const key: string = Math.random().toString(36);
         //bundle data for creating a new group for the service
-        const data: Group = new Group('', this.groupname, [this.founder], key.slice(3, -2));
+        const data: Group = new Group('id', groupName, [this.founder], key.slice(3, -2));
         //send request for generating a new group to the service
         const id = await this.groupService.addGroup(data);
         //navigate the user to the new created group
         await this.router.navigate(['group-overview/', {gId: id}]);
         //reset the inputfield for the groupname
-        this.groupname = '';
-      }
-    } catch (e) {
-      await this.alertService.showJoinGroupError();
+        this.groupName = '';
+      } else {
+        await this.alertService.showError('Du musst einen Gruppennnamen eingeben!');
     }
   }
 

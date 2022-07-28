@@ -80,13 +80,6 @@ export class AddExpenseComponent implements OnInit {
   }
 
   /**
-   * This function will get data from one expense by its ID.
-   */
-  async getExpenseData(){
-    this.entry = await this.expensesService.getEntryById(this.id);
-  }
-
-  /**
    * This function will set all input values if the user is in edit mode.
    */
   async setValuesInInputs(){
@@ -123,6 +116,9 @@ export class AddExpenseComponent implements OnInit {
    * This function will add data to firebase collection.
    */
   addExpenseEntry(){
+    if(this.receipt === undefined) {
+      this.receipt = '';
+    }
     this.entry = new Expense(
       '',
       this.name,
@@ -160,6 +156,7 @@ export class AddExpenseComponent implements OnInit {
       this.type,
       this.interval
     );
+    //This will check if new entry is an expense or income to call the right function of expense service
     if(this.type === 'expense'){
       this.expensesService.updateExpense(this.entry);
     } else if(this.type === 'income'){
