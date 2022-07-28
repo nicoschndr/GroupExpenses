@@ -33,7 +33,7 @@ export class DebtsService {
     await firebase.firestore().collection('group').doc(gId).collection('debts').doc(debt.id).set(data);
   }
 
-  /*-*
+  /**
    * This function divides the expenses of one group and calculates which member owes who what amount
    *
    * @example
@@ -43,7 +43,7 @@ export class DebtsService {
    * @param gId
    * @param expenses
    *
-   * **/
+   */
   async calculateDebtsForExpenses(gId: string, expenses: Expense[]) {
     //get group by groupId
     const group: Group = await this.groupService.getGroupById(gId);
@@ -155,7 +155,7 @@ export class DebtsService {
       }
     }
     //mark all given expenses as split
-    await this.markExpensesAsSplitted(expenses);
+    await this.markExpensesAsSplit(expenses);
   }
 
   /**
@@ -168,7 +168,7 @@ export class DebtsService {
    * @param gId
    * @param incomes
    *
-   * **/
+   */
   async calculateDebtsForIncomes(gId: string, incomes: Expense[]) {
     //get group by groupId
     const group: Group = await this.groupService.getGroupById(gId);
@@ -280,7 +280,7 @@ export class DebtsService {
       }
     }
     //mark all given expenses as split
-    await this.markIncomesAsSplitted(incomes);
+    await this.markIncomesAsSplit(incomes);
   }
 
   /**
@@ -295,10 +295,12 @@ export class DebtsService {
   async getDebts(groupId: string): Promise<Debt[]> {
     //access the subcollection 'debts' of the group
     const debtsRef = firebase.firestore().collection('group').doc(groupId).collection('debts');
+    //get debts
     const debtDocs = await getDocs(debtsRef);
     const debts: Debt[] = [];
-    debtDocs.forEach(recordDoc => {
-      debts.push(recordDoc.data());
+    //then save as debts in array and return them
+    debtDocs.forEach(debtDoc => {
+      debts.push(debtDoc.data());
     });
     return debts;
   }
@@ -317,14 +319,32 @@ export class DebtsService {
     await firebase.firestore().collection('group').doc(groupId).collection('debts').doc(debtId).delete();
   }
 
-  async markExpensesAsSplitted(expenses: Expense[]) {
+  /**
+   * This function will mark all given expenses as splitted
+   *
+   * @example
+   * Call it with an array of Expenses
+   * markExpensesAsSplit(Expenses[])
+   *
+   * @param expenses
+   */
+  async markExpensesAsSplit(expenses: Expense[]) {
     for (const expense of expenses) {
       expense.split = true;
       await this.expensesService.updateExpense(expense);
     }
   }
 
-  async markIncomesAsSplitted(incomes: Expense[]) {
+  /**
+   * This function will mark all given incomes as splitted
+   *
+   * @example
+   * Call it with an array of Expenses
+   * markIncomesAsSplit(Expenses[])
+   *
+   * @param incomes
+   */
+  async markIncomesAsSplit(incomes: Expense[]) {
     for (const income of incomes) {
       income.split = true;
       await this.incomingsService.updateIncome(income);

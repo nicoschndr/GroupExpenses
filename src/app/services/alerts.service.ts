@@ -15,28 +15,7 @@ export class AlertsService {
   // @ts-ignore
   constructor(
     private alertController: AlertController,
-    private router: Router,
   ) { }
-
-  /**
-   * This function will display an alert, which shows the user, that he is logged out
-   */
-  async showLoggedOutAlert() {
-    const alertLogin = await this.alertController.create({
-      cssClass: 'alertDanger',
-      header: 'Ups...',
-      message: 'Du bist nicht mehr eingelogt.',
-      buttons: [{
-        text: 'jetzt anmelden',
-        handler: () => {
-          //navigate the user to the login-page after click
-          this.router.navigate(['login']);
-        }
-      }]
-    });
-    await alertLogin.present();
-    await alertLogin.onDidDismiss();
-  }
 
   /**
    * This function will display an alert, which shows the user, that an action has been successfull
@@ -80,6 +59,7 @@ export class AlertsService {
       await alertShamementGroupOne.present();
       await alertShamementGroupOne.onDidDismiss();
     } else if (reminderCount === 3) { //check reminderCount
+      console.log('=3');
       const alertShamementGroupTwo = await this.alertController.create({
         cssClass: 'alertShamement',
         header: 'Schon drei Gruppenmitglieder warten auf deine Zahlungen...',
@@ -109,14 +89,14 @@ export class AlertsService {
   /**
    * This function will display an alert, which shows the user, that the join into the group was not successfull
    */
-  async showJoinGroupError() {
+  async showError(msg: string) {
     const alertShamementGroupThree = await this.alertController.create({
       cssClass: 'alertDanger',
       header: 'Ups..',
-      message: 'Die Gruppen-Id oder der Key ist nicht korrekt.',
+      message: msg,
       buttons: [{
         //dismiss the alert, so the user is able to correct the data of the input fields and tries again
-        text: 'Nochmal versuchen',
+        text: 'okay',
         role: 'cancel',
       }]
     });
@@ -137,8 +117,8 @@ export class AlertsService {
   async showPaymentReminder(groupNames: string[]) {
     const alertPayReminder = await this.alertController.create({
       cssClass: 'alertDanger',
-      header: 'Da war noch etwas...',
-      message: 'Du hast noch offene Beträge in den Gruppen'+ groupNames + ' auszugleichen!',
+      header: 'Deine Gruppenmitglieder warten auf dich...',
+      message: 'Checke deine Gruppen '+ groupNames + ' regelmäßig nach Schulden!',
       buttons: [{
         text: 'Ja',
         role: 'cancel',

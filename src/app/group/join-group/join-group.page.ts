@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
-import {NavController} from '@ionic/angular';
+import {IonInput, NavController, ViewWillEnter, ViewWillLeave} from '@ionic/angular';
 import {UserService} from '../../services/user.service';
 import {AlertsService} from '../../services/alerts.service';
 import {GroupService} from '../../services/group.service';
@@ -10,7 +10,9 @@ import {GroupService} from '../../services/group.service';
   templateUrl: './join-group.page.html',
   styleUrls: ['./join-group.page.scss'],
 })
-export class JoinGroupPage implements OnInit {
+export class JoinGroupPage implements OnInit, ViewWillLeave, ViewWillEnter {
+  @ViewChild('groupID')
+  public groupID: IonInput;
 
   public id: string;
   public key: string;
@@ -22,7 +24,19 @@ export class JoinGroupPage implements OnInit {
               public navCtrl: NavController,
               ) { }
 
+  async ionViewWillLeave() {
+    this.id='';
+    this.key='';
+  }
+
   ngOnInit() {
+  }
+
+  /**
+   * This function sets tho focus on the first Input field for a good usability.
+   */
+  ionViewWillEnter() {
+    this.groupID.setFocus();
   }
 
   /**
@@ -40,14 +54,14 @@ export class JoinGroupPage implements OnInit {
     const joinSuccess: boolean = await this.groupService.joinGroup(userId, key);
     //check if join into the existing group was successfull
     if (joinSuccess) {
+      //navigate the user to the group-overview of the group he joined
+      await this.router.navigate(['group-overview', {gId: this.id}]);
       //if so reset the input-fields
       this.id='';
       this.key='';
-      //navigate the user to the group-overview of the group he joined
-      await this.router.navigate(['group-overview', {gId: this.id}]);
     } else  {
       //if not, show an error
-      await this.alertsService.showJoinGroupError();
+      await this.alertsService.showError('Die Gruppen-Id oder der Key ist nicht korrekt.');
     }
   }
 }

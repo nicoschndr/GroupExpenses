@@ -1,7 +1,15 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {Expense} from '../../models/classes/expense';
 import {ExpensesService} from '../../services/expenses.service';
-import {AlertController, ModalController, NavController, NavParams} from '@ionic/angular';
+import {
+  AlertController,
+  IonInput,
+  ModalController,
+  NavController,
+  NavParams,
+  ViewDidEnter,
+  ViewWillEnter
+} from '@ionic/angular';
 import {ActivatedRoute} from '@angular/router';
 import {UserService} from '../../services/user.service';
 import {User} from '../../models/classes/User.model';
@@ -13,8 +21,10 @@ import {IncomingsService} from '../../services/incomings.service';
   templateUrl: './add-expense.component.html',
   styleUrls: ['./add-expense.component.scss'],
 })
-export class AddExpenseComponent implements OnInit {
+export class AddExpenseComponent implements OnInit, ViewDidEnter {
   @ViewChild('popover') popover;
+  @ViewChild('nameInput')
+  public nameInput: IonInput;
   pageTitle: string;
   entry: Expense = new Expense();
   id: string;
@@ -56,6 +66,14 @@ export class AddExpenseComponent implements OnInit {
     this.setPageTitle().catch((err) => console.log('Error: ', err));
     this.getCurrentUserData().catch((err) => console.log('Error: ', err));
   }
+
+  /**
+   * This function sets tho focus on the first Input field for a good usability.
+   */
+  ionViewDidEnter() {
+    this.nameInput.setFocus();
+  }
+
 
   /**
    * This function will get data from current / logged-in user.

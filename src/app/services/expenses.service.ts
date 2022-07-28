@@ -2,8 +2,8 @@ import {Injectable} from '@angular/core';
 import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/compat/firestore';
 import {Expense} from '../models/classes/expense';
 import {Observable} from 'rxjs';
-import firebase from 'firebase/compat/app';
 import {getDocs} from '@angular/fire/firestore';
+import firebase from 'firebase/compat/app';
 
 @Injectable({
   providedIn: 'root'

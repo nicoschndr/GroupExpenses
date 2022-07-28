@@ -11,7 +11,7 @@
   <h1>Passwort zurücksetzen</h1>
 </div>
 
-<div class="center">
+<div style="margin-left: 20px">
   <p>Geben Sie hier die mit dem Konto verbundene E-Mail ein:</p>
 </div>
 
@@ -20,15 +20,15 @@
   <ion-grid>
 
     <ion-row>
-      <ion-col class="center">
+      <ion-col>
         <ion-item>
-          <ion-input type="text" placeholder="E-Mail" [(ngModel)]="email"></ion-input>
+          <ion-input #emailInput2 type="text" placeholder="E-Mail" [(ngModel)]="email"></ion-input>
         </ion-item>
       </ion-col>
     </ion-row>
 
     <ion-row>
-      <ion-col class="center">
+      <ion-col>
         <ion-button (click)="forgotPW()">
           <p>senden</p>
         </ion-button>

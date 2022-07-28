@@ -1,16 +1,16 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar style="text-align: center">
     <ion-title>{{pageTitle}}</ion-title>
     <ion-buttons slot="start">
-      <ion-button (click)="dismissModal(type)">
+      <ion-button style="background-color: #ffff" (click)="dismissModal(type)">
         <ion-icon name="close-circle-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
     <ion-buttons slot="end">
-      <ion-button *ngIf="editMode" (click)="deleteExpense()">
+      <ion-button style="background-color: #ffff"*ngIf="editMode" (click)="deleteExpense()">
         <ion-icon name="trash-outline"></ion-icon>
       </ion-button>
-      <ion-button (click)="save()">
+      <ion-button style="background-color: #ffff"(click)="save()">
         <ion-icon name="save-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -21,7 +21,7 @@
   <ion-list>
     <ion-col>
       <ion-row>
-        <ion-input type="text" class="ion-text-start" [(ngModel)]="name" placeholder="Name" required="true"></ion-input>
+        <ion-input #nameInput type="text" class="ion-text-start" [(ngModel)]="name" placeholder="Name" required="true"></ion-input>
       </ion-row>
       <p class="ion-text-end ion-padding-end" style="color:var(--ion-color-danger); margin-right: 10px"
          *ngIf="errors.get('name')">

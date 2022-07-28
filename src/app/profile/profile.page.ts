@@ -3,7 +3,7 @@ import {UserService} from '../services/user.service';
 import {User } from '../models/classes/User.model';
 import {getAuth, onAuthStateChanged} from '@angular/fire/auth';
 import {AlertsService} from '../services/alerts.service';
-import {IonInput} from '@ionic/angular';
+import {IonInput, ViewDidLeave} from '@ionic/angular';
 import {Router} from '@angular/router';
 
 @Component({
@@ -11,7 +11,7 @@ import {Router} from '@angular/router';
   templateUrl: './profile.page.html',
   styleUrls: ['./profile.page.scss'],
 })
-export class ProfilePage implements OnInit {
+export class ProfilePage implements OnInit, ViewDidLeave {
   @ViewChild('firstName')
   public firstName: IonInput;
 
@@ -39,6 +39,9 @@ export class ProfilePage implements OnInit {
    */
   changeMode() {
     this.editMode = this.editMode === false;
+    if(this.editMode) {
+      this.firstName.setFocus();
+    }
   }
 
   /**
@@ -60,6 +63,13 @@ export class ProfilePage implements OnInit {
       } else {
       }
     });
+  }
+
+  /**
+   * This function deletes all errors, when the user leaves the view.
+   */
+  ionViewDidLeave() {
+    this.alertsService.errors.clear();
   }
 
   /**
