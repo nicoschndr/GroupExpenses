@@ -201,10 +201,21 @@ export class GroupOverviewPage implements ViewWillEnter {
         await this.alertsService.showError('Du musst deine Schulden begleichen, bevor du die Gruppe verlässt.');
         this.editMode = false;
       } else {
-        //if not, delete current user from group
-        await this.deleteUserFromGroup(uId);
+        //check if the user still gets money
+        for (const [keyM, valueM] of this.membersDebt) {
+          if (keyM !== undefined && keyM !== this.currentUserId) {
+            //if so avoid delete action and leave edit mode
+            await this.alertsService.showError('Du musst auf die Zahlungen deiner Gruppenmitglieder warten, bevor du die Gruppe verlässt.');
+            this.editMode = false;
+            break;
+          } else {
+            //if not, delete current user from group
+            await this.deleteUserFromGroup(uId);
+          }
+        }
       }
     } else { //if the current user wants to remove a member from the group
+      await this.getDebtsOfCurrentGroup();
       //check every debt, if the member, which should be removed gets still money or is still  owing money
       for (const debt of this.debts) {
         if (debt.dId === uId && debt.paid === false || debt.cId === uId && debt.paid === false) {
