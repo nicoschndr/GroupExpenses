@@ -59,6 +59,7 @@ export class AlertsService {
       await alertShamementGroupOne.present();
       await alertShamementGroupOne.onDidDismiss();
     } else if (reminderCount === 3) { //check reminderCount
+      console.log('=3');
       const alertShamementGroupTwo = await this.alertController.create({
         cssClass: 'alertShamement',
         header: 'Schon drei Gruppenmitglieder warten auf deine Zahlungen...',
@@ -88,7 +89,7 @@ export class AlertsService {
   /**
    * This function will display an alert, which shows the user, that the join into the group was not successfull
    */
-  async showError (msg: string) {
+  async showError(msg: string) {
     const alertShamementGroupThree = await this.alertController.create({
       cssClass: 'alertDanger',
       header: 'Ups..',
@@ -116,8 +117,8 @@ export class AlertsService {
   async showPaymentReminder(groupNames: string[]) {
     const alertPayReminder = await this.alertController.create({
       cssClass: 'alertDanger',
-      header: 'Da war noch etwas...',
-      message: 'Du hast noch offene Beträge in den Gruppen'+ groupNames + ' auszugleichen!',
+      header: 'Deine Gruppenmitglieder warten auf dich...',
+      message: 'Checke deine Gruppen '+ groupNames + ' regelmäßig nach Schulden!',
       buttons: [{
         text: 'Ja',
         role: 'cancel',

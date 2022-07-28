@@ -23,6 +23,7 @@ export class GrouplistPage implements ViewWillEnter {
   private currentUserId: string;
   private oldReminderCount: number;
   private onboardingShown: boolean;
+  private reminderShown: boolean = false;
 
   constructor(
     private router: Router,
@@ -35,25 +36,36 @@ export class GrouplistPage implements ViewWillEnter {
   ) {
   }
 
+
+
   async ionViewWillEnter() {
     //get value of onboardingShown saved in localStorage
     this.onboardingShown = JSON.parse(localStorage.getItem('onboardingShown'));
-      const auth = getAuth();
-      onAuthStateChanged(auth, async (user) => {
-        //check if the onboarding page has been already shown
-        if (this.onboardingShown === false) {
-          //if not show
-          await this.router.navigate(['onboarding']);
-        } else if (user && this.onboardingShown) { //check if a user is logged in and the onboarding page was shown before
-          //show all groups the user is a member from
-          this.currentUserId = await this.userService.getCurrentUserId();
-          await this.getOldReminderCount();
-          await this.getAllGroupsFromUser(this.currentUserId);
-          await this.setNewReminderCountStorage();
-        } else {
-          await this.handleLogout();
-        }
-      });
+    const auth = getAuth();
+    onAuthStateChanged(auth, async (user) => {
+      //check if the onboarding page has been already shown
+      if (this.onboardingShown === false) {
+        //if not show
+        await this.router.navigate(['onboarding']);
+        // eslint-disable-next-line max-len
+      } else if (user && this.onboardingShown && this.reminderShown) { //check if a user is logged in and the onboarding page was shown before
+        //show all groups the user is a member from
+        this.currentUserId = await this.userService.getCurrentUserId();
+        await this.getAllGroupsFromUser(this.currentUserId);
+      } else if (user && this.onboardingShown && !this.reminderShown) {
+        this.reminderShown = true;
+        //show all groups the user is a member from
+        this.currentUserId = await this.userService.getCurrentUserId();
+        //and handle the payment reminders
+        await this.getOldReminderCount(); //save the old value
+        await this.getAllGroupsFromUser(this.currentUserId);
+        await this.setNewReminderCountStorage();
+        //check if there is a difference between the old and new value
+        await this.handleReminderAlertsOnOpen();
+      } else {
+        await this.handleLogout();
+      }
+    });
     }
 
 
@@ -132,8 +144,6 @@ export class GrouplistPage implements ViewWillEnter {
     const reminderCount: string = userFromService.reminderCount.toString();
     //save the value of reminderCount in the localStorage
     await localStorage.setItem('reminderCount', JSON.stringify(reminderCount));
-    //check if there is a difference between the old and new value
-    await this.handleReminderAlertsOnOpen();
   }
 
   /**
@@ -148,6 +158,7 @@ export class GrouplistPage implements ViewWillEnter {
       if (newReminderCount === 2 || newReminderCount === 3 || newReminderCount === 4) {
         //then show the alert
         await this.alertsService.showNewShamementAlert(newReminderCount);
+        this.reminderShown = true;
       } else {
         //then there has sent somebody a paymentreminder - so show it
         await this.showPaymentReminderAlert();

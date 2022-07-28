@@ -11,10 +11,12 @@ ion-input {
   padding-top: 5px;
   padding-bottom: 5px;
   border-radius: 15px;
+  color: #47517B
 }
 ion-checkbox {
   border-radius: 15px;
   background-color: rgb(134,152,227,.3);
+  color: #47517B
 }
 ion-input[type="text"]::-webkit-input-placeholder {
   padding-left: 10px;
@@ -26,6 +28,7 @@ ion-item {
   margin: 10px auto;
   border: 1px solid #8CB8ED;
   border-radius: 15px;
+  color: #47517B
 }
 .formBtn {
   width: 300px;
@@ -39,8 +42,12 @@ ion-img {
   height: 100px;
   object-fit: cover;
 }
+ion-label {
+  color: #47517B
+}
 @media only screen and (max-width: 360px) {
   ion-title {
     font-size: 15px;
+    color: #47517B;
   }
 }

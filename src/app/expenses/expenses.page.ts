@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {Expense} from '../models/classes/expense';
-import {ActionSheetController, AlertController, ModalController} from '@ionic/angular';
+import {ActionSheetController, AlertController, ModalController, ViewWillEnter} from '@ionic/angular';
 import {ExpensesService} from '../services/expenses.service';
 import {AddExpenseComponent} from '../components/add-expense/add-expense.component';
 import {IncomingsService} from '../services/incomings.service';
@@ -19,7 +19,7 @@ import {getAuth, onAuthStateChanged} from '@angular/fire/auth';
   templateUrl: './expenses.page.html',
   styleUrls: ['./expenses.page.scss'],
 })
-export class ExpensesPage implements OnInit {
+export class ExpensesPage implements ViewWillEnter {
   segment = 'Aufteilung';
   expense: Expense;
   expenses: Expense[] = [];
@@ -47,7 +47,7 @@ export class ExpensesPage implements OnInit {
               private groupService: GroupService
               ) {}
 
-  async ngOnInit() {
+  async ionViewWillEnter() {
     this.segment = 'Aufteilung';
     await this.getUser();
     this.groupId = this.route.snapshot.paramMap.get('gId');
