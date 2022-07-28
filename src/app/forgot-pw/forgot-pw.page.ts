@@ -1,20 +1,26 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
 import {UserService} from '../services/user.service';
-import {AlertController} from '@ionic/angular';
+import {AlertController, IonInput, ViewWillEnter} from '@ionic/angular';
 
 @Component({
   selector: 'app-forgot-pw',
   templateUrl: './forgot-pw.page.html',
   styleUrls: ['./forgot-pw.page.scss'],
 })
-export class ForgotPWPage implements OnInit {
+export class ForgotPWPage implements OnInit, ViewWillEnter {
+  @ViewChild('emailInput2')
+  public emailInput2: IonInput;
 
   email='';
 
   constructor(private userService: UserService, private router: Router, private alertController: AlertController) { }
 
   ngOnInit() {
+  }
+
+  ionViewWillEnter() {
+    this.emailInput2.setFocus();
   }
 
   /**

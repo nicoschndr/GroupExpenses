@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
 import {UserService} from '../services/user.service';
 import {getAuth, onAuthStateChanged} from '@angular/fire/auth';
 import {AlertsService} from '../services/alerts.service';
+import {IonInput, ViewWillEnter} from '@ionic/angular';
 
 
 @Component({
@@ -11,7 +12,9 @@ import {AlertsService} from '../services/alerts.service';
   styleUrls: ['./login.page.scss'],
 })
 
-export class LoginPage implements OnInit{
+export class LoginPage implements OnInit, ViewWillEnter{
+  @ViewChild('emailInput')
+  public emailInput: IonInput;
 
   email = '';
   password = '';
@@ -78,4 +81,10 @@ export class LoginPage implements OnInit{
     });
   }
 
+  /**
+   * This function sets tho focus on the first Input field for a good usability.
+   */
+  ionViewWillEnter() {
+    this.emailInput.setFocus();
+  }
 }

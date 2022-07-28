@@ -21,7 +21,7 @@
       <h4 *ngIf="debtOfUser === 0">Ich habe keine Zahlungen offen.</h4>
       <br>
       <p *ngIf="debtOfUser > 0" style="color: #A62020; padding-bottom: 25px">- {{debtOfUser}} €</p>
-      <h4 class="showDetails"
+      <h4 style="cursor: pointer" class="showDetails"
           (click)="showExpensesOverview(groupId)">zur Übersicht ></h4>
     </ion-label>
     <ion-item *ngFor="let member of members" id="{{member.id}}">

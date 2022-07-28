@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {UserService} from '../services/user.service';
 import {Router} from '@angular/router';
 import {AlertsService} from '../services/alerts.service';
+import {IonInput, ViewWillEnter} from '@ionic/angular';
 
 
 @Component({
@@ -9,7 +10,9 @@ import {AlertsService} from '../services/alerts.service';
   templateUrl: './registration.page.html',
   styleUrls: ['./registration.page.scss'],
 })
-export class RegistrationPage implements OnInit {
+export class RegistrationPage implements OnInit, ViewWillEnter {
+  @ViewChild('firstname')
+  public firstname: IonInput;
 
   user: any ={};
   errors: Map<string, string> = new Map<string, string>();
@@ -34,6 +37,13 @@ export class RegistrationPage implements OnInit {
   }
 
   ngOnInit() {
+  }
+
+  /**
+   * This function sets tho focus on the first Input field for a good usability.
+   */
+  ionViewWillEnter() {
+    this.firstname.setFocus();
   }
 
 }

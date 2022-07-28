@@ -1,6 +1,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
-import {IonInput, NavController, ViewWillLeave} from '@ionic/angular';
+import {IonInput, NavController, ViewWillEnter, ViewWillLeave} from '@ionic/angular';
 import {getAuth, onAuthStateChanged} from '@angular/fire/auth';
 import {AlertsService} from '../../services/alerts.service';
 import {UserService} from '../../services/user.service';
@@ -12,7 +12,10 @@ import {Group} from '../../models/classes/group.model';
   templateUrl: './create-group.page.html',
   styleUrls: ['./create-group.page.scss'],
 })
-export class CreateGroupPage implements OnInit, ViewWillLeave {
+export class CreateGroupPage implements OnInit, ViewWillLeave, ViewWillEnter {
+
+  @ViewChild('groupnameInput')
+  public groupnameInput: IonInput;
 
   public groupName: string;
   #input: IonInput;
@@ -36,6 +39,12 @@ export class CreateGroupPage implements OnInit, ViewWillLeave {
 
   ionViewWillLeave() {
     this.groupName = '';
+  }
+  /**
+   * This function sets tho focus on the first Input field for a good usability.
+   */
+  ionViewWillEnter() {
+    this.groupnameInput.setFocus();
   }
 
   async ngOnInit() {

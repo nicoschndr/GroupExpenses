@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
-import {NavController, ViewWillLeave} from '@ionic/angular';
+import {IonInput, NavController, ViewWillEnter, ViewWillLeave} from '@ionic/angular';
 import {UserService} from '../../services/user.service';
 import {AlertsService} from '../../services/alerts.service';
 import {GroupService} from '../../services/group.service';
@@ -10,7 +10,9 @@ import {GroupService} from '../../services/group.service';
   templateUrl: './join-group.page.html',
   styleUrls: ['./join-group.page.scss'],
 })
-export class JoinGroupPage implements OnInit, ViewWillLeave {
+export class JoinGroupPage implements OnInit, ViewWillLeave, ViewWillEnter {
+  @ViewChild('groupID')
+  public groupID: IonInput;
 
   public id: string;
   public key: string;
@@ -28,6 +30,13 @@ export class JoinGroupPage implements OnInit, ViewWillLeave {
   }
 
   ngOnInit() {
+  }
+
+  /**
+   * This function sets tho focus on the first Input field for a good usability.
+   */
+  ionViewWillEnter() {
+    this.groupID.setFocus();
   }
 
   /**

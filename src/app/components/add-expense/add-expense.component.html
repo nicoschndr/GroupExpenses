@@ -21,7 +21,7 @@
   <ion-list>
     <ion-col>
       <ion-row>
-        <ion-input type="text" class="ion-text-start" [(ngModel)]="name" placeholder="Name" required="true"></ion-input>
+        <ion-input #nameInput type="text" class="ion-text-start" [(ngModel)]="name" placeholder="Name" required="true"></ion-input>
       </ion-row>
       <p class="ion-text-end ion-padding-end" style="color:var(--ion-color-danger); margin-right: 10px"
          *ngIf="errors.get('name')">
