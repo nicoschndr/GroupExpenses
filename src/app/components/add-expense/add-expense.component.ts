@@ -7,8 +7,7 @@ import {
   ModalController,
   NavController,
   NavParams,
-  ViewDidEnter,
-  ViewWillEnter
+  ViewDidEnter
 } from '@ionic/angular';
 import {ActivatedRoute} from '@angular/router';
 import {UserService} from '../../services/user.service';
@@ -40,6 +39,7 @@ export class AddExpenseComponent implements OnInit, ViewDidEnter {
   editMode = false;
   currentUser: User;
   errors: Map<string, string> = new Map<string, string>();
+  split: boolean;
   fileName: string;
   uploadStatus = false;
   today: any;
@@ -57,6 +57,7 @@ export class AddExpenseComponent implements OnInit, ViewDidEnter {
     this.type = this.navParams.get('type');
     this.groupId = this.navParams.get('groupId');
     this.today = new Date().toISOString();
+    this.split = false;
     if(this.entry){
       this.editMode = true;
       this.setValuesInInputs().catch((err) => console.log('Error: ', err));
@@ -110,6 +111,7 @@ export class AddExpenseComponent implements OnInit, ViewDidEnter {
     this.receipt = this.entry.receipt;
     this.type = this.entry.type;
     this.interval = this.entry.interval;
+    this.split = this.entry.split;
   }
   /**
    * This function will check if all required inputs have values and will add or update entry according to

@@ -91,7 +91,7 @@
                 <ion-content>
                   <ion-list>
                     <ion-item [button]="true" [detail]="false" (click)="showExpenseDetails(expense)">Details anzeigen</ion-item>
-                    <ion-item [button]="true" [detail]="false" (click)="editExpense(expense)">Bearbeiten</ion-item>
+                    <ion-item *ngIf="expense.split === false" [button]="true" [detail]="false" (click)="editExpense(expense)">Bearbeiten</ion-item>
                     <ion-item [button]="true" [detail]="false" (click)="deleteExpense(expense)" style="color: red">Löschen</ion-item>
                   </ion-list>
                 </ion-content>

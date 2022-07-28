@@ -45,7 +45,8 @@ export class ExpensesService {
    * @param groupId
    */
   getAllExpenses(groupId: string){
-    return this.afs.collection('expenses', ref => ref.where('groupId', '==', groupId)
+    return this.afs.collection('expenses', ref => ref.orderBy('date', 'desc')
+      .where('groupId', '==', groupId)
       .where('date', '<=', new Date().getTime()))
       .snapshotChanges();
   }
@@ -102,6 +103,16 @@ export class ExpensesService {
       .catch((err) => console.log('Error: ', err));
   }
 
+  /**
+   * This function will update the variable interval of an expense if a new one was created.
+   *
+   * @param expense
+   */
+  async updateExpenseInterval(expense: Expense){
+    this.expensesCollections.doc(expense.id).update({interval: false})
+      .then(() => console.log('Successfully updated expense interval in firebase'))
+      .catch((err) => console.log('Error: ', err));
+  }
   /**
    * This function will delete an object from the firebase collection by the given ID.
    *

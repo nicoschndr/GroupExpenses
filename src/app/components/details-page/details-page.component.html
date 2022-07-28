@@ -39,7 +39,7 @@
       </ion-col>
     </ion-row>
     <!-- interval of entry -->
-    <ion-row class="ion-justify-content-center" *ngIf="entry.type === 'expense'">
+    <ion-row class="ion-justify-content-center" *ngIf="entry.type === 'expense' && entry.split === false">
       <ion-col class="ion-text-start" size="6" style="padding: 10px">
         <p>
           Monatlich wiederkehrend?

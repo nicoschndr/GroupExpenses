@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component} from '@angular/core';
 import {Expense} from '../models/classes/Expense';
 import {ActionSheetController, AlertController, ModalController, ViewWillEnter} from '@ionic/angular';
 import {ExpensesService} from '../services/expenses.service';
@@ -61,6 +61,7 @@ export class ExpensesPage implements ViewWillEnter {
     await this.getDebts(this.currentGroup.id);
     await this.getAllNotSplitExpense(this.groupId);
     await this.getAllNotSplitIncome(this.groupId);
+    await this.getExpenseInterval(this.groupId);
   }
 
   /**
@@ -106,7 +107,6 @@ export class ExpensesPage implements ViewWillEnter {
         ...e.payload.doc.data() as Expense
       }));
     });
-    console.log('All expenses: ', this.expenses);
   }
 
   /**
@@ -201,19 +201,14 @@ export class ExpensesPage implements ViewWillEnter {
    * to add that is supposed to be called every month.
    */
   async addNewIntervalEntry(){
-    await this.getExpenseInterval(this.groupId);
-    console.log('interval2: ', this.expensesInterval);
     for(const expense of this.expensesInterval){
-      console.log('interval expense: ', expense);
-      if(expense.split === true) {
-        expense.split = false;
-        const date = new Date(expense.date);
-        const newMonth = date.getMonth()+1;
-        const setNewMonth = date.setMonth(newMonth);
-        expense.date = new Date(setNewMonth).getTime();
-        console.log('new expense: ', expense);
-        await this.expensesService.addExpense(expense);
-      }
+      expense.split = false;
+      const date = new Date(expense.date);
+      const newMonth = date.getMonth()+1;
+      const setNewMonth = date.setMonth(newMonth);
+      expense.date = new Date(setNewMonth).getTime();
+      await this.expensesService.updateExpenseInterval(expense);
+      await this.expensesService.addExpense(expense);
     }
   }
 
@@ -336,7 +331,9 @@ export class ExpensesPage implements ViewWillEnter {
    * @param groupId
    */
   backToGroupOverview(groupId: string){
-    this.router.navigate(['group-overview/', {gId: groupId}]).catch((err) => console.log('Error: ', err));
+    this.router.navigate(['group-overview/', {gId: groupId}])
+      .then(() => console.log('Back to group overview'))
+      .catch((err) => console.log('Error: ', err));
   }
 
   /**
@@ -383,12 +380,8 @@ export class ExpensesPage implements ViewWillEnter {
     await this.calcUsersDebt();
     //This function will get the list of all expenses
     await this.getExpenses(this.groupId);
-    console.log('showDebts expenses: ', this.expenses);
     //This function will get the list of all incoming
     await this.getIncoming(this.groupId);
-    //This function will get all expenses of current group with interval that was split
-    //await this.getExpenseInterval(this.groupId);
-    console.log('showDebts Interval: ', this.expensesInterval);
     //This function will get all debts of current group
     await this.getDebts(this.currentGroup.id);
     //This function will update all expenses with an interval for the coming month
