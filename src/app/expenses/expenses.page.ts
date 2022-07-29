@@ -53,14 +53,14 @@ export class ExpensesPage implements ViewWillEnter {
     this.segment = 'Aufteilung';
     await this.getUser();
     this.groupId = this.route.snapshot.paramMap.get('gId');
-    this.getCurrentUserData().catch((err) => console.log('Error: ', err));
+    //this.getCurrentUserData().catch((err) => console.log('Error: ', err));
     await this.getExpenses(this.groupId);
     await this.getIncoming(this.groupId);
     await this.getGroup();
     await this.getMembers();
     await this.getDebts(this.currentGroup.id);
-    await this.getAllNotSplitExpense(this.groupId);
-    await this.getAllNotSplitIncome(this.groupId);
+    await this.getAllNotSplitExpense();
+    await this.getAllNotSplitIncome();
     await this.getExpenseInterval(this.groupId);
   }
 
@@ -84,7 +84,7 @@ export class ExpensesPage implements ViewWillEnter {
   /**
    * This function will get id of current / logged-in user by calling getCurrentUserId() from userService.
    */
-  async getCurrentUserData(){
+  /*async getCurrentUserData(){
     this.currentUserId = await this.userService.getCurrentUserId();
   }
   /****************************
@@ -341,13 +341,15 @@ export class ExpensesPage implements ViewWillEnter {
    *
    * @param groupId
    */
-  async getAllNotSplitExpense(groupId: string){
-    this.expensesService.getAllNotSplitExpense(groupId).subscribe((res) => {
+  async getAllNotSplitExpense(){
+    /*this.expensesService.getAllNotSplitExpense(groupId).subscribe((res) => {
       this.notSplitExpense = res.map((e) => ({
         id: e.payload.doc.id,
         ...e.payload.doc.data() as Expense
       }));
-    });
+    });*/
+    this.notSplitExpense = this.expenses.filter(e => e.split === false);
+    console.log(this.notSplitExpense);
   }
 
   /**
@@ -355,18 +357,25 @@ export class ExpensesPage implements ViewWillEnter {
    *
    * @param groupId
    */
-  async getAllNotSplitIncome(groupId: string){
-    this.incomingService.getAllNotSplitIncome(groupId).subscribe((res) => {
+  async getAllNotSplitIncome(){
+    /*this.incomingService.getAllNotSplitIncome(groupId).subscribe((res) => {
       this.notSplitIncome = res.map((e) => ({
         id: e.payload.doc.id,
         ...e.payload.doc.data() as Expense
       }));
-    });
+    });*/
+    this.notSplitIncome = this.incoming.filter(e => e.split === false);
   }
   /**
    * This function will call all needed methods to calculate and split the expenses & incoming of the current group.
    */
   async showDebts() {
+    //This function will get the list of all expenses
+    await this.getExpenses(this.groupId);
+    //This function will get the list of all incoming
+    await this.getIncoming(this.groupId);
+    await this.getAllNotSplitExpense();
+    await this.getAllNotSplitIncome();
     //The two methods from debt service to calculate the new expenses & incoming that has not been split yet.
     await this.debtsService.calculateDebtsForExpenses(this.groupId, this.notSplitExpense);
     await this.debtsService.calculateDebtsForIncomes(this.groupId, this.notSplitIncome);
@@ -378,10 +387,6 @@ export class ExpensesPage implements ViewWillEnter {
     await this.getDebtsOfCurrentUser();
     //This function will calculate the debts between each user
     await this.calcUsersDebt();
-    //This function will get the list of all expenses
-    await this.getExpenses(this.groupId);
-    //This function will get the list of all incoming
-    await this.getIncoming(this.groupId);
     //This function will get all debts of current group
     await this.getDebts(this.currentGroup.id);
     //This function will update all expenses with an interval for the coming month

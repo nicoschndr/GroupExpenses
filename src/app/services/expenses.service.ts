@@ -57,6 +57,7 @@ export class ExpensesService {
       .where('date', '<=', new Date().getTime()))
       .snapshotChanges();
   }
+
   /**
    * This function will get all expenses from one group by the given ID where the interval is true.
    *

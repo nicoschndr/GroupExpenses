@@ -202,17 +202,18 @@ export class GroupOverviewPage implements ViewWillEnter {
         this.editMode = false;
       } else {
         //check if the user still gets money
+        console.log(this.membersDebt);
         for (const [keyM, valueM] of this.membersDebt) {
-          if (keyM !== undefined && keyM !== this.currentUserId) {
+          if (valueM !== 0) {
             //if so avoid delete action and leave edit mode
             await this.alertsService.showError('Du musst auf die Zahlungen deiner Gruppenmitglieder warten, bevor du die Gruppe verlässt.');
+            await this.getDebtsOfMembers();
             this.editMode = false;
             break;
-          } else {
-            //if not, delete current user from group
-            await this.deleteUserFromGroup(uId);
           }
         }
+        //if not, delete current user from group
+        await this.deleteUserFromGroup(uId);
       }
     } else { //if the current user wants to remove a member from the group
       await this.getDebtsOfCurrentGroup();
@@ -221,6 +222,7 @@ export class GroupOverviewPage implements ViewWillEnter {
         if (debt.dId === uId && debt.paid === false || debt.cId === uId && debt.paid === false) {
           //if so, avoid the delete action and leave the edit mode
           await this.alertsService.showError('Du kannst das Mitglied erst entfernen, wenn es alle Zahlungen erhalten und beglichen hat!');
+          await this.getDebtsOfMembers();
           this.editMode = false;
           break;
         } else {
